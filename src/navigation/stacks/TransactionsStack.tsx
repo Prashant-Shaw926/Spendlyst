@@ -5,6 +5,7 @@ import { TransactionsScreen } from '../../screens/Transactions/TransactionsScree
 import { AddTransactionScreen } from '../../screens/Transactions/AddTransactionScreen';
 import { TransactionDetailScreen } from '../../screens/Transactions/TransactionDetailScreen';
 import { colors } from '../../theme/colors';
+import NotificationScreen from '../../screens/Notification/NotificationScreen';
 
 const Stack = createNativeStackNavigator<TransactionsStackParamList>();
 
@@ -26,6 +27,7 @@ export function TransactionsStack() {
         name="TransactionDetail"
         component={TransactionDetailScreen}
       />
+      <Stack.Screen name="Notification" component={NotificationScreen} />
     </Stack.Navigator>
   );
 }

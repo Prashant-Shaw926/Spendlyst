@@ -3,20 +3,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../types/navigation';
 import { BottomTabNavigator } from './BottomTabNavigator';
-import { OnboardingScreen } from '../screens/Onboarding/OnboardingScreen.tsx';
+import SplashScreen from '../screens/SplashScreen/SplashScreen.tsx';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
-  // TODO: Replace with real check from settingsStore (MMKV flag)
-  const hasOnboarded = true;
-
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!hasOnboarded ? (
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        ) : null}
+      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Main" component={BottomTabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
