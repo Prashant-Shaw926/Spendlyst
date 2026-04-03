@@ -1,7 +1,14 @@
 import React from 'react';
 import { View, useColorScheme } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import type { SvgProps } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  GoalsIcon,
+  HomeIcon,
+  InsightsIcon,
+  TransactionsIcon,
+} from '../assets/icons';
 import type { BottomTabParamList } from '../types/navigation';
 import { HomeStack } from './stacks/HomeStack';
 import { TransactionsStack } from './stacks/TransactionsStack';
@@ -9,14 +16,9 @@ import { GoalsStack } from './stacks/GoalsStack';
 import { InsightsStack } from './stacks/InsightsStack';
 import { colors } from '../theme/colors';
 import { moderateScale } from '../utils/responsive';
-import {
-  AnalyticsIcon,
-  HomeIcon,
-  LayersIcon,
-  TransferIcon,
-} from '../components/shared/FinanceIcons';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
+type TabIconComponent = React.ComponentType<SvgProps>;
 
 function TabBubble({
   focused,
@@ -38,6 +40,24 @@ function TabBubble({
     >
       {children}
     </View>
+  );
+}
+
+function TabBarIcon({
+  Icon,
+  focused,
+  inactiveColor,
+}: {
+  Icon: TabIconComponent;
+  focused: boolean;
+  inactiveColor: string;
+}) {
+  const iconColor = focused ? colors.surfaceDark : inactiveColor;
+
+  return (
+    <TabBubble focused={focused}>
+      <Icon width={24} height={24} color={iconColor} />
+    </TabBubble>
   );
 }
 
@@ -80,12 +100,7 @@ export function BottomTabNavigator() {
         component={HomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBubble focused={focused}>
-              <HomeIcon
-                color={focused ? colors.surfaceDark : inactiveColor}
-                size={24}
-              />
-            </TabBubble>
+            <TabBarIcon Icon={HomeIcon} focused={focused} inactiveColor={inactiveColor} />
           ),
         }}
       />
@@ -95,12 +110,7 @@ export function BottomTabNavigator() {
         component={InsightsStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBubble focused={focused}>
-              <AnalyticsIcon
-                color={focused ? colors.surfaceDark : inactiveColor}
-                size={24}
-              />
-            </TabBubble>
+            <TabBarIcon Icon={InsightsIcon} focused={focused} inactiveColor={inactiveColor} />
           ),
         }}
       />
@@ -110,12 +120,11 @@ export function BottomTabNavigator() {
         component={TransactionsStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBubble focused={focused}>
-              <TransferIcon
-                color={focused ? colors.surfaceDark : inactiveColor}
-                size={24}
-              />
-            </TabBubble>
+            <TabBarIcon
+              Icon={TransactionsIcon}
+              focused={focused}
+              inactiveColor={inactiveColor}
+            />
           ),
         }}
       />
@@ -125,12 +134,7 @@ export function BottomTabNavigator() {
         component={GoalsStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBubble focused={focused}>
-              <LayersIcon
-                color={focused ? colors.surfaceDark : inactiveColor}
-                size={24}
-              />
-            </TabBubble>
+            <TabBarIcon Icon={GoalsIcon} focused={focused} inactiveColor={inactiveColor} />
           ),
         }}
       />

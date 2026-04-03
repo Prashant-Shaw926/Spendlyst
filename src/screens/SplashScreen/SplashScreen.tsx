@@ -111,7 +111,7 @@ export default function SplashScreen() {
         ]}
       >
         <BrandMark size={moderateScale(136)} />
-        <Text style={styles.wordmark}>FinWise</Text>
+        <Text style={styles.wordmark}>Spendlyst</Text>
       </Animated.View>
     </View>
   );

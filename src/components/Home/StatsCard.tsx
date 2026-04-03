@@ -9,7 +9,7 @@ export type HomeStatRow = {
   icon: string;
   label: string;
   value: string;
-  valueColor?: string;
+  isExpense?: boolean;
 };
 
 export type StatsCardProps = {
@@ -37,7 +37,12 @@ export function StatsCard({
   const innerRadius = moderateScale(27);
 
   return (
-    <View style={{ paddingHorizontal: S.space.marginScreen, marginTop: S.space.xl }}>
+    <View
+      style={{
+        paddingHorizontal: S.space.marginScreen,
+        marginTop: S.space.xl,
+      }}
+    >
       <View
         className="bg-primary-500"
         style={{
@@ -47,6 +52,7 @@ export function StatsCard({
           alignItems: 'center',
         }}
       >
+        {/* Donut + label */}
         <View style={{ width: moderateScale(96), alignItems: 'center' }}>
           <PieChart
             donut
@@ -56,16 +62,20 @@ export function StatsCard({
             innerCircleColor="transparent"
             strokeWidth={0}
             centerLabelComponent={() => (
-              <Text style={{ fontSize: S.fs.sm, color: colors.card }}>{donutIcon}</Text>
+              <Text
+                className="text-card"
+                style={{ fontSize: S.fs.sm }}
+              >
+                {donutIcon}
+              </Text>
             )}
           />
           <Text
+            className="text-card font-poppins text-center"
             style={{
               marginTop: S.space.xs,
               fontSize: S.fs.xxs,
               fontFamily: 'Poppins-Medium',
-              color: colors.card,
-              textAlign: 'center',
               lineHeight: S.fs.xxs * 1.4,
             }}
           >
@@ -73,6 +83,7 @@ export function StatsCard({
           </Text>
         </View>
 
+        {/* Divider */}
         <View
           style={{
             width: 1,
@@ -82,28 +93,35 @@ export function StatsCard({
           }}
         />
 
+        {/* Rows */}
         <View style={{ flex: 1, gap: S.space.sm, justifyContent: 'center' }}>
           {rows.map((row, idx) => (
             <View key={row.label}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={{ fontSize: S.fs.md, marginRight: S.space.sm }}>
+                <Text
+                  style={{
+                    fontSize: S.fs.md,
+                    marginRight: S.space.sm,
+                  }}
+                >
                   {row.icon}
                 </Text>
                 <View>
                   <Text
+                    className="text-card font-poppins"
                     style={{
                       fontSize: S.fs.xxs,
                       fontFamily: 'Poppins-Regular',
-                      color: 'rgba(255,255,255,0.8)',
+                      opacity: 0.8,
                     }}
                   >
                     {row.label}
                   </Text>
                   <Text
+                    className={row.isExpense ? 'text-finance-expense font-poppins' : 'text-card font-poppins'}
                     style={{
                       fontSize: S.fs.sm,
                       fontFamily: 'Poppins-SemiBold',
-                      color: row.valueColor ?? colors.card,
                       marginTop: 1,
                     }}
                   >
@@ -111,7 +129,8 @@ export function StatsCard({
                   </Text>
                 </View>
               </View>
-              {idx === 0 ? (
+
+              {idx === 0 && (
                 <View
                   style={{
                     height: 1,
@@ -119,7 +138,7 @@ export function StatsCard({
                     marginTop: S.space.sm,
                   }}
                 />
-              ) : null}
+              )}
             </View>
           ))}
         </View>
@@ -127,4 +146,3 @@ export function StatsCard({
     </View>
   );
 }
-

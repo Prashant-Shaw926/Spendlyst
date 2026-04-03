@@ -6,10 +6,16 @@
   --color-white: #ffffff;
   --color-black: #000000;
 
-  /* Primary — mint/teal */
+  /* Primary — mint/teal
+     Named shades derived from palette:
+     50  = Honeydew  #F1FFF3
+     100 = Light Green #DFF7E2
+     500 = Caribbean Green #00D09E (brand primary)
+     Intermediate shades interpolated between palette anchors
+  */
   --color-primary-50:  #F1FFF3;
   --color-primary-100: #DFF7E2;
-  --color-primary-200: #AEEFD4;
+  --color-primary-200: #AAEFD4;
   --color-primary-300: #6DE6BE;
   --color-primary-400: #1FCEA9;
   --color-primary-500: #00D09E;
@@ -18,7 +24,12 @@
   --color-primary-800: #005640;
   --color-primary-900: #002E22;
 
-  /* Blue */
+  /* Blue
+     300 = Light Blue  #6DB6FE
+     500 = Vivid Blue  #3299FF
+     700 = Ocean Blue  #0068FF
+     Other shades interpolated from palette anchors
+  */
   --color-blue-50:  #EBF5FF;
   --color-blue-100: #CCE5FF;
   --color-blue-200: #99CCFF;
@@ -30,7 +41,17 @@
   --color-blue-800: #0050CC;
   --color-blue-900: #003899;
 
-  /* Warning */
+  /* Dark teal surfaces — from palette
+     Cyprus    #0E3E3E → surface-raised
+     Fence Green #052224 → surface-dark / surface-medium
+     Void      #031314 → surface-deep
+  */
+  --color-surface-deep:   #031314;
+  --color-surface-dark:   #052224;
+  --color-surface-medium: #093030;
+  --color-surface-raised: #0E3E3E;
+
+  /* Warning — not in palette, kept from previous */
   --color-warning-50:  #fefce8;
   --color-warning-100: #fef9c3;
   --color-warning-200: #fef08a;
@@ -42,7 +63,7 @@
   --color-warning-800: #854d0e;
   --color-warning-900: #713f12;
 
-  /* Error */
+  /* Error — not in palette, kept from previous */
   --color-error-50:  #fef2f2;
   --color-error-100: #fee2e2;
   --color-error-200: #fecaca;
@@ -54,34 +75,33 @@
   --color-error-800: #991b1b;
   --color-error-900: #7f1d1d;
 
-  /* Neutral */
+  /* Neutral — mapped from palette dark teal scale.
+     Light mode neutrals stay close to white/light end.
+     Darkest neutral uses Void #031314.
+  */
   --color-neutral-50:  #fafafa;
-  --color-neutral-100: #f5f5f5;
-  --color-neutral-200: #e5e5e5;
+  --color-neutral-100: #F1FFF3;
+  --color-neutral-200: #DFF7E2;
   --color-neutral-300: #d4d4d4;
   --color-neutral-400: #a3a3a3;
   --color-neutral-500: #737373;
   --color-neutral-600: #525252;
   --color-neutral-700: #404040;
   --color-neutral-800: #262626;
-  --color-neutral-900: #171717;
-  --color-neutral-950: #0a0a0a;
+  --color-neutral-900: #0E3E3E;
+  --color-neutral-950: #031314;
 
-  /* Dark mode surface tokens — named, not numbered */
-  --color-surface-deep:   #031314;
-  --color-surface-dark:   #052224;
-  --color-surface-medium: #093030;
-  --color-surface-raised: #0E3E3E;
+  /* ── Light mode semantic tokens ───────────────────── */
 
-  /* Semantic surface */
-  --color-bg:           #F1FFF3;
+  /* Backgrounds & surfaces */
+  --color-bg:           #00D09E;
   --color-card:         #FFFFFF;
   --color-card-medium:  #FFFFFF;
-  --color-surface-pill: #F5F5F5;
+  --color-surface-pill: #DFF7E2;
 
-  /* Semantic text */
-  --color-text:         #000000;
-  --color-text-muted:   #737373;
+  /* Text */
+  --color-text:          #000000;
+  --color-text-muted:    #737373;
   --color-text-tertiary: #9AA0AD;
 
   /* Tab bar */
@@ -94,44 +114,49 @@
   --color-expense: #0068FF;
   --color-savings: #6DB6FE;
 
-  /* Semantic border / UI */
-  --color-border:       #E5E5E5;
-  --color-progress:     #E5E5E5;
+  /* Borders & progress */
+  --color-border:   #DFF7E2;
+  --color-progress: #DFF7E2;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Neutral flips for text readability */
-    --color-neutral-50:  #0a0a0a;
-    --color-neutral-100: #171717;
-    --color-neutral-200: #262626;
-    --color-neutral-300: #404040;
+    /* Neutral flips — dark end of palette becomes "light" text */
+    --color-neutral-50:  #031314;
+    --color-neutral-100: #052224;
+    --color-neutral-200: #093030;
+    --color-neutral-300: #0E3E3E;
     --color-neutral-400: #525252;
     --color-neutral-500: #737373;
     --color-neutral-600: #a3a3a3;
     --color-neutral-700: #d4d4d4;
-    --color-neutral-800: #e5e5e5;
-    --color-neutral-900: #f5f5f5;
+    --color-neutral-800: #DFF7E2;
+    --color-neutral-900: #F1FFF3;
     --color-neutral-950: #fafafa;
 
+    /* Dark mode surfaces — palette dark teals */
     --color-bg:           #031314;
     --color-card:         #052224;
     --color-card-medium:  #093030;
     --color-surface-pill: #0E3E3E;
 
-    --color-text:         #FFFFFF;
+    /* Text on dark */
+    --color-text:          #FFFFFF;
     --color-text-muted:    #9AA0AD;
     --color-text-tertiary: #737373;
 
+    /* Tab bar */
     --color-tab-active:     #00D09E;
     --color-tab-inactive:   #9AA0AD;
     --color-tab-background: #093030;
 
+    /* Finance — expense shifts to vivid blue in dark per screens */
     --color-income:  #00D09E;
     --color-expense: #4DAAFF;
     --color-savings: #6DB6FE;
 
-    --color-border:       #0E3E3E;
-    --color-progress:     #0E3E3E;
+    /* Borders */
+    --color-border:   #0E3E3E;
+    --color-progress: #0E3E3E;
   }
 }

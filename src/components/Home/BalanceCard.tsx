@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { S } from '../../theme/scale';
-import { colors } from '../../theme/colors';
 
 export type BalanceCardProps = {
   balanceLabel: string;
@@ -26,21 +25,20 @@ export function BalanceCard({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1 }}>
           <Text
+            className="text-text-muted font-poppins"
             style={{
               fontSize: S.fs.xxs,
               fontFamily: 'Poppins-Regular',
-              color: colors.surfaceDark,
-              opacity: 0.85,
               marginBottom: 4,
             }}
           >
             {balanceLabel}
           </Text>
           <Text
+            className="text-text font-poppins"
             style={{
               fontSize: S.fs.xl,
               fontFamily: 'Poppins-Bold',
-              color: colors.surfaceDark,
             }}
           >
             {balanceValue}
@@ -48,31 +46,30 @@ export function BalanceCard({
         </View>
 
         <View
+          className="bg-border"
           style={{
             width: 1,
             height: S.space['2xl'],
-            backgroundColor: 'rgba(5,34,36,0.25)',
             marginHorizontal: S.space.md,
           }}
         />
 
         <View style={{ flex: 1 }}>
           <Text
+            className="text-text-muted font-poppins"
             style={{
               fontSize: S.fs.xxs,
               fontFamily: 'Poppins-Regular',
-              color: colors.surfaceDark,
-              opacity: 0.85,
               marginBottom: 4,
             }}
           >
             {expenseLabel}
           </Text>
           <Text
+            className="text-finance-expense font-poppins"
             style={{
               fontSize: S.fs.xl,
               fontFamily: 'Poppins-Bold',
-              color: colors.blue700,
             }}
           >
             {expenseValue}
@@ -82,4 +79,3 @@ export function BalanceCard({
     </View>
   );
 }
-
