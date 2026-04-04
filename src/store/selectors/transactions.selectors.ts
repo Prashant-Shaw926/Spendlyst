@@ -5,8 +5,17 @@ import type { AppStore } from '../types';
 export const selectFetchTransactions = (state: AppStore) => state.fetchTransactions;
 
 export const selectTransactionsByMonth = createCachedSelector(
-  (state) =>
-    [state.transactionMonthIds, state.transactionIdsByMonth, state.transactionsById] as const,
+  (
+    state,
+  ): [
+    AppStore['transactionMonthIds'],
+    AppStore['transactionIdsByMonth'],
+    AppStore['transactionsById'],
+  ] => [
+    state.transactionMonthIds,
+    state.transactionIdsByMonth,
+    state.transactionsById,
+  ],
   (transactionMonthIds, transactionIdsByMonth, transactionsById) =>
     mapTransactionsToSections(
       transactionMonthIds,
@@ -16,14 +25,21 @@ export const selectTransactionsByMonth = createCachedSelector(
 );
 
 export const selectTransactionsScreenState = createCachedSelector(
-  (state) =>
-    [
-      state.transactionOverview,
-      state.transactionsStatus,
-      state.transactionsError,
-      state.hasHydrated,
-      state.transactionIds,
-    ] as const,
+  (
+    state,
+  ): [
+    AppStore['transactionOverview'],
+    AppStore['transactionsStatus'],
+    AppStore['transactionsError'],
+    AppStore['hasHydrated'],
+    AppStore['transactionIds'],
+  ] => [
+    state.transactionOverview,
+    state.transactionsStatus,
+    state.transactionsError,
+    state.hasHydrated,
+    state.transactionIds,
+  ],
   (
     transactionOverview,
     transactionsStatus,

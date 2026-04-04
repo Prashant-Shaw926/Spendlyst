@@ -51,6 +51,8 @@ export const S = {
     md:      moderateScale(10),
     lg:      moderateScale(12),
     xl:      moderateScale(16),
+    xxl:     moderateScale(20),
+    xxxl:    moderateScale(24),
     full:    9999,
   },
 

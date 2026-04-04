@@ -1,10 +1,10 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, type DimensionValue } from 'react-native';
 import { colors } from '../../theme/colors';
 import { moderateScale } from '../../utils/responsive';
 
 type SkeletonBlockProps = {
-  width?: number | string;
+  width?: DimensionValue;
   height: number;
   radius?: number;
   isDark: boolean;

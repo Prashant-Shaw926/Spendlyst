@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Text, View } from 'react-native';
+import type { InsightsModel } from '../../../types/models';
 import {
   ArrowDownRightIcon,
   ArrowUpRightIcon,
-} from '../shared/FinanceIcons';
-import { colors } from '../../theme/colors';
-import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
+} from '../../shared/FinanceIcons';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale } from '../../../utils/responsive';
 
-export type InsightsStatsCardProps = {
+type InsightsSummaryStatsProps = {
   isDark: boolean;
-  incomeValue: string;
-  expenseValue: string;
+  summary: InsightsModel['summary'];
 };
 
 function StatItem({
@@ -46,7 +46,11 @@ function StatItem({
           marginTop: 2,
           fontSize: moderateScale(18),
           fontFamily: 'Poppins-Bold',
-          color: isExpense ? colors.blue700 : isDark ? colors.primary50 : colors.surfaceDark,
+          color: isExpense
+            ? colors.blue700
+            : isDark
+              ? colors.primary50
+              : colors.surfaceDark,
         }}
       >
         {value}
@@ -55,11 +59,10 @@ function StatItem({
   );
 }
 
-export function StatsCard({
+function InsightsSummaryStatsComponent({
   isDark,
-  incomeValue,
-  expenseValue,
-}: InsightsStatsCardProps) {
+  summary,
+}: InsightsSummaryStatsProps) {
   return (
     <View
       style={{
@@ -69,8 +72,19 @@ export function StatsCard({
         paddingHorizontal: moderateScale(6),
       }}
     >
-      <StatItem label="Income" value={incomeValue} isDark={isDark} />
-      <StatItem label="Expense" value={expenseValue} isDark={isDark} isExpense />
+      <StatItem
+        label="Income"
+        value={summary.incomeLabel}
+        isDark={isDark}
+      />
+      <StatItem
+        label="Expense"
+        value={summary.expenseLabel}
+        isDark={isDark}
+        isExpense
+      />
     </View>
   );
 }
+
+export const InsightsSummaryStats = memo(InsightsSummaryStatsComponent);

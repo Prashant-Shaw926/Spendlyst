@@ -137,7 +137,7 @@ export function GoalsScreen() {
   const newGoalText = isDark ? colors.surfaceDark : colors.card;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={screenBg}
@@ -145,7 +145,7 @@ export function GoalsScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
+        // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
         showsVerticalScrollIndicator={false}
       >
         <View

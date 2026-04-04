@@ -9,13 +9,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BalanceSection } from '../../components/Home/BalanceSection';
-import { Header } from '../../components/Home/Header';
-import { SavingsCard } from '../../components/Home/SavingsCard';
-import { Tabs } from '../../components/Home/Tabs';
-import { TransactionItem } from '../../components/Home/TransactionItem';
+import { HomeBalanceSection } from '../../components/features/home/HomeBalanceSection';
+import { HomeSavingsCard } from '../../components/features/home/HomeSavingsCard';
+import { HomeTransactionItem } from '../../components/features/home/HomeTransactionItem';
+import { BellIcon } from '../../components/shared/FinanceIcons';
+import { Header } from '../../components/shared/Header';
 import { HomeScreenSkeleton } from '../../components/shared/HomeScreenSkeleton';
+import { IconButton } from '../../components/shared/IconButton';
 import { ScreenState } from '../../components/shared/ScreenState';
+import { SegmentedTabs } from '../../components/shared/SegmentedTabs';
 import {
   selectFetchHome,
   selectHomePreviewTransactions,
@@ -36,8 +38,10 @@ export function HomeScreen() {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const { homeData, homeError, isInitialLoading, isRefreshing } =
-    useAppStore(selectHomeScreenState);
+  const headerTextColor = isDark ? colors.card : colors.surfaceDark;
+  const { homeData, homeError, isInitialLoading, isRefreshing } = useAppStore(
+    selectHomeScreenState,
+  );
   const transactions = useAppStore(selectHomePreviewTransactions);
   const fetchHome = useAppStore(selectFetchHome);
 
@@ -52,9 +56,7 @@ export function HomeScreen() {
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {isInitialLoading ? (
-        <HomeScreenSkeleton isDark={isDark} />
-      ) : null}
+      {isInitialLoading ? <HomeScreenSkeleton isDark={isDark} /> : null}
 
       {!homeData && homeError ? (
         <ScreenState
@@ -72,7 +74,7 @@ export function HomeScreen() {
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
-            paddingBottom: moderateScale(150),
+            // paddingBottom: moderateScale(150),
           }}
           refreshControl={
             <RefreshControl
@@ -89,20 +91,28 @@ export function HomeScreen() {
         >
           <View style={{ gap: moderateScale(18) }}>
             <Header
-              iconColor={colors.surfaceDark}
-              onNotificationPress={() => navigation.navigate('Notification')}
-              subtitle={homeData.greeting}
+              variant="home"
               title={homeData.headerTitle}
+              subtitle={homeData.greeting}
+              titleColor={headerTextColor}
+              subtitleColor={headerTextColor}
+              rightAction={
+                <IconButton
+                  accessibilityLabel="Open notifications"
+                  backgroundColor={colors.primary50}
+                  borderRadius={moderateScale(21)}
+                  onPress={() => navigation.navigate('Notification')}
+                  size={moderateScale(42)}
+                >
+                  <BellIcon
+                    color={colors.surfaceDark}
+                    size={moderateScale(22)}
+                  />
+                </IconButton>
+              }
             />
 
-            <BalanceSection
-              iconColor={isDark ? colors.card : colors.surfaceDark}
-              totalBalance={homeData.overview.totalBalanceLabel}
-              totalExpense={homeData.overview.totalExpenseLabel}
-              progressPercent={homeData.overview.spentPercent}
-              progressValue={homeData.overview.budgetLabel}
-              note={homeData.overview.note}
-            />
+            <HomeBalanceSection isDark={isDark} overview={homeData.overview} />
           </View>
 
           <View
@@ -113,20 +123,33 @@ export function HomeScreen() {
               gap: moderateScale(28),
             }}
           >
-            <SavingsCard
-              revenueValue={homeData.weekly.revenueLabel}
-              foodValue={homeData.weekly.foodLabel}
-            />
+            <HomeSavingsCard weekly={homeData.weekly} />
 
-            <Tabs
+            <SegmentedTabs
               activeTab={activeTab}
               onChange={setActiveTab}
               tabs={TABS}
+              activeBackgroundColor={colors.primary500}
+              activeTextColor={colors.surfaceDark}
+              inactiveTextColor={headerTextColor}
+              containerStyle={{
+                backgroundColor: isDark
+                  ? colors.surfaceRaised
+                  : colors.primary100,
+                borderRadius: moderateScale(24),
+              }}
+              itemStyle={{
+                borderRadius: moderateScale(20),
+              }}
             />
 
             <View style={{ gap: moderateScale(24) }}>
-              {transactions.map((item) => (
-                <TransactionItem key={item.id} item={item} />
+              {transactions.map(item => (
+                <HomeTransactionItem
+                  key={item.id}
+                  item={item}
+                  isDark={isDark}
+                />
               ))}
             </View>
           </View>
@@ -135,4 +158,3 @@ export function HomeScreen() {
     </SafeAreaView>
   );
 }
-

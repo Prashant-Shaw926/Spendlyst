@@ -1,13 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   RefreshControl,
   ScrollView,
   StatusBar,
   Text,
-  TouchableOpacity,
   View,
   useColorScheme,
-  type LayoutChangeEvent,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -19,11 +17,16 @@ import {
   CheckSquareIcon,
   SearchIcon,
 } from '../../components/shared/FinanceIcons';
-import { IncomeExpenseBarChart } from '../../components/Insights/IncomeExpenseBarChart';
-import { StatsCard } from '../../components/Insights/StatsCard';
-import { TargetCard } from '../../components/Insights/TargetCard';
+import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
+import { InsightsSummaryStats } from '../../components/features/insights/InsightsSummaryStats';
+import { TargetCard } from '../../components/features/insights/TargetCard';
+import { BudgetOverview } from '../../components/shared/BudgetOverview';
+import { ChartSection } from '../../components/shared/ChartSection';
+import { Header } from '../../components/shared/Header';
+import { IconButton } from '../../components/shared/IconButton';
 import { InsightsScreenSkeleton } from '../../components/shared/InsightsScreenSkeleton';
 import { ScreenState } from '../../components/shared/ScreenState';
+import { SegmentedTabs } from '../../components/shared/SegmentedTabs';
 import {
   selectFetchInsights,
   selectInsightsScreenState,
@@ -36,62 +39,15 @@ import type { InsightsStackParamList } from '../../types/navigation';
 import { getInsightChartData } from '../../utils/finance';
 import { moderateScale } from '../../utils/responsive';
 
-function MetricBlock({
-  label,
-  value,
-  labelColor,
-  valueColor,
-}: {
-  label: string;
-  value: string;
-  labelColor: string;
-  valueColor: string;
-}) {
-  return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-        <CheckSquareIcon color={labelColor} size={13} />
-        <Text
-          style={{
-            marginLeft: 6,
-            fontSize: S.fs.sm,
-            fontFamily: 'Poppins-Regular',
-            color: labelColor,
-          }}
-        >
-          {label}
-        </Text>
-      </View>
-
-      <Text
-        style={{
-          fontSize: moderateScale(22),
-          fontFamily: 'Poppins-Bold',
-          color: valueColor,
-          letterSpacing: -0.4,
-        }}
-      >
-        {value}
-      </Text>
-    </View>
-  );
-}
-
 export function InsightsScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<InsightsStackParamList>>();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const [activeTab, setActiveTab] = useState<InsightRange>('Daily');
-  const [chartWidth, setChartWidth] = useState(0);
   const { insightsData, insightsError, isInitialLoading, isRefreshing } =
     useAppStore(selectInsightsScreenState);
   const fetchInsights = useAppStore(selectFetchInsights);
-
-  const onChartLayout = useCallback((event: LayoutChangeEvent) => {
-    const nextWidth = Math.floor(event.nativeEvent.layout.width);
-    setChartWidth((current) => (current === nextWidth ? current : nextWidth));
-  }, []);
 
   const headerTextColor = isDark ? colors.card : colors.surfaceDark;
   const screenBg = isDark ? colors.surfaceDeep : colors.primary500;
@@ -100,6 +56,9 @@ export function InsightsScreen() {
   const titleColor = isDark ? colors.card : colors.surfaceDark;
   const labelColor = isDark ? 'rgba(255,255,255,0.8)' : colors.surfaceDark;
   const noteColor = isDark ? colors.card : colors.surfaceDark;
+  const dividerColor = isDark
+    ? 'rgba(255,255,255,0.34)'
+    : 'rgba(255,255,255,0.84)';
   const bellBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(241,255,243,0.95)';
   const bellBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(5,34,36,0.08)';
   const fallbackTabs: InsightRange[] = ['Daily', 'Weekly', 'Monthly', 'Year'];
@@ -125,7 +84,7 @@ export function InsightsScreen() {
   }, [insightsData]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={screenBg}
@@ -150,7 +109,7 @@ export function InsightsScreen() {
       {insightsData ? (
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
+          // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -171,151 +130,66 @@ export function InsightsScreen() {
               paddingBottom: moderateScale(18),
             }}
           >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <TouchableOpacity
-                accessibilityLabel="Go back"
-                accessibilityRole="button"
-                disabled={!navigation.canGoBack()}
-                onPress={() => {
-                  if (navigation.canGoBack()) {
-                    navigation.goBack();
-                  }
-                }}
-                style={{
-                  width: moderateScale(40),
-                  height: moderateScale(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <ArrowLeftIcon color={headerTextColor} size={24} />
-              </TouchableOpacity>
+            <Header
+              variant="centerTitle"
+              title="Analysis"
+              titleColor={headerTextColor}
+              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+              leftAction={
+                <IconButton
+                  accessibilityLabel="Go back"
+                  disabled={!navigation.canGoBack()}
+                  onPress={() => {
+                    if (navigation.canGoBack()) {
+                      navigation.goBack();
+                    }
+                  }}
+                  size={moderateScale(40)}
+                >
+                  <ArrowLeftIcon color={headerTextColor} size={24} />
+                </IconButton>
+              }
+              rightAction={
+                <IconButton
+                  accessibilityLabel="Open notifications"
+                  backgroundColor={bellBg}
+                  borderColor={bellBorder}
+                  borderRadius={moderateScale(20)}
+                  borderWidth={1}
+                  onPress={() => navigation.navigate('Notification')}
+                  size={moderateScale(40)}
+                >
+                  <BellIcon color={colors.surfaceDark} size={20} />
+                </IconButton>
+              }
+            />
 
-              <Text
-                style={{
-                  fontSize: moderateScale(22),
-                  fontFamily: 'Poppins-Bold',
-                  color: headerTextColor,
-                  letterSpacing: -0.5,
+            <View style={{ marginTop: moderateScale(34) }}>
+              <BudgetOverview
+                leftMetric={{
+                  label: 'Total Balance',
+                  value: insightsData.overview.totalBalanceLabel,
+                  labelColor,
+                  valueColor: colors.card,
+                  icon: <CheckSquareIcon color={labelColor} size={13} />,
                 }}
-              >
-                Analysis
-              </Text>
-
-              <TouchableOpacity
-                accessibilityLabel="Open notifications"
-                accessibilityRole="button"
-                onPress={() => navigation.navigate('Notification')}
-                style={{
-                  width: moderateScale(40),
-                  height: moderateScale(40),
-                  borderRadius: moderateScale(20),
-                  backgroundColor: bellBg,
-                  borderWidth: 1,
-                  borderColor: bellBorder,
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                rightMetric={{
+                  label: 'Total Expense',
+                  value: insightsData.overview.totalExpenseLabel,
+                  labelColor,
+                  valueColor: colors.blue700,
+                  icon: <CheckSquareIcon color={labelColor} size={13} />,
                 }}
-              >
-                <BellIcon color={colors.surfaceDark} size={20} />
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ flexDirection: 'row', marginTop: moderateScale(34) }}>
-              <MetricBlock
-                label="Total Balance"
-                value={insightsData.overview.totalBalanceLabel}
-                labelColor={labelColor}
-                valueColor={colors.card}
-              />
-
-              <View
-                style={{
-                  width: 1,
+                progressPercent={insightsData.overview.spentPercent}
+                progressValue={insightsData.overview.budgetLabel}
+                note={insightsData.overview.note}
+                noteColor={noteColor}
+                noteIconColor={labelColor}
+                dividerStyle={{
                   marginHorizontal: moderateScale(18),
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.34)' : 'rgba(255,255,255,0.84)',
+                  backgroundColor: dividerColor,
                 }}
               />
-
-              <MetricBlock
-                label="Total Expense"
-                value={insightsData.overview.totalExpenseLabel}
-                labelColor={labelColor}
-                valueColor={colors.blue700}
-              />
-            </View>
-
-            <View style={{ marginTop: moderateScale(18) }}>
-              <View
-                style={{
-                  height: moderateScale(28),
-                  borderRadius: moderateScale(16),
-                  backgroundColor: colors.primary50,
-                  overflow: 'hidden',
-                  justifyContent: 'center',
-                }}
-              >
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    width: `${Math.max(0, Math.min(insightsData.overview.spentPercent, 100))}%`,
-                    borderRadius: moderateScale(16),
-                    backgroundColor: colors.surfaceDark,
-                  }}
-                />
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingHorizontal: moderateScale(20),
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: S.fs.xs,
-                      fontFamily: 'Poppins-Medium',
-                      color: colors.card,
-                    }}
-                  >
-                    {insightsData.overview.spentPercent}%
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: S.fs.sm,
-                      fontFamily: 'Poppins-SemiBold',
-                      color: colors.surfaceDark,
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {insightsData.overview.budgetLabel}
-                  </Text>
-                </View>
-              </View>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 14 }}>
-                <CheckSquareIcon color={labelColor} size={15} />
-                <Text
-                  style={{
-                    marginLeft: 9,
-                    fontSize: S.fs.md,
-                    fontFamily: 'Poppins-Regular',
-                    color: noteColor,
-                  }}
-                >
-                  {insightsData.overview.note}
-                </Text>
-              </View>
             </View>
           </View>
 
@@ -330,48 +204,35 @@ export function InsightsScreen() {
               paddingBottom: moderateScale(34),
             }}
           >
-            <View
-              style={{
+            <SegmentedTabs
+              activeTab={activeTab}
+              tabs={tabs}
+              onChange={setActiveTab}
+              activeBackgroundColor={colors.primary500}
+              activeTextColor={colors.surfaceDark}
+              inactiveTextColor={titleColor}
+              containerPadding={5}
+              gap={0}
+              containerStyle={{
                 borderRadius: moderateScale(24),
                 backgroundColor: segmentBg,
-                padding: 5,
-                flexDirection: 'row',
               }}
-            >
-              {tabs.map((tab) => {
-                const isActive = tab === activeTab;
+              itemStyle={{
+                borderRadius: moderateScale(20),
+              }}
+              labelStyle={{
+                fontSize: moderateScale(14),
+              }}
+            />
 
-                return (
-                  <TouchableOpacity
-                    key={tab}
-                    accessibilityRole="button"
-                    onPress={() => setActiveTab(tab)}
-                    style={{
-                      flex: 1,
-                      borderRadius: moderateScale(20),
-                      backgroundColor: isActive ? colors.primary500 : 'transparent',
-                      paddingVertical: moderateScale(12),
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: moderateScale(14),
-                        fontFamily: isActive ? 'Poppins-Medium' : 'Poppins-Regular',
-                        color: isActive ? colors.surfaceDark : titleColor,
-                      }}
-                    >
-                      {tab}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
-            <View
-              onLayout={onChartLayout}
-              style={{
+            <ChartSection
+              title={insightsData.chartTitle}
+              titleStyle={{
+                fontSize: moderateScale(18),
+                fontFamily: 'Poppins-SemiBold',
+                color: colors.surfaceDark,
+              }}
+              containerStyle={{
                 marginTop: moderateScale(30),
                 borderRadius: moderateScale(46),
                 backgroundColor: colors.primary100,
@@ -379,71 +240,45 @@ export function InsightsScreen() {
                 paddingTop: moderateScale(18),
                 paddingBottom: moderateScale(22),
               }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: moderateScale(14),
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: moderateScale(18),
-                    fontFamily: 'Poppins-SemiBold',
-                    color: colors.surfaceDark,
-                  }}
-                >
-                  {insightsData.chartTitle}
-                </Text>
-
+              headerStyle={{
+                marginBottom: moderateScale(14),
+              }}
+              actions={
                 <View style={{ flexDirection: 'row', gap: moderateScale(8) }}>
-                  <TouchableOpacity
-                    accessibilityRole="button"
+                  <IconButton
                     accessibilityLabel="Search analytics"
-                    style={{
-                      width: moderateScale(34),
-                      height: moderateScale(34),
-                      borderRadius: moderateScale(17),
-                      backgroundColor: colors.primary500,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
+                    backgroundColor={colors.primary500}
+                    borderRadius={moderateScale(17)}
+                    size={moderateScale(34)}
                   >
                     <SearchIcon color={colors.surfaceDark} size={18} />
-                  </TouchableOpacity>
+                  </IconButton>
 
-                  <TouchableOpacity
-                    accessibilityRole="button"
+                  <IconButton
                     accessibilityLabel="Open calendar"
-                    style={{
-                      width: moderateScale(34),
-                      height: moderateScale(34),
-                      borderRadius: moderateScale(17),
-                      backgroundColor: colors.primary500,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
+                    backgroundColor={colors.primary500}
+                    borderRadius={moderateScale(17)}
+                    size={moderateScale(34)}
                   >
                     <CalendarIcon color={colors.surfaceDark} size={18} />
-                  </TouchableOpacity>
+                  </IconButton>
                 </View>
-              </View>
+              }
+            >
+              {({ width }) =>
+                width > 0 ? (
+                  <IncomeExpenseBarChart
+                    width={width - moderateScale(56)}
+                    height={moderateScale(162)}
+                    data={dayData}
+                  />
+                ) : null
+              }
+            </ChartSection>
 
-              {chartWidth > 0 ? (
-                <IncomeExpenseBarChart
-                  width={chartWidth - moderateScale(56)}
-                  height={moderateScale(162)}
-                  data={dayData}
-                />
-              ) : null}
-            </View>
-
-            <StatsCard
+            <InsightsSummaryStats
               isDark={isDark}
-              incomeValue={insightsData.summary.incomeLabel}
-              expenseValue={insightsData.summary.expenseLabel}
+              summary={insightsData.summary}
             />
 
             <View style={{ marginTop: moderateScale(30) }}>
@@ -474,4 +309,3 @@ export function InsightsScreen() {
     </SafeAreaView>
   );
 }
-

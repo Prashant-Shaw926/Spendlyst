@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { BarChart, type barDataItem } from 'react-native-gifted-charts';
-import { colors } from '../../theme/colors';
-import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale } from '../../../utils/responsive';
 
 export type DayIncomeExpense = {
   label: string;
@@ -84,7 +84,9 @@ export function IncomeExpenseBarChart({
       maxValue: stepValue * 4,
       stepValue,
       labels: Array.from({ length: 4 }, (_, index) => {
-        return compactFormatter.format(stepValue * (index + 1)).toLowerCase();
+        return compactFormatter
+          .format(stepValue * (index + 1))
+          .toLowerCase();
       }),
     };
   }, [data]);

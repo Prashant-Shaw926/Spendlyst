@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { PieChart, type pieDataItem } from 'react-native-gifted-charts';
-import type { InsightTargetModel } from '../../types/models';
-import { colors } from '../../theme/colors';
-import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
+import type { InsightTargetModel } from '../../../types/models';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale } from '../../../utils/responsive';
 
 export type TargetCardProps = {
   isDark: boolean;
@@ -36,7 +36,13 @@ export function TargetCard({
         padding: moderateScale(18),
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <View style={{ flex: 1, paddingRight: S.space.md }}>
           <Text
             style={{
@@ -79,11 +85,11 @@ export function TargetCard({
           centerLabelComponent={() => (
             <Text
               style={{
-              fontSize: S.fs.xs,
-              fontFamily: 'Poppins-SemiBold',
-              color: isDark ? colors.card : colors.surfaceDark,
-            }}
-          >
+                fontSize: S.fs.xs,
+                fontFamily: 'Poppins-SemiBold',
+                color: isDark ? colors.card : colors.surfaceDark,
+              }}
+            >
               {Math.round(target.percent)}%
             </Text>
           )}

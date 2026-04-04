@@ -1,13 +1,14 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import type { HomeModel } from '../../../types/models';
 import {
   CarIcon,
   ForkKnifeIcon,
   StackCashIcon,
-} from '../shared/FinanceIcons';
-import { colors } from '../../theme/colors';
-import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
+} from '../../shared/FinanceIcons';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale } from '../../../utils/responsive';
 
 type FinanceIconComponent = React.ComponentType<{
   color?: string;
@@ -15,9 +16,8 @@ type FinanceIconComponent = React.ComponentType<{
   strokeWidth?: number;
 }>;
 
-type SavingsCardProps = {
-  revenueValue: string;
-  foodValue: string;
+type HomeSavingsCardProps = {
+  weekly: HomeModel['weekly'];
 };
 
 function SavingsStat({
@@ -61,10 +61,7 @@ function SavingsStat({
   );
 }
 
-export function SavingsCard({
-  revenueValue,
-  foodValue,
-}: SavingsCardProps) {
+export function HomeSavingsCard({ weekly }: HomeSavingsCardProps) {
   return (
     <View
       className="bg-primary-500 rounded-[32px] flex-row items-center"
@@ -116,7 +113,7 @@ export function SavingsCard({
         <SavingsStat
           Icon={StackCashIcon}
           label="Revenue Last Week"
-          value={revenueValue}
+          value={weekly.revenueLabel}
           valueClassName="text-surface-dark"
         />
 
@@ -130,7 +127,7 @@ export function SavingsCard({
         <SavingsStat
           Icon={ForkKnifeIcon}
           label="Food Last Week"
-          value={foodValue}
+          value={weekly.foodLabel}
           valueClassName="text-finance-expense"
         />
       </View>

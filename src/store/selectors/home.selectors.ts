@@ -4,8 +4,14 @@ import type { AppStore } from '../types';
 export const selectFetchHome = (state: AppStore) => state.fetchHome;
 
 export const selectHomeScreenState = createCachedSelector(
-  (state) =>
-    [state.homeData, state.homeStatus, state.homeError, state.hasHydrated] as const,
+  (
+    state,
+  ): [
+    AppStore['homeData'],
+    AppStore['homeStatus'],
+    AppStore['homeError'],
+    AppStore['hasHydrated'],
+  ] => [state.homeData, state.homeStatus, state.homeError, state.hasHydrated],
   (homeData, homeStatus, homeError, hasHydrated) => ({
     homeData,
     homeStatus,
@@ -19,7 +25,12 @@ export const selectHomeScreenState = createCachedSelector(
 );
 
 export const selectHomePreviewTransactions = createCachedSelector(
-  (state) => [state.homeData?.previewTransactionIds, state.transactionsById] as const,
+  (
+    state,
+  ): [string[] | undefined, AppStore['transactionsById']] => [
+    state.homeData?.previewTransactionIds,
+    state.transactionsById,
+  ],
   (previewTransactionIds, transactionsById) =>
     (previewTransactionIds ?? [])
       .map((transactionId) => transactionsById[transactionId])

@@ -3,20 +3,24 @@ import {
   RefreshControl,
   ScrollView,
   StatusBar,
-  Text,
-  TouchableOpacity,
   View,
   useColorScheme,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BalanceCard } from '../../components/Transactions/BalanceCard';
-import { StatsCard } from '../../components/Transactions/StatsCard';
-import { TransactionRow } from '../../components/Transactions/TransactionRow';
+import { TransactionBalanceCard } from '../../components/features/transactions/TransactionBalanceCard';
+import { TransactionMonthSection } from '../../components/features/transactions/TransactionMonthSection';
+import { BudgetOverview } from '../../components/shared/BudgetOverview';
+import {
+  ArrowLeftIcon,
+  BellIcon,
+  CheckSquareIcon,
+} from '../../components/shared/FinanceIcons';
+import { Header } from '../../components/shared/Header';
+import { IconButton } from '../../components/shared/IconButton';
 import { ScreenState } from '../../components/shared/ScreenState';
 import { TransactionsScreenSkeleton } from '../../components/shared/TransactionsScreenSkeleton';
-import { ArrowLeftIcon, BellIcon } from '../../components/shared/FinanceIcons';
 import {
   selectFetchTransactions,
   selectTransactionsByMonth,
@@ -44,6 +48,11 @@ export function TransactionsScreen() {
   const fetchTransactions = useAppStore(selectFetchTransactions);
 
   const headerTextColor = isDark ? colors.card : colors.surfaceDark;
+  const metricLabelColor = isDark ? 'rgba(255,255,255,0.8)' : colors.surfaceDark;
+  const noteColor = isDark ? colors.card : colors.surfaceDark;
+  const dividerColor = isDark
+    ? 'rgba(255,255,255,0.34)'
+    : 'rgba(255,255,255,0.84)';
   const screenBg = isDark ? colors.surfaceDeep : colors.primary500;
   const sheetBg = isDark ? colors.surfaceDark : colors.primary50;
   const bellBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(241,255,243,0.95)';
@@ -54,7 +63,7 @@ export function TransactionsScreen() {
   }, [fetchTransactions]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={screenBg}
@@ -79,7 +88,7 @@ export function TransactionsScreen() {
       {transactionOverview ? (
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
+          // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
@@ -100,80 +109,72 @@ export function TransactionsScreen() {
               paddingBottom: moderateScale(18),
             }}
           >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <TouchableOpacity
-                accessibilityLabel="Go back"
-                accessibilityRole="button"
-                disabled={!navigation.canGoBack()}
-                onPress={() => {
-                  if (navigation.canGoBack()) {
-                    navigation.goBack();
-                  }
-                }}
-                style={{
-                  width: moderateScale(40),
-                  height: moderateScale(40),
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  opacity: navigation.canGoBack() ? 1 : 0.95,
-                }}
-              >
-                <ArrowLeftIcon color={headerTextColor} size={24} />
-              </TouchableOpacity>
-
-              <Text
-                style={{
-                  fontSize: moderateScale(22),
-                  fontFamily: 'Poppins-Bold',
-                  color: headerTextColor,
-                  letterSpacing: -0.5,
-                }}
-              >
-                Transaction
-              </Text>
-
-              <TouchableOpacity
-                accessibilityLabel="Open notifications"
-                accessibilityRole="button"
-                onPress={() => navigation.navigate('Notification')}
-                style={{
-                  width: moderateScale(40),
-                  height: moderateScale(40),
-                  borderRadius: moderateScale(20),
-                  backgroundColor: bellBg,
-                  borderWidth: 1,
-                  borderColor: bellBorder,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <BellIcon color={colors.surfaceDark} size={20} />
-              </TouchableOpacity>
-            </View>
+            <Header
+              variant="centerTitle"
+              title="Transaction"
+              titleColor={headerTextColor}
+              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+              leftAction={
+                <IconButton
+                  accessibilityLabel="Go back"
+                  disabled={!navigation.canGoBack()}
+                  onPress={() => {
+                    if (navigation.canGoBack()) {
+                      navigation.goBack();
+                    }
+                  }}
+                  size={moderateScale(40)}
+                  style={{
+                    opacity: navigation.canGoBack() ? 1 : 0.95,
+                  }}
+                >
+                  <ArrowLeftIcon color={headerTextColor} size={24} />
+                </IconButton>
+              }
+              rightAction={
+                <IconButton
+                  accessibilityLabel="Open notifications"
+                  backgroundColor={bellBg}
+                  borderColor={bellBorder}
+                  borderRadius={moderateScale(20)}
+                  borderWidth={1}
+                  onPress={() => navigation.navigate('Notification')}
+                  size={moderateScale(40)}
+                >
+                  <BellIcon color={colors.surfaceDark} size={20} />
+                </IconButton>
+              }
+            />
 
             <View style={{ marginTop: moderateScale(26) }}>
-              <BalanceCard
-                label="Total Balance"
-                value={transactionOverview.totalBalanceLabel}
-              />
+              <TransactionBalanceCard overview={transactionOverview} />
             </View>
 
             <View style={{ marginTop: moderateScale(14) }}>
-              <StatsCard
-                isDark={isDark}
-                balanceLabel="Total Balance"
-                balanceValue={transactionOverview.totalBalanceLabel}
-                expenseLabel="Total Expense"
-                expenseValue={transactionOverview.totalExpenseLabel}
+              <BudgetOverview
+                leftMetric={{
+                  label: 'Total Balance',
+                  value: transactionOverview.totalBalanceLabel,
+                  labelColor: metricLabelColor,
+                  valueColor: colors.card,
+                  icon: <CheckSquareIcon color={metricLabelColor} size={13} />,
+                }}
+                rightMetric={{
+                  label: 'Total Expense',
+                  value: transactionOverview.totalExpenseLabel,
+                  labelColor: metricLabelColor,
+                  valueColor: colors.blue700,
+                  icon: <CheckSquareIcon color={metricLabelColor} size={13} />,
+                }}
                 progressPercent={transactionOverview.spentPercent}
                 progressValue={transactionOverview.budgetLabel}
                 note={transactionOverview.note}
+                noteColor={noteColor}
+                noteIconColor={metricLabelColor}
+                dividerStyle={{
+                  marginHorizontal: moderateScale(18),
+                  backgroundColor: dividerColor,
+                }}
               />
             </View>
           </View>
@@ -190,34 +191,12 @@ export function TransactionsScreen() {
             }}
           >
             {sections.map((section, sectionIndex) => (
-              <View
+              <TransactionMonthSection
                 key={section.title}
-                style={{
-                  marginBottom:
-                    sectionIndex === sections.length - 1 ? 0 : moderateScale(26),
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: moderateScale(22),
-                    fontFamily: 'Poppins-Bold',
-                    color: isDark ? colors.card : colors.surfaceDark,
-                    marginBottom: moderateScale(18),
-                    letterSpacing: -0.5,
-                  }}
-                >
-                  {section.title}
-                </Text>
-
-                {section.items.map((item, index) => (
-                  <TransactionRow
-                    key={item.id}
-                    item={item}
-                    isDark={isDark}
-                    isLast={index === section.items.length - 1}
-                  />
-                ))}
-              </View>
+                section={section}
+                isDark={isDark}
+                isLast={sectionIndex === sections.length - 1}
+              />
             ))}
           </View>
         </ScrollView>
@@ -225,4 +204,3 @@ export function TransactionsScreen() {
     </SafeAreaView>
   );
 }
-

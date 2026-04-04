@@ -1,25 +1,30 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
 type ProgressBarProps = {
   progressPercent: number;
   progressValue: string;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function ProgressBar({
   progressPercent,
   progressValue,
+  style,
 }: ProgressBarProps) {
   const clampedProgress = Math.max(0, Math.min(100, progressPercent));
 
   return (
     <View
       className="bg-primary-50 rounded-full overflow-hidden flex-row items-center"
-      style={{
-        height: moderateScale(28),
-      }}
+      style={[
+        {
+          height: moderateScale(28),
+        },
+        style,
+      ]}
     >
       <View
         className="bg-surface-dark justify-center"

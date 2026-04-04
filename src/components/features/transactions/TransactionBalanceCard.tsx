@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Text, View } from 'react-native';
-import { colors } from '../../theme/colors';
-import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
+import type { BudgetOverviewModel } from '../../../types/models';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale } from '../../../utils/responsive';
 
-export type BalanceCardProps = {
-  label: string;
-  value: string;
+type TransactionBalanceCardProps = {
+  overview: BudgetOverviewModel;
 };
 
-export function BalanceCard({ label, value }: BalanceCardProps) {
+function TransactionBalanceCardComponent({
+  overview,
+}: TransactionBalanceCardProps) {
   return (
     <View
       style={{
@@ -27,7 +29,7 @@ export function BalanceCard({ label, value }: BalanceCardProps) {
           color: colors.surfaceDark,
         }}
       >
-        {label}
+        Total Balance
       </Text>
       <Text
         style={{
@@ -38,8 +40,10 @@ export function BalanceCard({ label, value }: BalanceCardProps) {
           letterSpacing: -0.4,
         }}
       >
-        {value}
+        {overview.totalBalanceLabel}
       </Text>
     </View>
   );
 }
+
+export const TransactionBalanceCard = memo(TransactionBalanceCardComponent);

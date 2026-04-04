@@ -245,7 +245,7 @@ export default function NotificationScreen() {
   const bellIconColor = isDark ? colors.card : colors.surfaceDark;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={screenBg}
@@ -322,8 +322,7 @@ export default function NotificationScreen() {
           style={{ flex: 1 }}
           contentContainerStyle={{
             paddingHorizontal: moderateScale(36),
-            paddingTop: moderateScale(26),
-            paddingBottom: tabBarHeight + moderateScale(18),
+            paddingVertical: moderateScale(26)
           }}
           showsVerticalScrollIndicator={false}
         >
