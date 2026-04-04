@@ -1,21 +1,27 @@
-import React, { useMemo, useState } from 'react';
-import { ScrollView, StatusBar, View, useColorScheme } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  StatusBar,
+  View,
+  useColorScheme,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  GroceriesIcon,
-  RentIcon,
-  SalaryIcon,
-} from '../../assets/icons';
 import { BalanceSection } from '../../components/Home/BalanceSection';
 import { Header } from '../../components/Home/Header';
 import { SavingsCard } from '../../components/Home/SavingsCard';
 import { Tabs } from '../../components/Home/Tabs';
+import { TransactionItem } from '../../components/Home/TransactionItem';
+import { HomeScreenSkeleton } from '../../components/shared/HomeScreenSkeleton';
+import { ScreenState } from '../../components/shared/ScreenState';
 import {
-  TransactionItem,
-  type HomeTransaction,
-} from '../../components/Home/TransactionItem';
+  selectFetchHome,
+  selectHomePreviewTransactions,
+  selectHomeScreenState,
+} from '../../store/selectors/home.selectors';
+import { useAppStore } from '../../store/useAppStore';
 import { colors } from '../../theme/colors';
 import type { HomeStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
@@ -30,41 +36,14 @@ export function HomeScreen() {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { homeData, homeError, isInitialLoading, isRefreshing } =
+    useAppStore(selectHomeScreenState);
+  const transactions = useAppStore(selectHomePreviewTransactions);
+  const fetchHome = useAppStore(selectFetchHome);
 
-  const transactions = useMemo<HomeTransaction[]>(
-    () => [
-      {
-        id: 'salary',
-        title: 'Salary',
-        time: '18:27 - April 30',
-        category: 'Monthly',
-        amount: '$4.000,00',
-        iconBackgroundClassName: 'bg-blue-300',
-        Icon: SalaryIcon,
-      },
-      {
-        id: 'groceries',
-        title: 'Groceries',
-        time: '17:00 - April 24',
-        category: 'Pantry',
-        amount: '-$100,00',
-        isExpense: true,
-        iconBackgroundClassName: 'bg-blue-500',
-        Icon: GroceriesIcon,
-      },
-      {
-        id: 'rent',
-        title: 'Rent',
-        time: '8:30 - April 15',
-        category: 'Rent',
-        amount: '-$674,40',
-        isExpense: true,
-        iconBackgroundClassName: 'bg-blue-700',
-        Icon: RentIcon,
-      },
-    ],
-    [],
-  );
+  useEffect(() => {
+    fetchHome();
+  }, [fetchHome]);
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
@@ -73,51 +52,87 @@ export function HomeScreen() {
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingBottom: moderateScale(150),
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={{ gap: moderateScale(18) }}>
-          <Header
-            iconColor={colors.surfaceDark}
-            onNotificationPress={() => navigation.navigate('Notification')}
-            subtitle="Good Morning"
-            title="Hi, Welcome Back"
-          />
+      {isInitialLoading ? (
+        <HomeScreenSkeleton isDark={isDark} />
+      ) : null}
 
-          <BalanceSection
-            iconColor={isDark ? colors.card : colors.surfaceDark}
-            progressPercent={30}
-            progressValue="$20,000.00"
-          />
-        </View>
-
-        <View
-          className="bg-card rounded-t-[56px]"
-          style={{
-            paddingHorizontal: moderateScale(36),
-            paddingVertical: moderateScale(36),
-            gap: moderateScale(28),
+      {!homeData && homeError ? (
+        <ScreenState
+          isDark={isDark}
+          mode="error"
+          title="Unable To Load Home"
+          message={homeError}
+          onRetry={() => {
+            fetchHome({ force: true });
           }}
+        />
+      ) : null}
+
+      {homeData ? (
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingBottom: moderateScale(150),
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => {
+                fetchHome({ force: true });
+              }}
+              colors={[colors.primary500]}
+              tintColor={colors.primary500}
+              progressBackgroundColor={colors.card}
+            />
+          }
+          showsVerticalScrollIndicator={false}
         >
-          <SavingsCard />
+          <View style={{ gap: moderateScale(18) }}>
+            <Header
+              iconColor={colors.surfaceDark}
+              onNotificationPress={() => navigation.navigate('Notification')}
+              subtitle={homeData.greeting}
+              title={homeData.headerTitle}
+            />
 
-          <Tabs
-            activeTab={activeTab}
-            onChange={setActiveTab}
-            tabs={TABS}
-          />
-
-          <View style={{ gap: moderateScale(24) }}>
-            {transactions.map(item => (
-              <TransactionItem key={item.id} item={item} />
-            ))}
+            <BalanceSection
+              iconColor={isDark ? colors.card : colors.surfaceDark}
+              totalBalance={homeData.overview.totalBalanceLabel}
+              totalExpense={homeData.overview.totalExpenseLabel}
+              progressPercent={homeData.overview.spentPercent}
+              progressValue={homeData.overview.budgetLabel}
+              note={homeData.overview.note}
+            />
           </View>
-        </View>
-      </ScrollView>
+
+          <View
+            className="bg-card rounded-t-[56px]"
+            style={{
+              paddingHorizontal: moderateScale(36),
+              paddingVertical: moderateScale(36),
+              gap: moderateScale(28),
+            }}
+          >
+            <SavingsCard
+              revenueValue={homeData.weekly.revenueLabel}
+              foodValue={homeData.weekly.foodLabel}
+            />
+
+            <Tabs
+              activeTab={activeTab}
+              onChange={setActiveTab}
+              tabs={TABS}
+            />
+
+            <View style={{ gap: moderateScale(24) }}>
+              {transactions.map((item) => (
+                <TransactionItem key={item.id} item={item} />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      ) : null}
     </SafeAreaView>
   );
 }
+

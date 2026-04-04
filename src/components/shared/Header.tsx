@@ -27,7 +27,7 @@ export function Header({
     <SafeAreaView edges={['top']}>
       <View
         style={{
-          paddingHorizontal: S.space.marginScreen,
+          paddingHorizontal: S.space.paddingHorizontal,
           paddingVertical: S.space.md,
           flexDirection: 'row',
           alignItems: 'center',
@@ -107,4 +107,5 @@ export function Header({
     </SafeAreaView>
   );
 }
+
 

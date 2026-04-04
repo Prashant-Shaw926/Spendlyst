@@ -1,39 +1,50 @@
 import React from 'react';
-import type { SvgProps } from 'react-native-svg';
 import { Text, View, useColorScheme } from 'react-native';
+import {
+  CarIcon,
+  FoodIcon,
+  GroceriesIcon,
+  RentIcon,
+  SalaryIcon,
+  Transport,
+} from '../../assets/icons';
+import type { TransactionModel } from '../../types/models';
 import { colors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
-export type HomeTransaction = {
-  id: string;
-  title: string;
-  time: string;
-  category: string;
-  amount: string;
-  isExpense?: boolean;
-  iconBackgroundClassName: string;
-  Icon: React.ComponentType<SvgProps>;
+type TransactionItemProps = {
+  item: TransactionModel;
 };
 
-type TransactionItemProps = {
-  item: HomeTransaction;
-};
+const ICONS = {
+  salary: SalaryIcon,
+  groceries: GroceriesIcon,
+  rent: RentIcon,
+  transport: Transport,
+  food: FoodIcon,
+  travel: CarIcon,
+  car: CarIcon,
+} as const;
 
 export function TransactionItem({ item }: TransactionItemProps) {
   const isDark = useColorScheme() === 'dark';
   const iconColor = isDark ? colors.primary50 : colors.card;
+  const Icon = ICONS[item.icon] ?? SalaryIcon;
 
   return (
     <View className="flex-row items-center" style={{ gap: moderateScale(14) }}>
       <View
-        className={`${item.iconBackgroundClassName} rounded-full items-center justify-center`}
-        style={{
-          width: moderateScale(56),
-          height: moderateScale(56),
-        }}
+          style={{
+            width: moderateScale(56),
+            height: moderateScale(56),
+            borderRadius: moderateScale(999),
+            backgroundColor: item.iconBackgroundColor,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
       >
-        <item.Icon
+        <Icon
           color={iconColor}
           height={moderateScale(24)}
           width={moderateScale(24)}
@@ -62,7 +73,7 @@ export function TransactionItem({ item }: TransactionItemProps) {
               fontSize: S.fs.xs,
             }}
           >
-            {item.time}
+            {item.metaLabel}
           </Text>
         </View>
 
@@ -105,7 +116,7 @@ export function TransactionItem({ item }: TransactionItemProps) {
               lineHeight: moderateScale(22),
             }}
           >
-            {item.amount}
+            {item.amountLabel}
           </Text>
         </View>
       </View>

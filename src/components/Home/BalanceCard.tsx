@@ -18,7 +18,7 @@ export function BalanceCard({
   return (
     <View
       style={{
-        paddingHorizontal: S.space.marginScreen,
+        paddingHorizontal: S.space.paddingHorizontal,
         marginTop: S.space.sm,
       }}
     >

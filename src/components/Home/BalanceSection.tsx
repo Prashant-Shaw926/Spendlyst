@@ -53,14 +53,20 @@ function Metric({
 
 type BalanceSectionProps = {
   iconColor: string;
+  totalBalance: string;
+  totalExpense: string;
   progressPercent: number;
   progressValue: string;
+  note: string;
 };
 
 export function BalanceSection({
   iconColor,
+  totalBalance,
+  totalExpense,
   progressPercent,
   progressValue,
+  note,
 }: BalanceSectionProps) {
   return (
     <View
@@ -75,7 +81,7 @@ export function BalanceSection({
           Icon={IncomeIcon}
           iconColor={iconColor}
           label="Total Balance"
-          value="$7,783.00"
+          value={totalBalance}
           valueClassName="text-white"
         />
 
@@ -91,7 +97,7 @@ export function BalanceSection({
           Icon={ExpenseIcon}
           iconColor={iconColor}
           label="Total Expense"
-          value="-$1.187.40"
+          value={totalExpense}
           valueClassName="text-finance-expense"
         />
       </View>
@@ -111,7 +117,7 @@ export function BalanceSection({
               fontSize: S.fs.md,
             }}
           >
-            30% Of Your Expenses, Looks Good.
+            {note}
           </Text>
         </View>
       </View>

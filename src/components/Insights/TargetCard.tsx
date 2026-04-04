@@ -1,27 +1,22 @@
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { PieChart, type pieDataItem } from 'react-native-gifted-charts';
+import type { InsightTargetModel } from '../../types/models';
 import { colors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
 export type TargetCardProps = {
   isDark: boolean;
-  label: string;
-  savedAmount: string;
-  goalAmount: string;
-  percent: number;
+  target: InsightTargetModel;
 };
 
 export function TargetCard({
   isDark,
-  label,
-  savedAmount,
-  goalAmount,
-  percent,
+  target,
 }: TargetCardProps) {
   const donutData: pieDataItem[] = useMemo(() => {
-    const progress = Math.max(0, Math.min(100, percent));
+    const progress = Math.max(0, Math.min(100, target.percent));
 
     return [
       { value: progress, color: colors.primary500 },
@@ -30,7 +25,7 @@ export function TargetCard({
         color: isDark ? 'rgba(255,255,255,0.18)' : 'rgba(5,34,36,0.12)',
       },
     ];
-  }, [isDark, percent]);
+  }, [isDark, target.percent]);
 
   return (
     <View
@@ -50,7 +45,7 @@ export function TargetCard({
               color: isDark ? colors.card : colors.surfaceDark,
             }}
           >
-            {label}
+            {target.label}
           </Text>
           <Text
             style={{
@@ -60,7 +55,7 @@ export function TargetCard({
               color: isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted,
             }}
           >
-            Saved {savedAmount}
+            Saved {target.savedAmountLabel}
           </Text>
           <Text
             style={{
@@ -70,7 +65,7 @@ export function TargetCard({
               color: isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted,
             }}
           >
-            Goal {goalAmount}
+            Goal {target.goalAmountLabel}
           </Text>
         </View>
 
@@ -84,12 +79,12 @@ export function TargetCard({
           centerLabelComponent={() => (
             <Text
               style={{
-                fontSize: S.fs.xs,
-                fontFamily: 'Poppins-SemiBold',
-                color: isDark ? colors.card : colors.surfaceDark,
-              }}
-            >
-              {Math.round(percent)}%
+              fontSize: S.fs.xs,
+              fontFamily: 'Poppins-SemiBold',
+              color: isDark ? colors.card : colors.surfaceDark,
+            }}
+          >
+              {Math.round(target.percent)}%
             </Text>
           )}
         />

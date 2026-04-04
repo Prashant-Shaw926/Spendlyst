@@ -76,7 +76,7 @@ export function BottomTabNavigator() {
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         sceneStyle: {
-          backgroundColor: isDark ? colors.surfaceDeep : colors.primary500,
+          backgroundColor: isDark ? colors.surfaceDark : colors.primary500,
         },
         tabBarStyle: {
           backgroundColor: tabBarBackground,
@@ -86,8 +86,8 @@ export function BottomTabNavigator() {
           height: moderateScale(88) + Math.max(insets.bottom, moderateScale(10)),
           paddingTop: moderateScale(14),
           paddingBottom: Math.max(insets.bottom, moderateScale(10)),
-          borderTopLeftRadius: moderateScale(40),
-          borderTopRightRadius: moderateScale(40),
+          // borderTopLeftRadius: moderateScale(40),
+          // borderTopRightRadius: moderateScale(40),
         },
         tabBarItemStyle: {
           alignItems: 'center',

@@ -4,7 +4,6 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // Guideline sizes are based on standard ~5" screen mobile device
 const guidelineBaseWidth = 375;
-const guidelineBaseHeight = 812;
 
 /**
  * Width percentage - converts percentage to actual width
@@ -18,7 +17,7 @@ export const wp = (widthPercent: number): number => {
 
 /**
  * Height percentage - converts percentage to actual height
- * @param heightPercent - percentage of screen height (0-100)
+ * @param heightPercent - percentage of screen height
  */
 export const hp = (heightPercent: number): number => {
   const elemHeight =

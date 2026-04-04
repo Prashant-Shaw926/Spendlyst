@@ -87,6 +87,7 @@ module.exports = {
          medium = (mid-point) #093030
          raised = Cyprus      #0E3E3E */
       surface: {
+        light: 'var(--color-surface-light)',
         deep:   'var(--color-surface-deep)',
         dark:   'var(--color-surface-dark)',
         medium: 'var(--color-surface-medium)',

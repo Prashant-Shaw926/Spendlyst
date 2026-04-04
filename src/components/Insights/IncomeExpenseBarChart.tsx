@@ -40,20 +40,62 @@ function buildGroupedBarData(days: DayIncomeExpense[]): barDataItem[] {
   });
 }
 
+function getNiceStepValue(maxValue: number) {
+  if (maxValue <= 0) {
+    return 2500;
+  }
+
+  const roughStep = maxValue / 4;
+  const magnitude = 10 ** Math.floor(Math.log10(roughStep));
+  const normalized = roughStep / magnitude;
+
+  if (normalized <= 1) {
+    return magnitude;
+  }
+
+  if (normalized <= 2) {
+    return 2 * magnitude;
+  }
+
+  if (normalized <= 5) {
+    return 5 * magnitude;
+  }
+
+  return 10 * magnitude;
+}
+
 export function IncomeExpenseBarChart({
   width,
   height,
   data,
 }: IncomeExpenseBarChartProps) {
   const chartData = useMemo(() => buildGroupedBarData(data), [data]);
+  const chartScale = useMemo(() => {
+    const maxDataValue = data.reduce((currentMax, item) => {
+      return Math.max(currentMax, item.income, item.expense);
+    }, 0);
+    const stepValue = getNiceStepValue(maxDataValue);
+    const compactFormatter = new Intl.NumberFormat('en-US', {
+      notation: 'compact',
+      maximumFractionDigits: 1,
+    });
+
+    return {
+      maxValue: stepValue * 4,
+      stepValue,
+      labels: Array.from({ length: 4 }, (_, index) => {
+        return compactFormatter.format(stepValue * (index + 1)).toLowerCase();
+      }),
+    };
+  }, [data]);
 
   return (
     <BarChart
       parentWidth={width}
       data={chartData}
       height={height}
-      maxValue={15000}
-      stepValue={5000}
+      maxValue={chartScale.maxValue}
+      stepValue={chartScale.stepValue}
       noOfSections={4}
       hideOrigin
       barWidth={moderateScale(6)}
@@ -69,7 +111,7 @@ export function IncomeExpenseBarChart({
       xAxisThickness={1}
       yAxisColor="transparent"
       yAxisThickness={0}
-      yAxisLabelTexts={['1k', '5k', '10k', '15k']}
+      yAxisLabelTexts={chartScale.labels}
       yAxisTextStyle={{
         fontSize: S.fs.xs,
         fontFamily: 'Poppins-Regular',

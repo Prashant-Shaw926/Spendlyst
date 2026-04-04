@@ -46,6 +46,7 @@
      Fence Green #052224 → surface-dark / surface-medium
      Void      #031314 → surface-deep
   */
+  --color-surface-light: #FFFFFF;   
   --color-surface-deep:   #031314;
   --color-surface-dark:   #052224;
   --color-surface-medium: #093030;

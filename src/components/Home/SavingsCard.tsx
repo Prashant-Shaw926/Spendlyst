@@ -15,6 +15,11 @@ type FinanceIconComponent = React.ComponentType<{
   strokeWidth?: number;
 }>;
 
+type SavingsCardProps = {
+  revenueValue: string;
+  foodValue: string;
+};
+
 function SavingsStat({
   Icon,
   label,
@@ -56,7 +61,10 @@ function SavingsStat({
   );
 }
 
-export function SavingsCard() {
+export function SavingsCard({
+  revenueValue,
+  foodValue,
+}: SavingsCardProps) {
   return (
     <View
       className="bg-primary-500 rounded-[32px] flex-row items-center"
@@ -108,7 +116,7 @@ export function SavingsCard() {
         <SavingsStat
           Icon={StackCashIcon}
           label="Revenue Last Week"
-          value="$4.000.00"
+          value={revenueValue}
           valueClassName="text-surface-dark"
         />
 
@@ -122,7 +130,7 @@ export function SavingsCard() {
         <SavingsStat
           Icon={ForkKnifeIcon}
           label="Food Last Week"
-          value="-$100.00"
+          value={foodValue}
           valueClassName="text-finance-expense"
         />
       </View>
