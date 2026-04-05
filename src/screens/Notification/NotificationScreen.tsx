@@ -3,12 +3,14 @@ import {
   ScrollView,
   StatusBar,
   Text,
-  TouchableOpacity,
   View,
   useColorScheme,
 } from 'react-native';
-import { useNavigation, type NavigationProp, type ParamListBase } from '@react-navigation/native';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import {
+  useNavigation,
+  type NavigationProp,
+  type ParamListBase,
+} from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeftIcon,
@@ -17,16 +19,14 @@ import {
   StarIcon,
   TrendDownIcon,
 } from '../../components/shared/FinanceIcons';
-import { colors } from '../../theme/colors';
+import { Header } from '../../components/shared/Header';
+import { IconButton } from '../../components/shared/IconButton';
+import { colors, getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
 type NotifType = 'reminder' | 'update' | 'transaction' | 'expense';
-
-type Tag = {
-  label: string;
-};
-
+type Tag = { label: string };
 type NotifItem = {
   id: string;
   type: NotifType;
@@ -35,11 +35,7 @@ type NotifItem = {
   time: string;
   tags?: Tag[];
 };
-
-type NotifGroup = {
-  section: string;
-  items: NotifItem[];
-};
+type NotifGroup = { section: string; items: NotifItem[] };
 
 const NOTIFICATIONS: NotifGroup[] = [
   {
@@ -111,23 +107,20 @@ const NOTIFICATIONS: NotifGroup[] = [
   },
 ];
 
-function NotifIcon({
-  type,
-}: {
-  type: NotifType;
-}) {
-  const size = moderateScale(40);
+function NotifIcon({ type }: { type: NotifType }) {
+  const iconSize = moderateScale(18);
+  const iconColor = colors.surfaceDark;
 
   const icon = (() => {
     switch (type) {
       case 'reminder':
-        return <BellIcon color={colors.surfaceDark} size={20} />;
+        return <BellIcon color={iconColor} size={iconSize} />;
       case 'update':
-        return <StarIcon color={colors.surfaceDark} size={20} />;
+        return <StarIcon color={iconColor} size={iconSize} />;
       case 'transaction':
-        return <DollarIcon color={colors.surfaceDark} size={20} />;
+        return <DollarIcon color={iconColor} size={iconSize} />;
       case 'expense':
-        return <TrendDownIcon color={colors.surfaceDark} size={20} />;
+        return <TrendDownIcon color={iconColor} size={iconSize} />;
       default:
         return null;
     }
@@ -135,15 +128,11 @@ function NotifIcon({
 
   return (
     <View
+      className="shrink-0 items-center justify-center bg-primary-500"
       style={{
-        width: size,
-        height: size,
+        width: moderateScale(40),
+        height: moderateScale(40),
         borderRadius: moderateScale(12),
-        backgroundColor: colors.primary500,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: moderateScale(12),
-        flexShrink: 0,
       }}
     >
       {icon}
@@ -153,203 +142,144 @@ function NotifIcon({
 
 function NotificationRow({
   item,
-  isDark,
   isLast,
 }: {
   item: NotifItem;
-  isDark: boolean;
   isLast: boolean;
 }) {
-  const titleColor = isDark ? colors.card : colors.surfaceDark;
-  const bodyColor = isDark ? 'rgba(255,255,255,0.84)' : colors.surfaceDark;
-  const dividerColor = isDark ? 'rgba(255,255,255,0.72)' : colors.primary500;
-  const timeColor = colors.blue700;
-  const tagColor = isDark ? colors.primary500 : colors.blue700;
-
   return (
     <View
+      className={isLast ? 'border-b-0' : 'border-b border-primary-500 dark:border-border'}
       style={{
-        paddingVertical: moderateScale(16),
-        borderBottomWidth: isLast ? 0 : 1,
-        borderBottomColor: dividerColor,
+        paddingVertical: moderateScale(14),
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-        <NotifIcon type={item.type} />
+      <View style={{ gap: moderateScale(6) }}>
+        <View className="flex-row items-start" style={{ gap: moderateScale(12) }}>
+          <NotifIcon type={item.type} />
 
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              fontSize: S.fs.lg,
-              fontFamily: 'Poppins-SemiBold',
-              color: titleColor,
-            }}
-          >
-            {item.title}
-          </Text>
-
-          <Text
-            style={{
-              marginTop: 2,
-              fontSize: S.fs.sm,
-              fontFamily: 'Poppins-Regular',
-              color: bodyColor,
-              lineHeight: S.fs.sm * 1.45,
-              maxWidth: '95%',
-            }}
-          >
-            {item.body}
-          </Text>
-
-          {item.tags ? (
+          <View className="flex-1" style={{ gap: moderateScale(4) }}>
             <Text
+              className="text-text"
               style={{
-                marginTop: 6,
-                fontSize: S.fs.xs,
+                fontSize: S.fs.md,
                 fontFamily: 'Poppins-SemiBold',
-                color: tagColor,
+                lineHeight: S.fs.md * 1.3,
               }}
             >
-              {item.tags.map((tag) => tag.label).join(' | ')}
+              {item.title}
             </Text>
-          ) : null}
-        </View>
-      </View>
 
-      <Text
-        style={{
-          marginTop: moderateScale(10),
-          fontSize: S.fs.xs,
-          fontFamily: 'Poppins-Regular',
-          color: timeColor,
-          textAlign: 'right',
-        }}
-      >
-        {item.time}
-      </Text>
+            <Text
+              className="text-text opacity-75"
+              style={{
+                fontSize: S.fs.sm,
+                fontFamily: 'Poppins-Regular',
+                lineHeight: S.fs.sm * 1.45,
+              }}
+            >
+              {item.body}
+            </Text>
+
+            {item.tags ? (
+              <Text
+                className="text-primary-500"
+                style={{
+                  fontSize: S.fs.xs,
+                  fontFamily: 'Poppins-SemiBold',
+                }}
+              >
+                {item.tags.map(tag => tag.label).join(' | ')}
+              </Text>
+            ) : null}
+          </View>
+        </View>
+
+        <Text
+          className="text-right text-blue-700"
+          style={{
+            fontSize: S.fs.xs,
+            fontFamily: 'Poppins-Regular',
+          }}
+        >
+          {item.time}
+        </Text>
+      </View>
     </View>
   );
 }
 
 export default function NotificationScreen() {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
-  const colorScheme = useColorScheme();
-  const tabBarHeight = useBottomTabBarHeight();
-  const isDark = colorScheme === 'dark';
-
-  const screenBg = isDark ? colors.surfaceDeep : colors.primary500;
-  const sheetBg = isDark ? colors.surfaceDark : colors.primary50;
-  const titleColor = isDark ? colors.card : colors.surfaceDark;
-  const sectionColor = isDark ? colors.card : colors.surfaceDark;
-  const bellBg = isDark ? colors.blue700 : colors.primary100;
-  const bellIconColor = isDark ? colors.card : colors.surfaceDark;
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={screenBg}
+        backgroundColor={semanticColors.background}
       />
 
-      <View
-        style={{
-          paddingHorizontal: moderateScale(36),
-          paddingTop: S.space.md,
-          paddingBottom: moderateScale(18),
-        }}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <TouchableOpacity
+      <Header
+        variant="centerTitle"
+        title="Notification"
+        titleClassName="text-title"
+                    contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+        leftAction={
+          <IconButton
             accessibilityLabel="Go back"
-            accessibilityRole="button"
+            disabled={!navigation.canGoBack()}
             onPress={() => {
               if (navigation.canGoBack()) {
                 navigation.goBack();
               }
             }}
-            style={{
-              width: moderateScale(40),
-              height: moderateScale(40),
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={titleColor} size={24} />
-          </TouchableOpacity>
-
-          <Text
-            style={{
-              fontSize: moderateScale(22),
-              fontFamily: 'Poppins-Bold',
-              color: titleColor,
-              letterSpacing: -0.5,
-            }}
-          >
-            Notification
-          </Text>
-
-          <View
-            style={{
-              width: moderateScale(40),
-              height: moderateScale(40),
-              borderRadius: moderateScale(20),
-              backgroundColor: bellBg,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <BellIcon color={bellIconColor} size={20} />
-          </View>
-        </View>
-      </View>
+            <ArrowLeftIcon color={semanticColors.title} size={moderateScale(22)} />
+          </IconButton>
+        }
+      />
 
       <View
+        className="flex-1 overflow-hidden bg-card"
         style={{
-          flex: 1,
-          marginTop: moderateScale(8),
-          borderTopLeftRadius: moderateScale(72),
-          borderTopRightRadius: moderateScale(72),
-          backgroundColor: sheetBg,
+          borderTopLeftRadius: moderateScale(56),
+          borderTopRightRadius: moderateScale(56),
+          paddingVertical: S.space.lg,
         }}
       >
         <ScrollView
-          style={{ flex: 1 }}
+          className="flex-1"
           contentContainerStyle={{
-            paddingHorizontal: moderateScale(36),
-            paddingVertical: moderateScale(26)
+            paddingHorizontal: moderateScale(28),
+            paddingVertical: moderateScale(28),
+            gap: moderateScale(20),
           }}
           showsVerticalScrollIndicator={false}
         >
-          {NOTIFICATIONS.map((group, groupIndex) => (
-            <View
-              key={group.section}
-              style={{ marginBottom: groupIndex === NOTIFICATIONS.length - 1 ? 0 : moderateScale(14) }}
-            >
+          {NOTIFICATIONS.map(group => (
+            <View key={group.section} style={{ gap: moderateScale(4) }}>
               <Text
+                className="text-text opacity-50"
                 style={{
                   fontSize: S.fs.sm,
                   fontFamily: 'Poppins-Medium',
-                  color: sectionColor,
-                  marginBottom: moderateScale(8),
                 }}
               >
                 {group.section}
               </Text>
 
-              {group.items.map((item, itemIndex) => (
-                <NotificationRow
-                  key={item.id}
-                  item={item}
-                  isDark={isDark}
-                  isLast={itemIndex === group.items.length - 1}
-                />
-              ))}
+              <View>
+                {group.items.map((item, itemIndex) => (
+                  <NotificationRow
+                    key={item.id}
+                    item={item}
+                    isLast={itemIndex === group.items.length - 1}
+                  />
+                ))}
+              </View>
             </View>
           ))}
         </ScrollView>

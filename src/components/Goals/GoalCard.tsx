@@ -1,10 +1,9 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
-import type { FinanceIconProps } from '../shared/FinanceIcons';
+import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
 import { CalendarIcon } from '../shared/FinanceIcons';
-import { colors } from '../../theme/colors';
+import type { FinanceIconProps } from '../shared/FinanceIcons';
+import { getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
 
 export type GoalCardItem = {
   id: string;
@@ -24,7 +23,6 @@ export type GoalCardItem = {
 
 export type GoalCardProps = {
   item: GoalCardItem;
-  isDark: boolean;
   onPress?: (item: GoalCardItem) => void;
 };
 
@@ -32,30 +30,35 @@ function InfoColumn({
   label,
   value,
   align = 'left',
-  isDark,
 }: {
   label: string;
   value: string;
   align?: 'left' | 'center' | 'right';
-  isDark: boolean;
 }) {
+  const alignmentClassName =
+    align === 'center'
+      ? 'items-center'
+      : align === 'right'
+        ? 'items-end'
+        : 'items-start';
+
   return (
-    <View style={{ flex: 1, alignItems: align === 'left' ? 'flex-start' : align === 'center' ? 'center' : 'flex-end' }}>
+    <View className={`flex-1 ${alignmentClassName}`} style={{ gap: S.space.xs }}>
       <Text
+        className="text-text-muted"
         style={{
           fontSize: S.fs.xs,
           fontFamily: 'Poppins-Regular',
-          color: isDark ? 'rgba(255,255,255,0.68)' : colors.textMuted,
         }}
       >
         {label}
       </Text>
+
       <Text
+        className="text-text"
         style={{
-          marginTop: 4,
           fontSize: S.fs.sm,
           fontFamily: 'Poppins-SemiBold',
-          color: isDark ? colors.card : colors.surfaceDark,
         }}
       >
         {value}
@@ -64,48 +67,51 @@ function InfoColumn({
   );
 }
 
-export function GoalCard({ item, isDark, onPress }: GoalCardProps) {
+export function GoalCard({ item, onPress }: GoalCardProps) {
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
+  const progressWidth = `${Math.max(0, Math.min(100, item.progress))}%` as `${number}%`;
+
   const content = (
     <View
+      className="bg-card border border-border dark:border-transparent dark:bg-secondary-card"
       style={{
-        borderRadius: moderateScale(28),
-        backgroundColor: isDark ? colors.surfaceMedium : colors.card,
-        padding: moderateScale(18),
-        borderWidth: isDark ? 0 : 1,
-        borderColor: 'rgba(5,34,36,0.05)',
+        borderRadius: S.radius.xxxl,
+        paddingHorizontal: S.space.lg,
+        paddingVertical: S.space.lg,
+        gap: S.space.lg,
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View className="flex-row items-center">
         <View
+          className="items-center justify-center"
           style={{
-            width: moderateScale(56),
-            height: moderateScale(56),
-            borderRadius: moderateScale(18),
+            width: S.size.avatarLg - S.space.xs,
+            height: S.size.avatarLg - S.space.xs,
+            borderRadius: S.radius.xxl,
             backgroundColor: item.iconBg,
-            alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
           <item.Icon color={item.tint} size={28} />
         </View>
 
-        <View style={{ flex: 1, marginLeft: S.space.md }}>
+        <View className="flex-1" style={{ gap: S.space.xs, paddingHorizontal: S.space.md }}>
           <Text
+            className="text-text"
             style={{
               fontSize: S.fs.md_h,
               fontFamily: 'Poppins-Bold',
-              color: isDark ? colors.card : colors.surfaceDark,
             }}
             numberOfLines={1}
           >
             {item.title}
           </Text>
+
           <Text
+            className="text-text-muted"
             style={{
-              marginTop: 2,
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Regular',
-              color: isDark ? 'rgba(255,255,255,0.68)' : colors.textMuted,
             }}
             numberOfLines={1}
           >
@@ -115,10 +121,10 @@ export function GoalCard({ item, isDark, onPress }: GoalCardProps) {
 
         <View
           style={{
-            borderRadius: moderateScale(16),
+            borderRadius: S.radius.xl,
             backgroundColor: item.iconBg,
-            paddingVertical: moderateScale(8),
-            paddingHorizontal: moderateScale(10),
+            paddingHorizontal: S.space.sm,
+            paddingVertical: S.space.sm,
           }}
         >
           <Text
@@ -133,33 +139,24 @@ export function GoalCard({ item, isDark, onPress }: GoalCardProps) {
         </View>
       </View>
 
-      <View style={{ marginTop: moderateScale(16) }}>
+      <View style={{ gap: S.space.sm }}>
         <View
+          className="overflow-hidden rounded-full bg-progress"
           style={{
-            height: moderateScale(10),
-            borderRadius: moderateScale(8),
-            backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : colors.primary100,
-            overflow: 'hidden',
+            height: S.space.sm + S.space.xs,
           }}
         >
           <View
             style={{
               height: '100%',
-              width: `${Math.max(0, Math.min(100, item.progress))}%`,
-              borderRadius: moderateScale(8),
+              width: progressWidth,
+              borderRadius: S.radius.sm,
               backgroundColor: item.tint,
             }}
           />
         </View>
 
-        <View
-          style={{
-            marginTop: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
+        <View className="flex-row items-center justify-between">
           <Text
             style={{
               fontSize: S.fs.xs,
@@ -170,17 +167,13 @@ export function GoalCard({ item, isDark, onPress }: GoalCardProps) {
             {Math.round(item.progress)}% funded
           </Text>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <CalendarIcon
-              color={isDark ? 'rgba(255,255,255,0.68)' : colors.textMuted}
-              size={14}
-            />
+          <View className="flex-row items-center" style={{ gap: S.space.xs }}>
+            <CalendarIcon color={semanticColors.textMuted} size={14} />
             <Text
+              className="text-text-muted"
               style={{
-                marginLeft: 6,
                 fontSize: S.fs.xs,
                 fontFamily: 'Poppins-Regular',
-                color: isDark ? 'rgba(255,255,255,0.68)' : colors.textMuted,
               }}
             >
               {item.dueLabel}
@@ -190,54 +183,51 @@ export function GoalCard({ item, isDark, onPress }: GoalCardProps) {
       </View>
 
       <View
+        className="bg-secondary-bg dark:bg-secondary-card"
         style={{
-          marginTop: moderateScale(16),
-          borderRadius: moderateScale(20),
-          backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : colors.primary50,
-          paddingVertical: moderateScale(14),
-          paddingHorizontal: moderateScale(14),
+          borderRadius: S.radius.xxl,
+          paddingHorizontal: S.space.md,
+          paddingVertical: S.space.md,
+          gap: S.space.md,
         }}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <InfoColumn label="Saved" value={item.savedAmount} isDark={isDark} />
+        <View className="flex-row items-center" style={{ gap: S.space.md }}>
+          <InfoColumn label="Saved" value={item.savedAmount} />
 
           <View
+            className="bg-border"
             style={{
               width: 1,
-              height: moderateScale(34),
-              backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(5,34,36,0.1)',
-              marginHorizontal: moderateScale(10),
+              height: S.size.avatarSm + S.space.xs,
             }}
           />
 
-          <InfoColumn label="Target" value={item.targetAmount} align="center" isDark={isDark} />
+          <InfoColumn label="Target" value={item.targetAmount} align="center" />
 
           <View
+            className="bg-border"
             style={{
               width: 1,
-              height: moderateScale(34),
-              backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(5,34,36,0.1)',
-              marginHorizontal: moderateScale(10),
+              height: S.size.avatarSm + S.space.xs,
             }}
           />
 
-          <InfoColumn label="Left" value={item.leftAmount} align="right" isDark={isDark} />
+          <InfoColumn label="Left" value={item.leftAmount} align="right" />
         </View>
 
         <View
+          className="bg-pill dark:bg-secondary-bg"
           style={{
-            marginTop: moderateScale(12),
-            borderRadius: moderateScale(16),
-            backgroundColor: isDark ? colors.surfaceDark : colors.primary100,
-            paddingVertical: moderateScale(10),
-            paddingHorizontal: moderateScale(12),
+            borderRadius: S.radius.xl,
+            paddingHorizontal: S.space.md,
+            paddingVertical: S.space.sm,
           }}
         >
           <Text
+            className="text-title"
             style={{
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Medium',
-              color: isDark ? colors.card : colors.surfaceDark,
             }}
           >
             Saving plan: {item.monthlyPlan}

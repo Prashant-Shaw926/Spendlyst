@@ -27,7 +27,7 @@ import {
   selectTransactionsScreenState,
 } from '../../store/selectors/transactions.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors } from '../../theme/colors';
+import { colors, getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { TransactionsStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
@@ -47,35 +47,23 @@ export function TransactionsScreen() {
   const sections = useAppStore(selectTransactionsByMonth);
   const fetchTransactions = useAppStore(selectFetchTransactions);
 
-  const headerTextColor = isDark ? colors.card : colors.surfaceDark;
-  const metricLabelColor = isDark ? 'rgba(255,255,255,0.8)' : colors.surfaceDark;
-  const noteColor = isDark ? colors.card : colors.surfaceDark;
-  const dividerColor = isDark
-    ? 'rgba(255,255,255,0.34)'
-    : 'rgba(255,255,255,0.84)';
-  const screenBg = isDark ? colors.surfaceDeep : colors.primary500;
-  const sheetBg = isDark ? colors.surfaceDark : colors.primary50;
-  const bellBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(241,255,243,0.95)';
-  const bellBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(5,34,36,0.08)';
+  const semanticColors = getSemanticColors(isDark);
 
   useEffect(() => {
     fetchTransactions();
   }, [fetchTransactions]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={screenBg}
+        backgroundColor={semanticColors.background}
       />
 
-      {isInitialLoading ? (
-        <TransactionsScreenSkeleton isDark={isDark} />
-      ) : null}
+      {isInitialLoading ? <TransactionsScreenSkeleton /> : null}
 
       {!hasTransactions && transactionsError ? (
         <ScreenState
-          isDark={isDark}
           mode="error"
           title="Unable To Load Transactions"
           message={transactionsError}
@@ -84,6 +72,41 @@ export function TransactionsScreen() {
           }}
         />
       ) : null}
+
+                  <Header
+              variant="centerTitle"
+              title="Transaction"
+              titleClassName="text-text"
+              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+              leftAction={
+                <IconButton
+                  accessibilityLabel="Go back"
+                  disabled={!navigation.canGoBack()}
+                  onPress={() => {
+                    if (navigation.canGoBack()) {
+                      navigation.goBack();
+                    }
+                  }}
+                  size={moderateScale(40)}
+                  style={{
+                    opacity: navigation.canGoBack() ? 1 : 0.95,
+                  }}
+                >
+                  <ArrowLeftIcon color={semanticColors.text} size={24} />
+                </IconButton>
+              }
+            rightAction={
+                <IconButton
+                  accessibilityLabel="Open notifications"
+                  className="items-center justify-center bg-pill"
+                  borderRadius={moderateScale(21)}
+                  onPress={() => navigation.navigate('Notification')}
+                  size={moderateScale(40)}
+                >
+                  <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+                </IconButton>
+              }
+            />
 
       {transactionOverview ? (
         <ScrollView
@@ -105,99 +128,61 @@ export function TransactionsScreen() {
           <View
             style={{
               paddingHorizontal: moderateScale(36),
-              paddingTop: S.space.md,
-              paddingBottom: moderateScale(18),
+            paddingVertical: S.space.md,
+            gap: moderateScale(26),
             }}
           >
-            <Header
-              variant="centerTitle"
-              title="Transaction"
-              titleColor={headerTextColor}
-              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
-              leftAction={
-                <IconButton
-                  accessibilityLabel="Go back"
-                  disabled={!navigation.canGoBack()}
-                  onPress={() => {
-                    if (navigation.canGoBack()) {
-                      navigation.goBack();
-                    }
-                  }}
-                  size={moderateScale(40)}
-                  style={{
-                    opacity: navigation.canGoBack() ? 1 : 0.95,
-                  }}
-                >
-                  <ArrowLeftIcon color={headerTextColor} size={24} />
-                </IconButton>
-              }
-              rightAction={
-                <IconButton
-                  accessibilityLabel="Open notifications"
-                  backgroundColor={bellBg}
-                  borderColor={bellBorder}
-                  borderRadius={moderateScale(20)}
-                  borderWidth={1}
-                  onPress={() => navigation.navigate('Notification')}
-                  size={moderateScale(40)}
-                >
-                  <BellIcon color={colors.surfaceDark} size={20} />
-                </IconButton>
-              }
-            />
 
-            <View style={{ marginTop: moderateScale(26) }}>
+
+            <View>
               <TransactionBalanceCard overview={transactionOverview} />
             </View>
 
-            <View style={{ marginTop: moderateScale(14) }}>
+            <View>
               <BudgetOverview
                 leftMetric={{
                   label: 'Total Balance',
                   value: transactionOverview.totalBalanceLabel,
-                  labelColor: metricLabelColor,
-                  valueColor: colors.card,
-                  icon: <CheckSquareIcon color={metricLabelColor} size={13} />,
+                  labelClassName: 'text-text',
+                  valueClassName: 'text-text',
+                  icon: <CheckSquareIcon color={semanticColors.text} size={13} />,
                 }}
                 rightMetric={{
                   label: 'Total Expense',
                   value: transactionOverview.totalExpenseLabel,
-                  labelColor: metricLabelColor,
-                  valueColor: colors.blue700,
-                  icon: <CheckSquareIcon color={metricLabelColor} size={13} />,
+                  labelClassName: 'text-text',
+                  valueClassName: 'text-finance-expense',
+                  icon: <CheckSquareIcon color={semanticColors.text} size={13} />,
                 }}
                 progressPercent={transactionOverview.spentPercent}
                 progressValue={transactionOverview.budgetLabel}
                 note={transactionOverview.note}
-                noteColor={noteColor}
-                noteIconColor={metricLabelColor}
-                dividerStyle={{
-                  marginHorizontal: moderateScale(18),
-                  backgroundColor: dividerColor,
-                }}
+                noteClassName="text-text"
+                noteIconColor={semanticColors.text}
+                dividerClassName="bg-primary-50"
               />
             </View>
           </View>
 
           <View
+            className="bg-secondary-bg"
             style={{
               marginTop: moderateScale(10),
               borderTopLeftRadius: moderateScale(72),
               borderTopRightRadius: moderateScale(72),
-              backgroundColor: sheetBg,
               paddingTop: moderateScale(28),
               paddingHorizontal: moderateScale(36),
               paddingBottom: moderateScale(34),
             }}
           >
-            {sections.map((section, sectionIndex) => (
-              <TransactionMonthSection
-                key={section.title}
-                section={section}
-                isDark={isDark}
-                isLast={sectionIndex === sections.length - 1}
-              />
-            ))}
+            <View style={{ gap: S.space['2xl'] }}>
+              {sections.map((section) => (
+                <TransactionMonthSection
+                  key={section.title}
+                  section={section}
+                />
+              ))}
+            </View>
           </View>
         </ScrollView>
       ) : null}

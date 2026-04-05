@@ -14,6 +14,12 @@ type SegmentedTabsProps<T extends string> = {
   activeTab: T;
   tabs: readonly T[];
   onChange: (tab: T) => void;
+  containerClassName?: string;
+  itemClassName?: string;
+  activeItemClassName?: string;
+  labelClassName?: string;
+  activeLabelClassName?: string;
+  inactiveLabelClassName?: string;
   containerStyle?: StyleProp<ViewStyle>;
   itemStyle?: StyleProp<ViewStyle>;
   activeItemStyle?: StyleProp<ViewStyle>;
@@ -32,26 +38,31 @@ export function SegmentedTabs<T extends string>({
   activeTab,
   tabs,
   onChange,
+  containerClassName,
+  itemClassName,
+  activeItemClassName,
+  labelClassName,
+  activeLabelClassName,
+  inactiveLabelClassName,
   containerStyle,
   itemStyle,
   activeItemStyle,
   labelStyle,
   activeLabelStyle,
   inactiveLabelStyle,
-  activeBackgroundColor = '#00D09E',
-  inactiveBackgroundColor = 'transparent',
-  activeTextColor = '#052224',
-  inactiveTextColor = '#000000',
+  activeBackgroundColor,
+  inactiveBackgroundColor,
+  activeTextColor,
+  inactiveTextColor,
   gap = moderateScale(6),
   containerPadding = moderateScale(6),
 }: SegmentedTabsProps<T>) {
   return (
     <View
+      className={containerClassName ?? 'flex-row items-center'}
       style={[
         {
           borderRadius: S.radius.lg,
-          flexDirection: 'row',
-          alignItems: 'center',
           paddingHorizontal: containerPadding,
           paddingVertical: containerPadding,
           gap,
@@ -66,30 +77,40 @@ export function SegmentedTabs<T extends string>({
           <TouchableOpacity
             key={tab}
             accessibilityRole="button"
+            className={`${itemClassName ?? 'flex-1 items-center justify-center'} ${
+              isActive ? activeItemClassName ?? '' : ''
+            }`}
             onPress={() => onChange(tab)}
             style={[
               {
-                flex: 1,
                 borderRadius: S.radius.lg,
-                backgroundColor: isActive
-                  ? activeBackgroundColor
-                  : inactiveBackgroundColor,
                 paddingHorizontal: moderateScale(12),
                 paddingVertical: moderateScale(12),
-                alignItems: 'center',
-                justifyContent: 'center',
               },
+              isActive && activeBackgroundColor
+                ? { backgroundColor: activeBackgroundColor }
+                : null,
+              !isActive && inactiveBackgroundColor
+                ? { backgroundColor: inactiveBackgroundColor }
+                : null,
               itemStyle,
               isActive ? activeItemStyle : null,
             ]}
           >
             <Text
+              className={`${labelClassName ?? ''} ${
+                isActive
+                  ? activeLabelClassName ?? ''
+                  : inactiveLabelClassName ?? ''
+              }`}
               style={[
                 {
-                  fontFamily: isActive ? 'Poppins-Medium' : 'Poppins-Regular',
                   fontSize: S.fs.md,
-                  color: isActive ? activeTextColor : inactiveTextColor,
                 },
+                isActive && activeTextColor ? { color: activeTextColor } : null,
+                !isActive && inactiveTextColor
+                  ? { color: inactiveTextColor }
+                  : null,
                 labelStyle,
                 isActive ? activeLabelStyle : inactiveLabelStyle,
               ]}

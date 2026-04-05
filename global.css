@@ -95,12 +95,15 @@
   /* ── Light mode semantic tokens ───────────────────── */
 
   /* Backgrounds & surfaces */
-  --color-bg:           #00D09E;
-  --color-card:         #FFFFFF;
-  --color-card-medium:  #FFFFFF;
-  --color-surface-pill: #DFF7E2;
+  --color-bg:             #00D09E;
+  --color-secondary-bg:   #F1FFF3;
+  --color-card:           #FFFFFF;
+  --color-secondary-card: #DFF7E2;
+  --color-pill:           #DFF7E2;
+  --color-progress-bar:   #0E3E3E;
 
   /* Text */
+  --color-title:         #052224;
   --color-text:          #000000;
   --color-text-muted:    #737373;
   --color-text-tertiary: #9AA0AD;
@@ -136,12 +139,15 @@
     --color-neutral-950: #fafafa;
 
     /* Dark mode surfaces — palette dark teals */
-    --color-bg:           #031314;
-    --color-card:         #052224;
-    --color-card-medium:  #093030;
-    --color-surface-pill: #0E3E3E;
+    --color-bg:             #031314;
+    --color-secondary-bg:   #052224;
+    --color-card:           #052224;
+    --color-secondary-card: #093030;
+    --color-pill:           #0E3E3E;
+    --color-progress-bar:   #0E3E3E;
 
     /* Text on dark */
+    --color-title:         #FFFFFF;
     --color-text:          #FFFFFF;
     --color-text-muted:    #9AA0AD;
     --color-text-tertiary: #737373;

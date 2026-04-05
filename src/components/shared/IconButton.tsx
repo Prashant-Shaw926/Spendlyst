@@ -10,6 +10,7 @@ export type IconButtonProps = {
   children: React.ReactNode;
   onPress?: () => void;
   disabled?: boolean;
+  className?: string;
   size?: number;
   borderRadius?: number;
   backgroundColor?: string;
@@ -22,10 +23,11 @@ export function IconButton({
   accessibilityLabel,
   children,
   onPress,
-  disabled = false,
+  disabled,
+  className,
   size = 40,
   borderRadius = size / 2,
-  backgroundColor = 'transparent',
+  // backgroundColor = colors.secondaryBackgroundLight,
   borderColor,
   borderWidth = borderColor ? 1 : 0,
   style,
@@ -35,6 +37,7 @@ export function IconButton({
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="button"
       activeOpacity={0.85}
+      className={className ?? 'items-center justify-center'}
       disabled={disabled}
       onPress={onPress}
       style={[
@@ -42,11 +45,9 @@ export function IconButton({
           width: size,
           height: size,
           borderRadius,
-          backgroundColor,
+          // backgroundColor,
           borderColor,
           borderWidth,
-          alignItems: 'center',
-          justifyContent: 'center',
         },
         style,
       ]}

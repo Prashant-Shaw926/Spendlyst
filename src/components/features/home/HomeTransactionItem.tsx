@@ -4,20 +4,10 @@ import { TransactionRow } from '../../shared/TransactionRow';
 
 type HomeTransactionItemProps = {
   item: TransactionModel;
-  isDark: boolean;
 };
 
-function HomeTransactionItemComponent({
-  item,
-  isDark,
-}: HomeTransactionItemProps) {
-  return (
-    <TransactionRow
-      item={item}
-      isDark={isDark}
-      variant="preview"
-    />
-  );
+function HomeTransactionItemComponent({ item }: HomeTransactionItemProps) {
+  return <TransactionRow item={item} variant="preview" />;
 }
 
 export const HomeTransactionItem = memo(HomeTransactionItemComponent);

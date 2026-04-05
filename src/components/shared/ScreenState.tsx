@@ -2,10 +2,8 @@ import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../../theme/colors';
 import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
 
 type ScreenStateProps = {
-  isDark: boolean;
   mode: 'loading' | 'error';
   title: string;
   message: string;
@@ -13,76 +11,75 @@ type ScreenStateProps = {
 };
 
 export function ScreenState({
-  isDark,
   mode,
   title,
   message,
   onRetry,
 }: ScreenStateProps) {
-  const primaryText = isDark ? colors.card : colors.surfaceDark;
-  const secondaryText = isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted;
+  const stackGap =
+    mode === 'loading'
+      ? S.space.lg
+      : mode === 'error' && onRetry
+        ? S.space.xl
+        : S.space.sm;
 
   return (
     <View
+      className="flex-1 items-center justify-center"
       style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingHorizontal: moderateScale(36),
+        paddingHorizontal: S.space.paddingHorizontal,
       }}
     >
-      {mode === 'loading' ? (
-        <ActivityIndicator color={colors.primary500} size="large" />
-      ) : null}
+      <View className="items-center" style={{ gap: stackGap }}>
+        {mode === 'loading' ? (
+          <ActivityIndicator color={colors.primary500} size="large" />
+        ) : null}
 
-      <Text
-        style={{
-          marginTop: moderateScale(mode === 'loading' ? 18 : 0),
-          fontSize: moderateScale(24),
-          fontFamily: 'Poppins-Bold',
-          color: primaryText,
-          textAlign: 'center',
-        }}
-      >
-        {title}
-      </Text>
-
-      <Text
-        style={{
-          marginTop: moderateScale(8),
-          fontSize: S.fs.md,
-          fontFamily: 'Poppins-Regular',
-          color: secondaryText,
-          textAlign: 'center',
-          lineHeight: moderateScale(24),
-        }}
-      >
-        {message}
-      </Text>
-
-      {mode === 'error' && onRetry ? (
-        <TouchableOpacity
-          accessibilityRole="button"
-          onPress={onRetry}
-          style={{
-            marginTop: moderateScale(20),
-            borderRadius: moderateScale(999),
-            backgroundColor: colors.primary500,
-            paddingHorizontal: moderateScale(20),
-            paddingVertical: moderateScale(12),
-          }}
-        >
+        <View className="items-center" style={{ gap: S.space.sm }}>
           <Text
+            className="text-text text-center"
             style={{
-              fontSize: S.fs.md,
-              fontFamily: 'Poppins-SemiBold',
-              color: colors.surfaceDark,
+              fontSize: S.fs.xl,
+              fontFamily: 'Poppins-Bold',
             }}
           >
-            Try Again
+            {title}
           </Text>
-        </TouchableOpacity>
-      ) : null}
+
+          <Text
+            className="text-text-muted text-center"
+            style={{
+              fontSize: S.fs.md,
+              fontFamily: 'Poppins-Regular',
+              lineHeight: S.fs.md * 1.5,
+            }}
+          >
+            {message}
+          </Text>
+        </View>
+
+        {mode === 'error' && onRetry ? (
+          <TouchableOpacity
+            accessibilityRole="button"
+            className="rounded-full bg-primary-500"
+            onPress={onRetry}
+            style={{
+              paddingHorizontal: S.space.xl,
+              paddingVertical: S.space.md,
+            }}
+          >
+            <Text
+              className="text-surface-dark"
+              style={{
+                fontSize: S.fs.md,
+                fontFamily: 'Poppins-SemiBold',
+              }}
+            >
+              Try Again
+            </Text>
+          </TouchableOpacity>
+        ) : null}
+      </View>
     </View>
   );
 }

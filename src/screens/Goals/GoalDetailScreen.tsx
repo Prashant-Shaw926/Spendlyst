@@ -16,5 +16,5 @@ export function GoalDetailScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: '600', color: colors.textPrimary },
+  title: { fontSize: 24, fontWeight: '600', color: colors.title },
 });

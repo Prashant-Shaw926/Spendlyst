@@ -6,12 +6,15 @@ import Svg, {
   Polyline,
   Rect,
 } from 'react-native-svg';
+import { colors } from '../../theme/colors';
 
 export type FinanceIconProps = {
   size?: number;
   color?: string;
   strokeWidth?: number;
 };
+
+const DEFAULT_ICON_COLOR = colors.surfaceDark;
 
 function BaseIcon({
   size = 24,
@@ -29,7 +32,7 @@ function BaseIcon({
 
 export function BellIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -65,7 +68,7 @@ export function BellIcon({
 
 export function ArrowLeftIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -89,7 +92,7 @@ export function ArrowLeftIcon({
 
 export function SearchIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -107,7 +110,7 @@ export function SearchIcon({
 
 export function PlusIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -130,7 +133,7 @@ export function PlusIcon({
 
 export function CalendarIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -171,7 +174,7 @@ export function CalendarIcon({
 
 export function StarIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -189,7 +192,7 @@ export function StarIcon({
 
 export function DollarIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -218,7 +221,7 @@ export function DollarIcon({
 
 export function TrendDownIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -242,7 +245,7 @@ export function TrendDownIcon({
 
 export function ArrowUpRightIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -275,7 +278,7 @@ export function ArrowUpRightIcon({
 
 export function ArrowDownRightIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -308,7 +311,7 @@ export function ArrowDownRightIcon({
 
 export function CheckSquareIcon({
   size = 16,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.7,
 }: FinanceIconProps) {
   return (
@@ -335,7 +338,7 @@ export function CheckSquareIcon({
 
 export function HomeIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -367,7 +370,7 @@ export function HomeIcon({
 
 export function AnalyticsIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -415,7 +418,7 @@ export function AnalyticsIcon({
 
 export function TransferIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -452,7 +455,7 @@ export function TransferIcon({
 
 export function LayersIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -484,7 +487,7 @@ export function LayersIcon({
 
 export function UserIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -502,7 +505,7 @@ export function UserIcon({
 
 export function StackCashIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -540,7 +543,7 @@ export function StackCashIcon({
 
 export function BagIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -569,7 +572,7 @@ export function BagIcon({
 
 export function KeyIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -599,7 +602,7 @@ export function KeyIcon({
 
 export function CarIcon({
   size = 28,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -638,7 +641,7 @@ export function CarIcon({
 
 export function ForkKnifeIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (
@@ -686,7 +689,7 @@ export function ForkKnifeIcon({
 
 export function TransportIcon({
   size = 24,
-  color = '#052224',
+  color = DEFAULT_ICON_COLOR,
   strokeWidth = 1.8,
 }: FinanceIconProps) {
   return (

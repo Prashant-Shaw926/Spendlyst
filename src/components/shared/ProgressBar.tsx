@@ -15,27 +15,26 @@ export function ProgressBar({
   style,
 }: ProgressBarProps) {
   const clampedProgress = Math.max(0, Math.min(100, progressPercent));
+  const barHeight = moderateScale(28);
+  const barRadius = moderateScale(14);
 
   return (
     <View
-      className="bg-primary-50 rounded-full overflow-hidden flex-row items-center"
-      style={[
-        {
-          height: moderateScale(28),
-        },
-        style,
-      ]}
+      className="flex-row items-center overflow-hidden rounded-full bg-primary-50"
+      style={[{ height: barHeight }, style]}
     >
       <View
-        className="bg-surface-dark justify-center"
+        className="bg-progress-bar justify-center"
         style={{
           width: `${clampedProgress}%`,
-          height: moderateScale(28),
-          paddingHorizontal: moderateScale(20),
+          height: barHeight,
+          borderTopRightRadius: barRadius,
+          borderBottomRightRadius: barRadius,
+          paddingHorizontal: S.space.md,
         }}
       >
         <Text
-          className="text-white font-poppins"
+          className="text-primary-500"
           style={{
             fontFamily: 'Poppins-Medium',
             fontSize: S.fs.xs,
@@ -48,16 +47,15 @@ export function ProgressBar({
       <View
         className="flex-1 items-end justify-center"
         style={{
-          height: moderateScale(28),
-          paddingHorizontal: moderateScale(20),
+          height: barHeight,
+          paddingHorizontal: S.space.md,
         }}
       >
         <Text
-          className="text-surface-dark font-poppins"
+          className="text-surface-dark"
           style={{
             fontFamily: 'Poppins-SemiBold',
-            fontSize: S.fs.sm,
-            fontStyle: 'italic',
+            fontSize: S.fs.xs,
           }}
         >
           {progressValue}

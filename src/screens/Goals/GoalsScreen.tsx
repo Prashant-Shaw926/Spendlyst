@@ -14,6 +14,7 @@ import { GoalCard, type GoalCardItem } from '../../components/Goals/GoalCard';
 import { GoalFilterTabs } from '../../components/Goals/GoalFilterTabs';
 import { GoalHeroCard } from '../../components/Goals/GoalHeroCard';
 import {
+  ArrowLeftIcon,
   BagIcon,
   BellIcon,
   CarIcon,
@@ -21,7 +22,9 @@ import {
   PlusIcon,
   StackCashIcon,
 } from '../../components/shared/FinanceIcons';
-import { colors } from '../../theme/colors';
+import { Header } from '../../components/shared/Header';
+import { IconButton } from '../../components/shared/IconButton';
+import { colors, getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { GoalsStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
@@ -38,9 +41,10 @@ type ScreenGoal = GoalCardItem & {
 
 export function GoalsScreen() {
   const [activeTab, setActiveTab] = useState<GoalTab>('Active');
-  const navigation = useNavigation<NativeStackNavigationProp<GoalsStackParamList>>();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const navigation =
+    useNavigation<NativeStackNavigationProp<GoalsStackParamList>>();
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
 
   const goals = useMemo<ScreenGoal[]>(
     () => [
@@ -127,120 +131,87 @@ export function GoalsScreen() {
     [goals],
   );
 
-  const screenBg = isDark ? colors.surfaceDeep : colors.primary500;
-  const sheetBg = isDark ? colors.surfaceDark : colors.primary50;
-  const titleColor = isDark ? colors.card : colors.surfaceDark;
-  const subtitleColor = isDark ? 'rgba(255,255,255,0.78)' : colors.surfaceDark;
-  const bellBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(241,255,243,0.95)';
-  const bellBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(5,34,36,0.08)';
-  const newGoalBg = isDark ? colors.primary500 : colors.surfaceDark;
-  const newGoalText = isDark ? colors.surfaceDark : colors.card;
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={screenBg}
+        backgroundColor={semanticColors.background}
       />
 
+                  <Header
+              variant="centerTitle"
+              title="My Goals"
+              titleClassName="text-text"
+              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0,}}
+              leftAction={
+                <IconButton
+                  accessibilityLabel="Go back"
+                  disabled={!navigation.canGoBack()}
+                  onPress={() => {
+                    if (navigation.canGoBack()) {
+                      navigation.goBack();
+                    }
+                  }}
+                  size={moderateScale(40)}
+                >
+                  <ArrowLeftIcon color={semanticColors.text} size={24} />
+                </IconButton>
+              }
+             rightAction={
+               <IconButton
+                 accessibilityLabel="Open notifications"
+                 className="items-center justify-center bg-pill"
+                 borderRadius={moderateScale(21)}
+                 onPress={() => navigation.navigate('Notification')}
+                 size={moderateScale(40)}
+               >
+                 <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+               </IconButton>
+             }
+            />
+
       <ScrollView
-        style={{ flex: 1 }}
-        // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
+        className="flex-1"
+        contentContainerStyle={{
+          gap: moderateScale(30),
+        }}
         showsVerticalScrollIndicator={false}
       >
         <View
           style={{
-            paddingHorizontal: moderateScale(36),
-            paddingTop: S.space.lg,
-            paddingBottom: moderateScale(22),
+            paddingHorizontal: S.space.paddingHorizontal,
+            paddingVertical: S.space.md,
+            gap: moderateScale(26),
           }}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'flex-start',
-              justifyContent: 'space-between',
-            }}
-          >
-            <View style={{ flex: 1, paddingRight: S.space.lg }}>
-              <Text
-                style={{
-                  fontSize: moderateScale(24),
-                  fontFamily: 'Poppins-Bold',
-                  color: titleColor,
-                  letterSpacing: -0.5,
-                }}
-              >
-                My Goals
-              </Text>
-              <Text
-                style={{
-                  marginTop: 4,
-                  fontSize: S.fs.sm,
-                  fontFamily: 'Poppins-Regular',
-                  color: subtitleColor,
-                }}
-              >
-                Track the things you are saving for.
-              </Text>
-            </View>
 
-            <TouchableOpacity
-              accessibilityLabel="Open notifications"
-              accessibilityRole="button"
-              onPress={() => navigation.navigate('Notification')}
-              style={{
-                width: moderateScale(40),
-                height: moderateScale(40),
-                borderRadius: moderateScale(20),
-                backgroundColor: bellBg,
-                borderWidth: 1,
-                borderColor: bellBorder,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <BellIcon color={colors.surfaceDark} size={20} />
-            </TouchableOpacity>
-          </View>
 
-          <View style={{ marginTop: moderateScale(26) }}>
-            <GoalHeroCard
-              isDark={isDark}
-              progress={61}
-              savedAmount="$34,900"
-              targetAmount="$64,400"
-              activeGoals={activeGoalsCount}
-              completedGoals={completedGoalsCount}
-              monthlySaving="$2,250"
-            />
-          </View>
+          <GoalHeroCard
+            progress={61}
+            savedAmount="$34,900"
+            targetAmount="$64,400"
+            activeGoals={activeGoalsCount}
+            completedGoals={completedGoalsCount}
+            monthlySaving="$2,250"
+          />
         </View>
 
         <View
+          className="bg-secondary-bg"
           style={{
-            marginTop: moderateScale(8),
             borderTopLeftRadius: moderateScale(72),
             borderTopRightRadius: moderateScale(72),
-            backgroundColor: sheetBg,
-            paddingTop: moderateScale(30),
-            paddingHorizontal: moderateScale(36),
-            paddingBottom: moderateScale(34),
+            paddingHorizontal: S.space.paddingHorizontal,
+            paddingVertical: S.space['4xl'],
+            gap: moderateScale(22),
           }}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: moderateScale(18),
-            }}
-          >
+          <View className="flex-row items-center justify-between">
             <Text
+              className="text-title"
               style={{
                 fontSize: S.fs.lg,
                 fontFamily: 'Poppins-SemiBold',
-                color: isDark ? colors.card : colors.surfaceDark,
               }}
             >
               Goal Plans
@@ -248,22 +219,22 @@ export function GoalsScreen() {
 
             <TouchableOpacity
               accessibilityRole="button"
+              className="flex-row items-center bg-primary-500"
               style={{
                 borderRadius: moderateScale(18),
-                backgroundColor: newGoalBg,
-                paddingVertical: moderateScale(10),
                 paddingHorizontal: moderateScale(14),
-                flexDirection: 'row',
-                alignItems: 'center',
+                paddingVertical: moderateScale(10),
+                gap: moderateScale(6),
               }}
             >
-              <PlusIcon color={newGoalText} size={16} />
+              <PlusIcon
+                color={colors.black}
+                size={16}
+              />
               <Text
+                className="text-black"
                 style={{
-                  marginLeft: 6,
                   fontSize: S.fs.sm,
-                  fontFamily: 'Poppins-Medium',
-                  color: newGoalText,
                 }}
               >
                 New Goal
@@ -274,13 +245,12 @@ export function GoalsScreen() {
           <GoalFilterTabs
             tabs={TABS}
             activeTab={activeTab}
-            isDark={isDark}
             onChange={setActiveTab}
           />
 
-          <View style={{ marginTop: moderateScale(22), gap: moderateScale(16) }}>
+          <View style={{ gap: moderateScale(16) }}>
             {filteredGoals.map((goal) => (
-              <GoalCard key={goal.id} item={goal} isDark={isDark} />
+              <GoalCard key={goal.id} item={goal} />
             ))}
           </View>
         </View>

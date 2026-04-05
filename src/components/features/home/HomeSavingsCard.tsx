@@ -1,14 +1,13 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
 import type { HomeModel } from '../../../types/models';
 import {
   CarIcon,
   ForkKnifeIcon,
   StackCashIcon,
 } from '../../shared/FinanceIcons';
-import { colors } from '../../../theme/colors';
-import { S } from '../../../theme/scale';
-import { moderateScale } from '../../../utils/responsive';
 
 type FinanceIconComponent = React.ComponentType<{
   color?: string;
@@ -32,12 +31,12 @@ function SavingsStat({
   valueClassName: string;
 }) {
   return (
-    <View className="flex-row items-center" style={{ gap: moderateScale(12) }}>
-      <Icon color={colors.surfaceDark} size={moderateScale(28)} />
+    <View className="flex-row items-center" style={{ gap: S.space.md }}>
+      <Icon color={colors.surfaceDark} size={S.icon.xl} />
 
-      <View style={{ gap: moderateScale(2) }}>
+      <View style={{ gap: S.space.xs }}>
         <Text
-          className="text-surface-dark font-poppins"
+          className="text-surface-dark"
           style={{
             fontFamily: 'Poppins-Regular',
             fontSize: S.fs.sm,
@@ -47,11 +46,11 @@ function SavingsStat({
         </Text>
 
         <Text
-          className={`${valueClassName} font-poppins`}
+          className={valueClassName}
           style={{
             fontFamily: 'Poppins-Bold',
-            fontSize: moderateScale(16),
-            lineHeight: moderateScale(22),
+            fontSize: S.fs.md,
+            lineHeight: S.fs.md * 1.35,
           }}
         >
           {value}
@@ -64,52 +63,46 @@ function SavingsStat({
 export function HomeSavingsCard({ weekly }: HomeSavingsCardProps) {
   return (
     <View
-      className="bg-primary-500 rounded-[32px] flex-row items-center"
+      className="flex-row items-center bg-primary-500"
       style={{
-        paddingHorizontal: moderateScale(22),
-        paddingVertical: moderateScale(20),
-        gap: moderateScale(18),
+        borderRadius: S.radius.xxxl,
+        paddingHorizontal: S.space.lg,
+        paddingVertical: S.space.lg,
+        gap: S.space.lg,
       }}
     >
-      <View
-        className="items-center justify-center"
-        style={{
-          width: moderateScale(118),
-          gap: moderateScale(10),
-        }}
-      >
+      <View className="items-center justify-center" style={{ gap: S.space.md }}>
         <View
-          className="rounded-full border-blue-700 items-center justify-center"
+          className="items-center justify-center rounded-full border-2 border-blue-700"
           style={{
-            width: moderateScale(70),
-            height: moderateScale(70),
-            borderWidth: moderateScale(3),
+            width: S.size.avatarLg + S.space.sm,
+            height: S.size.avatarLg + S.space.sm,
           }}
         >
-          <CarIcon color={colors.surfaceDark} size={moderateScale(30)} />
+          <CarIcon color={colors.surfaceDark} size={S.icon.xl} />
         </View>
 
         <Text
-          className="text-surface-dark font-poppins text-center"
+          className="text-center text-surface-dark"
           style={{
             fontFamily: 'Poppins-Regular',
             fontSize: S.fs.md,
-            lineHeight: moderateScale(24),
+            lineHeight: S.fs.md * 1.25,
           }}
         >
-          Savings{'\n'}On Goals
+          {'Savings\nOn Goals'}
         </Text>
       </View>
 
       <View
-        className="bg-white"
+        className="self-stretch bg-white"
         style={{
           width: 1,
-          alignSelf: 'stretch',
+          opacity: 0.5,
         }}
       />
 
-      <View style={{ flex: 1, gap: moderateScale(14) }}>
+      <View className="flex-1" style={{ gap: S.space.md }}>
         <SavingsStat
           Icon={StackCashIcon}
           label="Revenue Last Week"
@@ -121,6 +114,7 @@ export function HomeSavingsCard({ weekly }: HomeSavingsCardProps) {
           className="bg-white"
           style={{
             height: 1,
+            opacity: 0.5,
           }}
         />
 

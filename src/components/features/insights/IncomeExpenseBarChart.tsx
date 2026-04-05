@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { BarChart, type barDataItem } from 'react-native-gifted-charts';
+import { BarChart } from 'react-native-gifted-charts';
 import { colors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
 import { moderateScale } from '../../../utils/responsive';
@@ -15,30 +15,6 @@ export type IncomeExpenseBarChartProps = {
   height: number;
   data: DayIncomeExpense[];
 };
-
-function buildGroupedBarData(days: DayIncomeExpense[]): barDataItem[] {
-  return days.flatMap((day, index) => {
-    const trailingSpacing = index === days.length - 1 ? 0 : moderateScale(18);
-
-    return [
-      {
-        value: day.income,
-        frontColor: colors.primary500,
-        label: day.label,
-        spacing: moderateScale(4),
-        barBorderTopLeftRadius: moderateScale(8),
-        barBorderTopRightRadius: moderateScale(8),
-      },
-      {
-        value: day.expense,
-        frontColor: colors.blue700,
-        spacing: trailingSpacing,
-        barBorderTopLeftRadius: moderateScale(8),
-        barBorderTopRightRadius: moderateScale(8),
-      },
-    ];
-  });
-}
 
 function getNiceStepValue(maxValue: number) {
   if (maxValue <= 0) {
@@ -69,7 +45,6 @@ export function IncomeExpenseBarChart({
   height,
   data,
 }: IncomeExpenseBarChartProps) {
-  const chartData = useMemo(() => buildGroupedBarData(data), [data]);
   const chartScale = useMemo(() => {
     const maxDataValue = data.reduce((currentMax, item) => {
       return Math.max(currentMax, item.income, item.expense);
@@ -79,37 +54,87 @@ export function IncomeExpenseBarChart({
       notation: 'compact',
       maximumFractionDigits: 1,
     });
-
     return {
       maxValue: stepValue * 4,
       stepValue,
-      labels: Array.from({ length: 4 }, (_, index) => {
-        return compactFormatter
-          .format(stepValue * (index + 1))
-          .toLowerCase();
-      }),
+      labels: Array.from({ length: 4 }, (_, index) =>
+        compactFormatter.format(stepValue * (index + 1)).toLowerCase(),
+      ),
     };
   }, [data]);
+
+  // ── Dynamic bar sizing ──────────────────────────────────────────────
+  // Each group = 2 bars (income + expense) + gap between them + gap after group
+  // Total drawable width = parentWidth - yAxisLabelWidth - initialSpacing - endSpacing
+  const yAxisLabelWidth = moderateScale(28);
+  const initialSpacing = moderateScale(16);
+  const endSpacing = moderateScale(8);
+  const intraGroupGap = moderateScale(4);   // gap between the 2 bars in one group
+
+  const drawableWidth = width - yAxisLabelWidth - initialSpacing - endSpacing;
+  const numGroups = data.length;
+
+  // Each group occupies: 2 * barWidth + intraGroupGap + interGroupSpacing
+  // We want: numGroups * (2 * barWidth + intraGroupGap + interGroupSpacing) = drawableWidth
+  // Fix ratio: barWidth : interGroupSpacing = 1 : 2  (gives breathing room)
+  // So: numGroups * (2 * barWidth + intraGroupGap + 2 * barWidth) = drawableWidth
+  //     numGroups * (4 * barWidth + intraGroupGap) = drawableWidth
+  //     barWidth = (drawableWidth / numGroups - intraGroupGap) / 4
+
+  const barWidth = Math.max(
+    moderateScale(4), // minimum bar width
+    Math.floor((drawableWidth / numGroups - intraGroupGap) / 4),
+  );
+  const interGroupSpacing = Math.max(
+    moderateScale(8),
+    Math.floor(drawableWidth / numGroups - 2 * barWidth - intraGroupGap),
+  );
+  // ────────────────────────────────────────────────────────────────────
+
+  // Rebuild bar data with dynamic spacing values
+  const dynamicChartData = useMemo(() => {
+    return data.flatMap((day, index) => {
+      const trailingSpacing =
+        index === data.length - 1 ? 0 : interGroupSpacing;
+      return [
+        {
+          value: day.income,
+          frontColor: colors.primary500,
+          label: day.label,
+          spacing: intraGroupGap,
+          barBorderTopLeftRadius: moderateScale(8),
+          barBorderTopRightRadius: moderateScale(8),
+        },
+        {
+          value: day.expense,
+          frontColor: colors.blue700,
+          spacing: trailingSpacing,
+          barBorderTopLeftRadius: moderateScale(8),
+          barBorderTopRightRadius: moderateScale(8),
+        },
+      ];
+    });
+  }, [data, intraGroupGap, interGroupSpacing]);
 
   return (
     <BarChart
       parentWidth={width}
-      data={chartData}
+      data={dynamicChartData}
       height={height}
       maxValue={chartScale.maxValue}
       stepValue={chartScale.stepValue}
       noOfSections={4}
       hideOrigin
-      barWidth={moderateScale(6)}
-      initialSpacing={moderateScale(26)}
-      spacing={moderateScale(4)}
-      endSpacing={0}
+      barWidth={barWidth}
+      initialSpacing={initialSpacing}
+      spacing={intraGroupGap}
+      endSpacing={endSpacing}
       showFractionalValues={false}
       rulesType="dashed"
       dashWidth={3}
       dashGap={3}
-      rulesColor="rgba(50,153,255,0.42)"
-      xAxisColor="rgba(5,34,36,0.75)"
+      rulesColor={colors.chartRule}
+      xAxisColor={colors.chartAxis}
       xAxisThickness={1}
       yAxisColor="transparent"
       yAxisThickness={0}
@@ -124,7 +149,7 @@ export function IncomeExpenseBarChart({
         fontFamily: 'Poppins-Regular',
         color: colors.surfaceDark,
       }}
-      yAxisLabelWidth={moderateScale(28)}
+      yAxisLabelWidth={yAxisLabelWidth}
       labelsDistanceFromXaxis={moderateScale(8)}
     />
   );

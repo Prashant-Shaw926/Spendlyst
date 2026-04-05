@@ -13,6 +13,8 @@ export type ChartSectionProps = {
   title: string;
   actions?: React.ReactNode;
   containerClassName?: string;
+  headerClassName?: string;
+  titleClassName?: string;
   containerStyle?: StyleProp<ViewStyle>;
   headerStyle?: StyleProp<ViewStyle>;
   titleStyle?: StyleProp<TextStyle>;
@@ -23,6 +25,8 @@ export function ChartSection({
   title,
   actions,
   containerClassName,
+  headerClassName,
+  titleClassName,
   containerStyle,
   headerStyle,
   titleStyle,
@@ -56,34 +60,29 @@ export function ChartSection({
         containerStyle,
       ]}
     >
-      <View
-        style={[
-          {
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: S.space.lg,
-          },
-          headerStyle,
-        ]}
-      >
-        <Text
-          className="text-text"
-          style={[
-            {
-              fontSize: S.fs.sm,
-              fontFamily: 'Poppins-SemiBold',
-            },
-            titleStyle,
-          ]}
+      <View style={{ gap: S.space.lg }}>
+        <View
+          className={headerClassName ?? 'flex-row items-center justify-between'}
+          style={headerStyle}
         >
-          {title}
-        </Text>
+          <Text
+            className={titleClassName ?? 'text-text'}
+            style={[
+              {
+                fontSize: S.fs.sm,
+                fontFamily: 'Poppins-SemiBold',
+              },
+              titleStyle,
+            ]}
+          >
+            {title}
+          </Text>
 
-        {actions}
+          {actions}
+        </View>
+
+        <View>{content}</View>
       </View>
-
-      <View>{content}</View>
     </View>
   );
 }

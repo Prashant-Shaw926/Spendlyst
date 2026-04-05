@@ -1,48 +1,36 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
+import { S } from '../../../theme/scale';
 import type { TransactionSectionModel } from '../../../types/models';
-import { colors } from '../../../theme/colors';
-import { moderateScale } from '../../../utils/responsive';
 import { TransactionRow } from '../../shared/TransactionRow';
 
 type TransactionMonthSectionProps = {
   section: TransactionSectionModel;
-  isDark: boolean;
-  isLast: boolean;
 };
 
-function TransactionMonthSectionComponent({
-  section,
-  isDark,
-  isLast,
-}: TransactionMonthSectionProps) {
+function TransactionMonthSectionComponent({ section }: TransactionMonthSectionProps) {
   return (
-    <View
-      style={{
-        marginBottom: isLast ? 0 : moderateScale(26),
-      }}
-    >
+    <View style={{ gap: S.space.lg }}>
       <Text
+        className="text-title"
         style={{
-          fontSize: moderateScale(22),
+          fontSize: S.fs.lg,
           fontFamily: 'Poppins-Bold',
-          color: isDark ? colors.card : colors.surfaceDark,
-          marginBottom: moderateScale(18),
           letterSpacing: -0.5,
         }}
       >
         {section.title}
       </Text>
 
-      {section.items.map((item, index) => (
-        <TransactionRow
-          key={item.id}
-          item={item}
-          isDark={isDark}
-          variant="detailed"
-          isLast={index === section.items.length - 1}
-        />
-      ))}
+      <View style={{ gap: S.space.lg }}>
+        {section.items.map((item) => (
+          <TransactionRow
+            key={item.id}
+            item={item}
+            variant="detailed"
+          />
+        ))}
+      </View>
     </View>
   );
 }

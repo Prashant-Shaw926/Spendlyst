@@ -9,16 +9,22 @@ import {
   InsightsIcon,
   TransactionsIcon,
 } from '../assets/icons';
+import { UserIcon } from '../components/shared/FinanceIcons';
 import type { BottomTabParamList } from '../types/navigation';
 import { HomeStack } from './stacks/HomeStack';
 import { TransactionsStack } from './stacks/TransactionsStack';
 import { GoalsStack } from './stacks/GoalsStack';
 import { InsightsStack } from './stacks/InsightsStack';
+import { ProfileStack } from './stacks/ProfileStack';
 import { colors } from '../theme/colors';
 import { moderateScale } from '../utils/responsive';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 type TabIconComponent = React.ComponentType<SvgProps>;
+type FinanceTabIconComponent = React.ComponentType<{
+  size?: number;
+  color?: string;
+}>;
 
 function TabBubble({
   focused,
@@ -61,6 +67,24 @@ function TabBarIcon({
   );
 }
 
+function TabBarFinanceIcon({
+  Icon,
+  focused,
+  inactiveColor,
+}: {
+  Icon: FinanceTabIconComponent;
+  focused: boolean;
+  inactiveColor: string;
+}) {
+  const iconColor = focused ? colors.surfaceDark : inactiveColor;
+
+  return (
+    <TabBubble focused={focused}>
+      <Icon size={24} color={iconColor} />
+    </TabBubble>
+  );
+}
+
 export function BottomTabNavigator() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -86,8 +110,6 @@ export function BottomTabNavigator() {
           height: moderateScale(88) + Math.max(insets.bottom, moderateScale(10)),
           paddingTop: moderateScale(14),
           paddingBottom: Math.max(insets.bottom, moderateScale(10)),
-          // borderTopLeftRadius: moderateScale(40),
-          // borderTopRightRadius: moderateScale(40),
         },
         tabBarItemStyle: {
           alignItems: 'center',
@@ -135,6 +157,20 @@ export function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ focused }) => (
             <TabBarIcon Icon={GoalsIcon} focused={focused} inactiveColor={inactiveColor} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="ProfileTab"
+        component={ProfileStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabBarFinanceIcon
+              Icon={UserIcon}
+              focused={focused}
+              inactiveColor={inactiveColor}
+            />
           ),
         }}
       />

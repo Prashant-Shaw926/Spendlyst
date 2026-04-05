@@ -1,12 +1,11 @@
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, useColorScheme } from 'react-native';
 import { PieChart, type pieDataItem } from 'react-native-gifted-charts';
-import { colors } from '../../theme/colors';
+import { colors, getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
 export type GoalHeroCardProps = {
-  isDark: boolean;
   progress: number;
   savedAmount: string;
   targetAmount: string;
@@ -18,37 +17,35 @@ export type GoalHeroCardProps = {
 function StatPill({
   label,
   value,
-  isDark,
 }: {
   label: string;
   value: string;
-  isDark: boolean;
 }) {
   return (
     <View
+      className="flex-1 bg-card"
       style={{
-        flex: 1,
-        borderRadius: moderateScale(16),
-        backgroundColor: isDark ? 'rgba(255,255,255,0.06)' : colors.card,
-        paddingVertical: moderateScale(12),
-        paddingHorizontal: moderateScale(14),
+        borderRadius: S.radius.xl,
+        paddingHorizontal: S.space.md,
+        paddingVertical: S.space.md,
+        gap: S.space.xs,
       }}
     >
       <Text
+        className="text-text-muted"
         style={{
           fontSize: S.fs.xs,
           fontFamily: 'Poppins-Regular',
-          color: isDark ? 'rgba(255,255,255,0.68)' : colors.textMuted,
         }}
       >
         {label}
       </Text>
+
       <Text
+        className="text-text"
         style={{
-          marginTop: 4,
           fontSize: S.fs.md_h,
           fontFamily: 'Poppins-Bold',
-          color: isDark ? colors.card : colors.surfaceDark,
         }}
       >
         {value}
@@ -58,7 +55,6 @@ function StatPill({
 }
 
 export function GoalHeroCard({
-  isDark,
   progress,
   savedAmount,
   targetAmount,
@@ -66,6 +62,8 @@ export function GoalHeroCard({
   completedGoals,
   monthlySaving,
 }: GoalHeroCardProps) {
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
   const donutData: pieDataItem[] = useMemo(() => {
     const safeProgress = Math.max(0, Math.min(100, progress));
 
@@ -73,21 +71,23 @@ export function GoalHeroCard({
       { value: safeProgress, color: colors.primary500 },
       {
         value: 100 - safeProgress,
-        color: isDark ? 'rgba(255,255,255,0.14)' : 'rgba(5,34,36,0.1)',
+        color: semanticColors.progress,
       },
     ];
-  }, [isDark, progress]);
+  }, [progress, semanticColors.progress]);
 
   return (
     <View
+      className="bg-secondary-bg dark:bg-secondary-card"
       style={{
-        borderRadius: moderateScale(32),
-        backgroundColor: isDark ? colors.surfaceMedium : colors.primary50,
-        padding: moderateScale(20),
+        borderRadius: S.radius.xxxl,
+        paddingHorizontal: S.space.xl,
+        paddingVertical: S.space.xl,
+        gap: S.space.lg,
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ width: moderateScale(104), alignItems: 'center' }}>
+      <View className="flex-row items-center">
+        <View className="items-center" style={{ width: moderateScale(104), gap: S.space.sm }}>
           <PieChart
             donut
             data={donutData}
@@ -97,56 +97,55 @@ export function GoalHeroCard({
             strokeWidth={0}
             centerLabelComponent={() => (
               <Text
+                className="text-text"
                 style={{
                   fontSize: S.fs.md_h,
                   fontFamily: 'Poppins-Bold',
-                  color: isDark ? colors.card : colors.surfaceDark,
                 }}
               >
                 {Math.round(progress)}%
               </Text>
             )}
           />
+
           <Text
+            className="text-center text-text-muted"
             style={{
-              marginTop: 10,
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Medium',
-              color: isDark ? 'rgba(255,255,255,0.75)' : colors.textMuted,
-              textAlign: 'center',
             }}
           >
             Overall Progress
           </Text>
         </View>
 
-        <View style={{ flex: 1, marginLeft: moderateScale(18) }}>
+        <View className="flex-1" style={{ gap: S.space.xs }}>
           <Text
+            className="text-text-muted"
             style={{
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Medium',
-              color: isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted,
             }}
           >
             Saved across all goals
           </Text>
+
           <Text
+            className="text-text"
             style={{
-              marginTop: 4,
-              fontSize: moderateScale(24),
+              fontSize: S.fs.xl,
               fontFamily: 'Poppins-Bold',
-              color: isDark ? colors.card : colors.surfaceDark,
               letterSpacing: -0.5,
             }}
           >
             {savedAmount}
           </Text>
+
           <Text
+            className="text-text-muted"
             style={{
-              marginTop: 4,
               fontSize: S.fs.sm,
               fontFamily: 'Poppins-Regular',
-              color: isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted,
             }}
           >
             Target {targetAmount}
@@ -154,37 +153,34 @@ export function GoalHeroCard({
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: moderateScale(10), marginTop: moderateScale(18) }}>
-        <StatPill label="Active goals" value={`${activeGoals}`} isDark={isDark} />
-        <StatPill label="Completed" value={`${completedGoals}`} isDark={isDark} />
+      <View className="flex-row" style={{ gap: S.space.sm }}>
+        <StatPill label="Active goals" value={`${activeGoals}`} />
+        <StatPill label="Completed" value={`${completedGoals}`} />
       </View>
 
       <View
+        className="flex-row items-center justify-between bg-primary-500"
         style={{
-          marginTop: moderateScale(16),
-          borderRadius: moderateScale(18),
-          backgroundColor: colors.primary500,
-          paddingVertical: moderateScale(14),
-          paddingHorizontal: moderateScale(16),
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          borderRadius: S.radius.xl,
+          paddingHorizontal: S.space.lg,
+          paddingVertical: S.space.md,
         }}
       >
         <Text
+          className="text-surface-dark"
           style={{
             fontSize: S.fs.sm,
             fontFamily: 'Poppins-Medium',
-            color: colors.surfaceDark,
           }}
         >
           Monthly saving rhythm
         </Text>
+
         <Text
+          className="text-surface-dark"
           style={{
             fontSize: S.fs.md,
             fontFamily: 'Poppins-Bold',
-            color: colors.surfaceDark,
           }}
         >
           {monthlySaving}

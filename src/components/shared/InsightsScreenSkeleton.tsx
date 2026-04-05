@@ -1,59 +1,61 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { S } from '../../theme/scale';
 import { SkeletonBlock } from './SkeletonBlock';
-import { moderateScale } from '../../utils/responsive';
 
-export function InsightsScreenSkeleton({ isDark }: { isDark: boolean }) {
+export function InsightsScreenSkeleton() {
   return (
     <ScrollView
-      style={{ flex: 1 }}
-      contentContainerStyle={{ paddingBottom: moderateScale(80) }}
+      className="flex-1"
+      contentContainerStyle={{ paddingVertical: S.space['6xl'] }}
       showsVerticalScrollIndicator={false}
     >
-      <View
-        style={{
-          paddingHorizontal: moderateScale(36),
-          paddingTop: moderateScale(24),
-          gap: moderateScale(18),
-        }}
-      >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <SkeletonBlock isDark={isDark} width={40} height={40} radius={20} />
-          <SkeletonBlock isDark={isDark} width="28%" height={22} radius={12} />
-          <SkeletonBlock isDark={isDark} width={40} height={40} radius={20} />
+      <View style={{ gap: S.space.lg }}>
+        <View
+          style={{
+            paddingHorizontal: S.space.paddingHorizontal,
+            paddingVertical: S.space.lg,
+            gap: S.space.lg,
+          }}
+        >
+          <View className="flex-row justify-between">
+            <SkeletonBlock width={40} height={40} radius={20} />
+            <SkeletonBlock width="28%" height={22} radius={12} />
+            <SkeletonBlock width={40} height={40} radius={20} />
+          </View>
+
+          <View className="flex-row" style={{ gap: S.space.lg }}>
+            <SkeletonBlock width="48%" height={78} radius={22} />
+            <SkeletonBlock width="48%" height={78} radius={22} />
+          </View>
+
+          <SkeletonBlock height={32} radius={16} />
         </View>
 
-        <View style={{ flexDirection: 'row', gap: moderateScale(16) }}>
-          <SkeletonBlock isDark={isDark} width="48%" height={78} radius={22} />
-          <SkeletonBlock isDark={isDark} width="48%" height={78} radius={22} />
-        </View>
+        <View
+          className="bg-card"
+          style={{
+            borderTopLeftRadius: S.radius.xxxl + S.space['8xl'],
+            borderTopRightRadius: S.radius.xxxl + S.space['8xl'],
+            paddingHorizontal: S.space.paddingHorizontal,
+            paddingVertical: S.space['2xl'],
+            gap: S.space.xl,
+          }}
+        >
+          <View className="flex-row" style={{ gap: S.space.sm }}>
+            <SkeletonBlock width="24%" height={42} radius={21} />
+            <SkeletonBlock width="24%" height={42} radius={21} />
+            <SkeletonBlock width="24%" height={42} radius={21} />
+            <SkeletonBlock width="24%" height={42} radius={21} />
+          </View>
 
-        <SkeletonBlock isDark={isDark} height={32} radius={16} />
-      </View>
+          <SkeletonBlock height={230} radius={34} />
+          <SkeletonBlock height={118} radius={28} />
 
-      <View
-        style={{
-          marginTop: moderateScale(20),
-          borderTopLeftRadius: moderateScale(72),
-          borderTopRightRadius: moderateScale(72),
-          paddingHorizontal: moderateScale(36),
-          paddingTop: moderateScale(32),
-          gap: moderateScale(22),
-        }}
-      >
-        <View style={{ flexDirection: 'row', gap: moderateScale(10) }}>
-          <SkeletonBlock isDark={isDark} width="24%" height={42} radius={21} />
-          <SkeletonBlock isDark={isDark} width="24%" height={42} radius={21} />
-          <SkeletonBlock isDark={isDark} width="24%" height={42} radius={21} />
-          <SkeletonBlock isDark={isDark} width="24%" height={42} radius={21} />
-        </View>
-
-        <SkeletonBlock isDark={isDark} height={230} radius={34} />
-        <SkeletonBlock isDark={isDark} height={118} radius={28} />
-
-        <View style={{ flexDirection: 'row', gap: moderateScale(14) }}>
-          <SkeletonBlock isDark={isDark} width="48%" height={120} radius={24} />
-          <SkeletonBlock isDark={isDark} width="48%" height={120} radius={24} />
+          <View className="flex-row" style={{ gap: S.space.md }}>
+            <SkeletonBlock width="48%" height={120} radius={24} />
+            <SkeletonBlock width="48%" height={120} radius={24} />
+          </View>
         </View>
       </View>
     </ScrollView>

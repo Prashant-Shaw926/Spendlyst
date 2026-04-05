@@ -1,74 +1,70 @@
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, useColorScheme } from 'react-native';
 import { PieChart, type pieDataItem } from 'react-native-gifted-charts';
-import type { InsightTargetModel } from '../../../types/models';
-import { colors } from '../../../theme/colors';
+import { colors, getSemanticColors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
+import type { InsightTargetModel } from '../../../types/models';
 import { moderateScale } from '../../../utils/responsive';
 
 export type TargetCardProps = {
-  isDark: boolean;
   target: InsightTargetModel;
 };
 
-export function TargetCard({
-  isDark,
-  target,
-}: TargetCardProps) {
+export function TargetCard({ target }: TargetCardProps) {
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
+  const trackColor = semanticColors.progress;
+
   const donutData: pieDataItem[] = useMemo(() => {
     const progress = Math.max(0, Math.min(100, target.percent));
 
     return [
       { value: progress, color: colors.primary500 },
-      {
-        value: 100 - progress,
-        color: isDark ? 'rgba(255,255,255,0.18)' : 'rgba(5,34,36,0.12)',
-      },
+      { value: 100 - progress, color: trackColor },
     ];
-  }, [isDark, target.percent]);
+  }, [target.percent, trackColor]);
 
   return (
     <View
+      className="flex-1 bg-secondary-card"
       style={{
-        flex: 1,
-        borderRadius: moderateScale(24),
-        backgroundColor: isDark ? colors.surfaceMedium : colors.primary100,
-        padding: moderateScale(18),
+        borderRadius: S.radius.xxxl,
+        paddingHorizontal: S.space.lg,
+        paddingVertical: S.space.lg,
+        gap: S.space.md,
       }}
     >
       <View
+        className="flex-row items-center justify-between"
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          gap: S.space.md,
         }}
       >
-        <View style={{ flex: 1, paddingRight: S.space.md }}>
+        <View className="flex-1" style={{ gap: S.space.xs }}>
           <Text
+            className="text-text"
             style={{
               fontSize: S.fs.md,
-              fontFamily: 'Poppins-SemiBold',
-              color: isDark ? colors.card : colors.surfaceDark,
             }}
           >
             {target.label}
           </Text>
+
           <Text
+            className="text-text-muted"
             style={{
-              marginTop: 6,
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Regular',
-              color: isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted,
             }}
           >
             Saved {target.savedAmountLabel}
           </Text>
+
           <Text
+            className="text-text-muted"
             style={{
-              marginTop: 2,
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Regular',
-              color: isDark ? 'rgba(255,255,255,0.7)' : colors.textMuted,
             }}
           >
             Goal {target.goalAmountLabel}
@@ -84,10 +80,10 @@ export function TargetCard({
           strokeWidth={0}
           centerLabelComponent={() => (
             <Text
+              className="text-text"
               style={{
                 fontSize: S.fs.xs,
                 fontFamily: 'Poppins-SemiBold',
-                color: isDark ? colors.card : colors.surfaceDark,
               }}
             >
               {Math.round(target.percent)}%

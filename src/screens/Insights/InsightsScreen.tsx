@@ -32,7 +32,7 @@ import {
   selectInsightsScreenState,
 } from '../../store/selectors/insights.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors } from '../../theme/colors';
+import { colors, getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { InsightRange } from '../../types/api';
 import type { InsightsStackParamList } from '../../types/navigation';
@@ -49,18 +49,7 @@ export function InsightsScreen() {
     useAppStore(selectInsightsScreenState);
   const fetchInsights = useAppStore(selectFetchInsights);
 
-  const headerTextColor = isDark ? colors.card : colors.surfaceDark;
-  const screenBg = isDark ? colors.surfaceDeep : colors.primary500;
-  const sheetBg = isDark ? colors.surfaceDark : colors.card;
-  const segmentBg = isDark ? colors.surfaceMedium : colors.primary100;
-  const titleColor = isDark ? colors.card : colors.surfaceDark;
-  const labelColor = isDark ? 'rgba(255,255,255,0.8)' : colors.surfaceDark;
-  const noteColor = isDark ? colors.card : colors.surfaceDark;
-  const dividerColor = isDark
-    ? 'rgba(255,255,255,0.34)'
-    : 'rgba(255,255,255,0.84)';
-  const bellBg = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(241,255,243,0.95)';
-  const bellBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(5,34,36,0.08)';
+  const semanticColors = getSemanticColors(isDark);
   const fallbackTabs: InsightRange[] = ['Daily', 'Weekly', 'Monthly', 'Year'];
   const tabs = insightsData?.tabs ?? fallbackTabs;
   const dayData = getInsightChartData(insightsData, activeTab);
@@ -74,7 +63,7 @@ export function InsightsScreen() {
       return;
     }
 
-    setActiveTab((current) => {
+    setActiveTab(current => {
       if (insightsData.tabs.includes(current)) {
         return current;
       }
@@ -84,19 +73,16 @@ export function InsightsScreen() {
   }, [insightsData]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: screenBg }} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']} style={{}}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={screenBg}
+        backgroundColor={semanticColors.background}
       />
 
-      {isInitialLoading ? (
-        <InsightsScreenSkeleton isDark={isDark} />
-      ) : null}
+      {isInitialLoading ? <InsightsScreenSkeleton /> : null}
 
       {!insightsData && insightsError ? (
         <ScreenState
-          isDark={isDark}
           mode="error"
           title="Unable To Load Insights"
           message={insightsError}
@@ -107,204 +93,202 @@ export function InsightsScreen() {
       ) : null}
 
       {insightsData ? (
-        <ScrollView
-          style={{ flex: 1 }}
-          // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => {
-                fetchInsights({ force: true });
-              }}
-              colors={[colors.primary500]}
-              tintColor={colors.primary500}
-              progressBackgroundColor={colors.card}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        >
-          <View
-            style={{
-              paddingHorizontal: moderateScale(36),
-              paddingTop: S.space.md,
-              paddingBottom: moderateScale(18),
-            }}
-          >
-            <Header
-              variant="centerTitle"
-              title="Analysis"
-              titleColor={headerTextColor}
-              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
-              leftAction={
-                <IconButton
-                  accessibilityLabel="Go back"
-                  disabled={!navigation.canGoBack()}
-                  onPress={() => {
-                    if (navigation.canGoBack()) {
-                      navigation.goBack();
-                    }
-                  }}
-                  size={moderateScale(40)}
-                >
-                  <ArrowLeftIcon color={headerTextColor} size={24} />
-                </IconButton>
-              }
-              rightAction={
-                <IconButton
-                  accessibilityLabel="Open notifications"
-                  backgroundColor={bellBg}
-                  borderColor={bellBorder}
-                  borderRadius={moderateScale(20)}
-                  borderWidth={1}
-                  onPress={() => navigation.navigate('Notification')}
-                  size={moderateScale(40)}
-                >
-                  <BellIcon color={colors.surfaceDark} size={20} />
-                </IconButton>
-              }
-            />
-
-            <View style={{ marginTop: moderateScale(34) }}>
-              <BudgetOverview
-                leftMetric={{
-                  label: 'Total Balance',
-                  value: insightsData.overview.totalBalanceLabel,
-                  labelColor,
-                  valueColor: colors.card,
-                  icon: <CheckSquareIcon color={labelColor} size={13} />,
+        <>
+          <Header
+            variant="centerTitle"
+            title="Insights"
+            titleClassName="text-text"
+            contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+            leftAction={
+              <IconButton
+                accessibilityLabel="Go back"
+                disabled={!navigation.canGoBack()}
+                onPress={() => {
+                  if (navigation.canGoBack()) {
+                    navigation.goBack();
+                  }
                 }}
-                rightMetric={{
-                  label: 'Total Expense',
-                  value: insightsData.overview.totalExpenseLabel,
-                  labelColor,
-                  valueColor: colors.blue700,
-                  icon: <CheckSquareIcon color={labelColor} size={13} />,
-                }}
-                progressPercent={insightsData.overview.spentPercent}
-                progressValue={insightsData.overview.budgetLabel}
-                note={insightsData.overview.note}
-                noteColor={noteColor}
-                noteIconColor={labelColor}
-                dividerStyle={{
-                  marginHorizontal: moderateScale(18),
-                  backgroundColor: dividerColor,
-                }}
-              />
-            </View>
-          </View>
-
-          <View
-            style={{
-              marginTop: moderateScale(20),
-              borderTopLeftRadius: moderateScale(72),
-              borderTopRightRadius: moderateScale(72),
-              backgroundColor: sheetBg,
-              paddingTop: moderateScale(32),
-              paddingHorizontal: moderateScale(36),
-              paddingBottom: moderateScale(34),
-            }}
-          >
-            <SegmentedTabs
-              activeTab={activeTab}
-              tabs={tabs}
-              onChange={setActiveTab}
-              activeBackgroundColor={colors.primary500}
-              activeTextColor={colors.surfaceDark}
-              inactiveTextColor={titleColor}
-              containerPadding={5}
-              gap={0}
-              containerStyle={{
-                borderRadius: moderateScale(24),
-                backgroundColor: segmentBg,
-              }}
-              itemStyle={{
-                borderRadius: moderateScale(20),
-              }}
-              labelStyle={{
-                fontSize: moderateScale(14),
-              }}
-            />
-
-            <ChartSection
-              title={insightsData.chartTitle}
-              titleStyle={{
-                fontSize: moderateScale(18),
-                fontFamily: 'Poppins-SemiBold',
-                color: colors.surfaceDark,
-              }}
-              containerStyle={{
-                marginTop: moderateScale(30),
-                borderRadius: moderateScale(46),
-                backgroundColor: colors.primary100,
-                paddingHorizontal: moderateScale(28),
-                paddingTop: moderateScale(18),
-                paddingBottom: moderateScale(22),
-              }}
-              headerStyle={{
-                marginBottom: moderateScale(14),
-              }}
-              actions={
-                <View style={{ flexDirection: 'row', gap: moderateScale(8) }}>
-                  <IconButton
-                    accessibilityLabel="Search analytics"
-                    backgroundColor={colors.primary500}
-                    borderRadius={moderateScale(17)}
-                    size={moderateScale(34)}
-                  >
-                    <SearchIcon color={colors.surfaceDark} size={18} />
-                  </IconButton>
-
-                  <IconButton
-                    accessibilityLabel="Open calendar"
-                    backgroundColor={colors.primary500}
-                    borderRadius={moderateScale(17)}
-                    size={moderateScale(34)}
-                  >
-                    <CalendarIcon color={colors.surfaceDark} size={18} />
-                  </IconButton>
-                </View>
-              }
-            >
-              {({ width }) =>
-                width > 0 ? (
-                  <IncomeExpenseBarChart
-                    width={width - moderateScale(56)}
-                    height={moderateScale(162)}
-                    data={dayData}
-                  />
-                ) : null
-              }
-            </ChartSection>
-
-            <InsightsSummaryStats
-              isDark={isDark}
-              summary={insightsData.summary}
-            />
-
-            <View style={{ marginTop: moderateScale(30) }}>
-              <Text
-                style={{
-                  fontSize: S.fs.lg,
-                  fontFamily: 'Poppins-SemiBold',
-                  color: titleColor,
-                  marginBottom: moderateScale(16),
-                }}
+                size={moderateScale(40)}
               >
-                My Targets
-              </Text>
-
-              <View style={{ flexDirection: 'row', gap: moderateScale(14) }}>
-                {insightsData.targets.map((target) => (
-                  <TargetCard
-                    key={target.id}
-                    isDark={isDark}
-                    target={target}
-                  />
-                ))}
+                <ArrowLeftIcon color={semanticColors.text} size={24} />
+              </IconButton>
+            }
+            rightAction={
+              <IconButton
+                accessibilityLabel="Open notifications"
+                className="items-center justify-center bg-pill"
+                borderRadius={moderateScale(21)}
+                onPress={() => navigation.navigate('Notification')}
+                size={moderateScale(40)}
+              >
+                <BellIcon
+                  color={semanticColors.title}
+                  size={moderateScale(18)}
+                />
+              </IconButton>
+            }
+          />
+          <ScrollView
+            style={{ flex: 1 }}
+            // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={() => {
+                  fetchInsights({ force: true });
+                }}
+                colors={[colors.primary500]}
+                tintColor={colors.primary500}
+                progressBackgroundColor={
+                  isDark ? colors.cardDark : colors.cardLight
+                }
+              />
+            }
+            showsVerticalScrollIndicator={false}
+          >
+            <View
+              style={{
+                paddingHorizontal: moderateScale(36),
+                paddingVertical: S.space.md,
+                gap: moderateScale(26),
+              }}
+            >
+              <View>
+                <BudgetOverview
+                  leftMetric={{
+                    label: 'Total Balance',
+                    value: insightsData.overview.totalBalanceLabel,
+                    labelClassName: 'text-text',
+                    valueClassName: 'text-text',
+                    icon: (
+                      <CheckSquareIcon color={semanticColors.text} size={13} />
+                    ),
+                  }}
+                  rightMetric={{
+                    label: 'Total Expense',
+                    value: insightsData.overview.totalExpenseLabel,
+                    labelClassName: 'text-text',
+                    valueClassName: 'text-finance-expense',
+                    icon: (
+                      <CheckSquareIcon color={semanticColors.text} size={13} />
+                    ),
+                  }}
+                  progressPercent={insightsData.overview.spentPercent}
+                  progressValue={insightsData.overview.budgetLabel}
+                  note={insightsData.overview.note}
+                  noteClassName="text-text"
+                  noteIconColor={semanticColors.text}
+                  dividerClassName="bg-primary-50"
+                />
               </View>
             </View>
-          </View>
-        </ScrollView>
+
+            <View
+              className="bg-card"
+              style={{
+                marginTop: moderateScale(20),
+                borderTopLeftRadius: moderateScale(72),
+                borderTopRightRadius: moderateScale(72),
+                paddingTop: moderateScale(32),
+                paddingHorizontal: moderateScale(36),
+                paddingBottom: moderateScale(34),
+              }}
+            >
+              <SegmentedTabs
+                activeTab={activeTab}
+                tabs={tabs}
+                onChange={setActiveTab}
+                containerClassName="flex-row items-center bg-secondary-card"
+                activeItemClassName="bg-primary-500"
+                activeLabelClassName="text-surface-dark"
+                inactiveLabelClassName="text-text"
+                containerPadding={5}
+                gap={0}
+                containerStyle={{
+                  borderRadius: moderateScale(24),
+                }}
+                itemStyle={{
+                  borderRadius: moderateScale(20),
+                }}
+                labelStyle={{
+                  fontSize: moderateScale(14),
+                }}
+              />
+
+              <ChartSection
+                title={insightsData.chartTitle}
+                titleClassName="text-surface-dark"
+                titleStyle={{
+                  fontSize: moderateScale(18),
+                  fontFamily: 'Poppins-SemiBold',
+                }}
+                containerClassName="bg-primary-100"
+                containerStyle={{
+                  marginTop: moderateScale(30),
+                  borderRadius: moderateScale(46),
+                  paddingHorizontal: moderateScale(28),
+                  paddingTop: moderateScale(18),
+                  paddingBottom: moderateScale(22),
+                }}
+                headerStyle={{
+                  marginBottom: moderateScale(14),
+                }}
+                actions={
+                  <View className="flex-row" style={{ gap: S.space.sm }}>
+                    <IconButton
+                      accessibilityLabel="Search analytics"
+                      className="items-center justify-center bg-primary-500"
+                      borderRadius={moderateScale(17)}
+                      size={moderateScale(34)}
+                    >
+                      <SearchIcon color={colors.surfaceDark} size={18} />
+                    </IconButton>
+
+                    <IconButton
+                      accessibilityLabel="Open calendar"
+                      className="items-center justify-center bg-primary-500"
+                      borderRadius={moderateScale(17)}
+                      size={moderateScale(34)}
+                    >
+                      <CalendarIcon color={colors.surfaceDark} size={18} />
+                    </IconButton>
+                  </View>
+                }
+              >
+                {({ width }) =>
+                  width > 0 ? (
+                    <IncomeExpenseBarChart
+                      width={width - moderateScale(56)}
+                      height={moderateScale(162)}
+                      data={dayData}
+                    />
+                  ) : null
+                }
+              </ChartSection>
+
+              <InsightsSummaryStats summary={insightsData.summary} />
+
+              <View style={{ marginTop: moderateScale(30) }}>
+                <Text
+                  className="text-text"
+                  style={{
+                    fontSize: S.fs.lg,
+                    fontFamily: 'Poppins-SemiBold',
+                    marginBottom: moderateScale(16),
+                  }}
+                >
+                  My Targets
+                </Text>
+
+                <View style={{ flexDirection: 'row', gap: moderateScale(14) }}>
+                  {insightsData.targets.map(target => (
+                    <TargetCard key={target.id} target={target} />
+                  ))}
+                </View>
+              </View>
+            </View>
+          </ScrollView>
+        </>
       ) : null}
     </SafeAreaView>
   );

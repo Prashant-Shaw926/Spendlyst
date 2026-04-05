@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
+import { Text, View, useColorScheme } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
-import { Text, View } from 'react-native';
 import {
   CarIcon,
   FoodIcon,
@@ -9,9 +9,9 @@ import {
   SalaryIcon,
   Transport,
 } from '../../assets/icons';
-import type { TransactionModel } from '../../types/models';
 import { colors } from '../../theme/colors';
 import { S } from '../../theme/scale';
+import type { TransactionModel } from '../../types/models';
 import { moderateScale } from '../../utils/responsive';
 import type { FinanceIconProps } from './FinanceIcons';
 import {
@@ -26,9 +26,7 @@ export type TransactionRowVariant = 'preview' | 'detailed';
 
 type TransactionRowProps = {
   item: TransactionModel;
-  isDark: boolean;
   variant: TransactionRowVariant;
-  isLast?: boolean;
 };
 
 type AssetIcon = React.ComponentType<SvgProps>;
@@ -58,57 +56,51 @@ const DETAILED_ICONS: Record<
 
 function TransactionRowComponent({
   item,
-  isDark,
   variant,
-  isLast = false,
 }: TransactionRowProps) {
+  const isDark = useColorScheme() === 'dark';
+
   if (variant === 'preview') {
     const Icon = PREVIEW_ICONS[item.icon] ?? SalaryIcon;
     const iconColor = isDark ? colors.primary50 : colors.card;
 
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: moderateScale(14) }}>
+      <View className="flex-row items-center" style={{ gap: S.space.md }}>
         <View
+          className="items-center justify-center"
           style={{
             width: moderateScale(56),
             height: moderateScale(56),
             borderRadius: moderateScale(999),
             backgroundColor: item.iconBackgroundColor,
-            alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
           <Icon
             color={iconColor}
-            height={moderateScale(24)}
-            width={moderateScale(24)}
+            height={S.icon.lg}
+            width={S.icon.lg}
           />
         </View>
 
         <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: moderateScale(12),
-          }}
+          className="flex-1 flex-row items-center"
+          style={{ gap: S.space.md }}
         >
-          <View style={{ flex: 1, gap: moderateScale(4) }}>
+          <View className="flex-1" style={{ gap: S.space.xs }}>
             <Text
-              className="text-text font-poppins"
+              className="text-text"
               numberOfLines={1}
               style={{
                 fontFamily: 'Poppins-SemiBold',
                 fontSize: S.fs.md,
-                lineHeight: moderateScale(22),
+                lineHeight: S.fs.md * 1.35,
               }}
             >
               {item.title}
             </Text>
 
             <Text
-              className="text-finance-expense font-poppins"
+              className="text-finance-expense"
               numberOfLines={1}
               style={{
                 fontFamily: 'Poppins-SemiBold',
@@ -129,7 +121,7 @@ function TransactionRowComponent({
 
           <View className="items-start" style={{ width: moderateScale(64) }}>
             <Text
-              className="text-text-muted font-poppins"
+              className="text-text-muted"
               numberOfLines={1}
               style={{
                 fontFamily: 'Poppins-Regular',
@@ -150,12 +142,12 @@ function TransactionRowComponent({
 
           <View className="items-end" style={{ width: moderateScale(92) }}>
             <Text
-              className={`${item.isExpense ? 'text-finance-expense' : 'text-text'} font-poppins`}
+              className={item.isExpense ? 'text-finance-expense' : 'text-text'}
               numberOfLines={1}
               style={{
                 fontFamily: 'Poppins-SemiBold',
                 fontSize: S.fs.md,
-                lineHeight: moderateScale(22),
+                lineHeight: S.fs.md * 1.35,
               }}
             >
               {item.amountLabel}
@@ -167,100 +159,90 @@ function TransactionRowComponent({
   }
 
   const Icon = DETAILED_ICONS[item.icon] ?? StackCashIcon;
-  const textPrimary = isDark ? colors.card : colors.surfaceDark;
-  const textMuted = isDark ? 'rgba(255,255,255,0.8)' : colors.surfaceDark;
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: isLast ? 0 : moderateScale(18),
-      }}
-    >
+    <View className="flex-row items-center" style={{ gap: S.space.md }}>
       <View
+        className="items-center justify-center"
         style={{
           width: moderateScale(56),
           height: moderateScale(56),
-          borderRadius: moderateScale(18),
+          borderRadius: S.radius.xl,
           backgroundColor: item.iconBackgroundColor,
-          alignItems: 'center',
-          justifyContent: 'center',
         }}
       >
         <Icon color={colors.card} size={24} />
       </View>
 
-      <View style={{ flex: 1, marginLeft: S.space.md }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ flex: 1.4, paddingRight: S.space.md }}>
-            <Text
-              style={{
-                fontSize: S.fs.md,
-                fontFamily: 'Poppins-SemiBold',
-                color: textPrimary,
-              }}
-              numberOfLines={1}
-            >
-              {item.title}
-            </Text>
-            <Text
-              style={{
-                marginTop: 4,
-                fontSize: S.fs.xs,
-                fontFamily: 'Poppins-SemiBold',
-                color: colors.blue700,
-              }}
-              numberOfLines={1}
-            >
-              {item.metaLabel}
-            </Text>
-          </View>
-
-          <View
+      <View
+        className="flex-1 flex-row items-center"
+        style={{ gap: S.space.md }}
+      >
+        <View style={{ flex: 1.4, gap: S.space.xs }}>
+          <Text
+            className="text-text"
+            numberOfLines={1}
             style={{
-              width: 1,
-              alignSelf: 'stretch',
-              backgroundColor: colors.primary500,
-              opacity: 0.75,
+              fontSize: S.fs.md,
+              fontFamily: 'Poppins-SemiBold',
             }}
-          />
+          >
+            {item.title}
+          </Text>
 
-          <View style={{ flex: 1, paddingHorizontal: S.space.md }}>
-            <Text
-              style={{
-                fontSize: S.fs.sm,
-                fontFamily: 'Poppins-Regular',
-                color: textMuted,
-              }}
-              numberOfLines={1}
-            >
-              {item.category}
-            </Text>
-          </View>
-
-          <View
+          <Text
+            className="text-blue-700"
+            numberOfLines={1}
             style={{
-              width: 1,
-              alignSelf: 'stretch',
-              backgroundColor: colors.primary500,
-              opacity: 0.75,
+              fontSize: S.fs.xs,
+              fontFamily: 'Poppins-SemiBold',
             }}
-          />
+          >
+            {item.metaLabel}
+          </Text>
+        </View>
 
-          <View style={{ minWidth: moderateScale(88), paddingLeft: S.space.md }}>
-            <Text
-              style={{
-                fontSize: S.fs.md,
-                fontFamily: 'Poppins-SemiBold',
-                color: item.isExpense ? colors.blue700 : textPrimary,
-                textAlign: 'right',
-              }}
-              numberOfLines={1}
-            >
-              {item.amountLabel}
-            </Text>
-          </View>
+        <View
+          className="self-stretch bg-primary-500"
+          style={{
+            width: 1,
+            opacity: 0.75,
+          }}
+        />
+
+        <View className="flex-1 items-start">
+          <Text
+            className="text-text-muted"
+            numberOfLines={1}
+            style={{
+              fontSize: S.fs.sm,
+              fontFamily: 'Poppins-Regular',
+            }}
+          >
+            {item.category}
+          </Text>
+        </View>
+
+        <View
+          className="self-stretch bg-primary-500"
+          style={{
+            width: 1,
+            opacity: 0.75,
+          }}
+        />
+
+        <View className="items-end" style={{ minWidth: moderateScale(88) }}>
+          <Text
+            className={item.isExpense ? 'text-blue-700' : 'text-text'}
+            numberOfLines={1}
+            style={{
+              fontSize: S.fs.md,
+              fontFamily: 'Poppins-SemiBold',
+              textAlign: 'right',
+            }}
+          >
+            {item.amountLabel}
+          </Text>
         </View>
       </View>
     </View>

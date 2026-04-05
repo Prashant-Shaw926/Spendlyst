@@ -1,39 +1,36 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, useColorScheme } from 'react-native';
 import { ExpenseIcon, IncomeIcon } from '../../../assets/icons';
+import { getSemanticColors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
 import type { BudgetOverviewModel } from '../../../types/models';
-import { colors } from '../../../theme/colors';
 import { moderateScale } from '../../../utils/responsive';
 import { BudgetOverview } from '../../shared/BudgetOverview';
 
 type HomeBalanceSectionProps = {
-  isDark: boolean;
   overview: BudgetOverviewModel;
 };
 
-export function HomeBalanceSection({
-  isDark,
-  overview,
-}: HomeBalanceSectionProps) {
-  const textColor = isDark ? colors.card : colors.surfaceDark;
-  const expenseColor = isDark ? colors.blue400 : colors.blue700;
+export function HomeBalanceSection({ overview }: HomeBalanceSectionProps) {
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
 
   return (
     <View
       style={{
-        paddingHorizontal: moderateScale(36),
-        paddingVertical: moderateScale(8),
+        paddingHorizontal: S.space.paddingHorizontal,
+        paddingVertical: S.space.md,
       }}
     >
       <BudgetOverview
         leftMetric={{
           label: 'Total Balance',
           value: overview.totalBalanceLabel,
-          labelColor: textColor,
-          valueColor: textColor,
+          labelClassName: 'text-text',
+          valueClassName: 'text-text',
           icon: (
             <IncomeIcon
-              color={textColor}
+              color={semanticColors.text}
               height={moderateScale(14)}
               width={moderateScale(14)}
             />
@@ -42,11 +39,11 @@ export function HomeBalanceSection({
         rightMetric={{
           label: 'Total Expense',
           value: overview.totalExpenseLabel,
-          labelColor: textColor,
-          valueColor: expenseColor,
+          labelClassName: 'text-text',
+          valueClassName: 'text-finance-expense',
           icon: (
             <ExpenseIcon
-              color={textColor}
+              color={semanticColors.text}
               height={moderateScale(14)}
               width={moderateScale(14)}
             />
@@ -55,15 +52,10 @@ export function HomeBalanceSection({
         progressPercent={overview.spentPercent}
         progressValue={overview.budgetLabel}
         note={overview.note}
-        noteColor={textColor}
-        noteIconColor={textColor}
-        metricsContainerStyle={{
-          gap: moderateScale(18),
-        }}
-        dividerStyle={{
-          height: moderateScale(44),
-          backgroundColor: colors.primary50,
-        }}
+        noteClassName="text-text"
+        noteIconColor={semanticColors.text}
+        dividerClassName="bg-primary-50"
+        metricsContainerStyle={{ gap: S.space.lg }}
       />
     </View>
   );

@@ -17,6 +17,9 @@ export type HeaderProps = {
   subtitle?: string;
   leftAction?: React.ReactNode;
   rightAction?: React.ReactNode;
+  containerClassName?: string;
+  titleClassName?: string;
+  subtitleClassName?: string;
   titleColor?: string;
   subtitleColor?: string;
   contentStyle?: StyleProp<ViewStyle>;
@@ -32,6 +35,9 @@ export function Header({
   subtitle,
   leftAction,
   rightAction,
+  containerClassName,
+  titleClassName,
+  subtitleClassName,
   titleColor,
   subtitleColor,
   contentStyle,
@@ -42,28 +48,29 @@ export function Header({
 }: HeaderProps) {
   return (
     <View
+      className={`${containerClassName ?? ''} flex-row items-center ${
+        variant === 'home' ? 'justify-between' : 'justify-center'
+      }`}
       style={[
         {
-          paddingHorizontal: S.space.paddingHorizontal,
+          paddingHorizontal: S.space.xl,
           paddingVertical: S.space.md,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: variant === 'home' ? 'space-between' : 'center',
         },
         contentStyle,
       ]}
     >
       {variant === 'home' ? (
         <>
-          <View style={{ flex: 1 }}>
+          <View className="flex-1" style={{ gap: S.space.xs }}>
             <Text
+              className={titleClassName ?? 'text-text'}
               style={[
                 {
                   fontSize: moderateScale(24),
                   fontFamily: 'Poppins-Bold',
                   lineHeight: moderateScale(30),
-                  color: titleColor,
                 },
+                titleColor ? { color: titleColor } : null,
                 titleStyle,
               ]}
               numberOfLines={1}
@@ -73,13 +80,15 @@ export function Header({
 
             {subtitle ? (
               <Text
+                className={subtitleClassName ?? titleClassName ?? 'text-text'}
                 style={[
                   {
                     fontSize: S.fs.sm,
                     fontFamily: 'Poppins-Regular',
-                    marginTop: 2,
-                    color: subtitleColor ?? titleColor,
                   },
+                  subtitleColor || titleColor
+                    ? { color: subtitleColor ?? titleColor }
+                    : null,
                   subtitleStyle,
                 ]}
                 numberOfLines={1}
@@ -93,29 +102,36 @@ export function Header({
         </>
       ) : (
         <>
-          <View style={{ width: leftSlotWidth, alignItems: 'flex-start' }}>
-            {leftAction}
-          </View>
+          <View
+            className="flex-row items-center"
+            style={{
+              paddingHorizontal: S.space.xl,
+              paddingVertical: S.space.md,
+            }}
+          >
+            <View style={{ width: leftSlotWidth }}>{leftAction}</View>
 
-          <View style={{ flex: 1, alignItems: 'center' }}>
-            <Text
-              style={[
-                {
-                  fontSize: moderateScale(22),
-                  fontFamily: 'Poppins-Bold',
-                  color: titleColor,
-                  letterSpacing: -0.5,
-                },
-                titleStyle,
-              ]}
-              numberOfLines={1}
-            >
-              {title}
-            </Text>
-          </View>
+            <View className="flex-1 items-center">
+              <Text
+                className={titleClassName ?? 'text-text'}
+                style={[
+                  {
+                    fontSize: S.fs.lg,
+                    // fontFamily: 'Poppins-Bold',
+                    // letterSpacing: -0.5,
+                  },
+                  titleColor ? { color: titleColor } : null,
+                  titleStyle,
+                ]}
+                numberOfLines={1}
+              >
+                {title}
+              </Text>
+            </View>
 
-          <View style={{ width: rightSlotWidth, alignItems: 'flex-end' }}>
-            {rightAction}
+            <View className="items-end" style={{ width: rightSlotWidth }}>
+              {rightAction}
+            </View>
           </View>
         </>
       )}

@@ -14,8 +14,10 @@ import { moderateScale } from '../../utils/responsive';
 export type OverviewMetricConfig = {
   label: string;
   value: string;
-  labelColor: string;
-  valueColor: string;
+  labelClassName?: string;
+  valueClassName?: string;
+  labelColor?: string;
+  valueColor?: string;
   icon?: React.ReactNode;
   containerStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
@@ -28,7 +30,9 @@ type BudgetOverviewProps = {
   progressPercent: number;
   progressValue: string;
   note: string;
-  noteColor: string;
+  noteClassName?: string;
+  dividerClassName?: string;
+  noteColor?: string;
   noteIconColor: string;
   style?: StyleProp<ViewStyle>;
   metricsContainerStyle?: StyleProp<ViewStyle>;
@@ -40,6 +44,8 @@ type BudgetOverviewProps = {
 function OverviewMetric({
   label,
   value,
+  labelClassName,
+  valueClassName,
   labelColor,
   valueColor,
   icon,
@@ -48,40 +54,37 @@ function OverviewMetric({
   valueStyle,
 }: OverviewMetricConfig) {
   return (
-    <View style={[{ flex: 1 }, containerStyle]}>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: moderateScale(6),
-          marginBottom: moderateScale(8),
-        }}
-      >
+    <View className="flex-1" style={[{ gap: S.space.xs }, containerStyle]}>
+      <View className="flex-row items-center" style={{ gap: S.space.xs }}>
         {icon}
         <Text
+          className={labelClassName ?? 'text-text'}
           style={[
             {
               fontSize: S.fs.sm,
-              fontFamily: 'Poppins-Regular',
-              color: labelColor,
             },
+            labelColor ? { color: labelColor } : null,
             labelStyle,
           ]}
+          numberOfLines={1}
         >
           {label}
         </Text>
       </View>
 
       <Text
+        className={valueClassName ?? 'text-text'}
         style={[
           {
             fontSize: moderateScale(22),
-            fontFamily: 'Poppins-Bold',
-            color: valueColor,
-            letterSpacing: -0.4,
+            lineHeight: moderateScale(26),
           },
+          valueColor ? { color: valueColor } : null,
           valueStyle,
         ]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
       >
         {value}
       </Text>
@@ -95,6 +98,8 @@ export function BudgetOverview({
   progressPercent,
   progressValue,
   note,
+  noteClassName,
+  dividerClassName,
   noteColor,
   noteIconColor,
   style,
@@ -104,12 +109,12 @@ export function BudgetOverview({
   noteTextStyle,
 }: BudgetOverviewProps) {
   return (
-    <View style={[{ gap: moderateScale(18) }, style]}>
+    <View style={[{ gap: S.space.lg }, style]}>
       <View
+        className="flex-row items-center"
         style={[
           {
-            flexDirection: 'row',
-            alignItems: 'center',
+            gap: S.space.lg,
           },
           metricsContainerStyle,
         ]}
@@ -117,49 +122,51 @@ export function BudgetOverview({
         <OverviewMetric {...leftMetric} />
 
         <View
+          className={dividerClassName}
           style={[
             {
               width: 1,
-              alignSelf: 'stretch',
+              height: moderateScale(52),
+              alignSelf: 'center',
             },
             dividerStyle,
           ]}
         />
 
-        <OverviewMetric {...rightMetric} />
+        <OverviewMetric
+          containerStyle={{ alignItems: 'flex-end' }}
+          {...rightMetric}
+        />
       </View>
 
-      <View>
-        <ProgressBar
-          progressPercent={progressPercent}
-          progressValue={progressValue}
-        />
+      <ProgressBar
+        progressPercent={progressPercent}
+        progressValue={progressValue}
+      />
 
-        <View
+      <View
+        className="flex-row items-center"
+        style={[
+          {
+            gap: S.space.sm,
+          },
+          noteContainerStyle,
+        ]}
+      >
+        <CheckSquareIcon color={noteIconColor} size={moderateScale(20)} />
+        <Text
+          className={noteClassName}
           style={[
             {
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: moderateScale(14),
-              gap: moderateScale(9),
+              fontSize: S.fs.md,
+              fontFamily: 'Poppins-Regular',
             },
-            noteContainerStyle,
+            noteColor ? { color: noteColor } : null,
+            noteTextStyle,
           ]}
         >
-          <CheckSquareIcon color={noteIconColor} size={15} />
-          <Text
-            style={[
-              {
-                fontSize: S.fs.md,
-                fontFamily: 'Poppins-Regular',
-                color: noteColor,
-              },
-              noteTextStyle,
-            ]}
-          >
-            {note}
-          </Text>
-        </View>
+          {note}
+        </Text>
       </View>
     </View>
   );

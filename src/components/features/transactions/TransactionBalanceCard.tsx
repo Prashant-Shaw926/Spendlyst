@@ -1,9 +1,7 @@
 import React, { memo } from 'react';
 import { Text, View } from 'react-native';
-import type { BudgetOverviewModel } from '../../../types/models';
-import { colors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
-import { moderateScale } from '../../../utils/responsive';
+import type { BudgetOverviewModel } from '../../../types/models';
 
 type TransactionBalanceCardProps = {
   overview: BudgetOverviewModel;
@@ -14,29 +12,28 @@ function TransactionBalanceCardComponent({
 }: TransactionBalanceCardProps) {
   return (
     <View
+      className="items-center justify-center bg-primary-50"
       style={{
-        backgroundColor: colors.primary50,
-        borderRadius: moderateScale(16),
-        paddingVertical: moderateScale(14),
-        alignItems: 'center',
-        justifyContent: 'center',
+        borderRadius: S.radius.xl,
+        paddingVertical: S.space.lg,
+        gap: S.space.xs,
       }}
     >
       <Text
+        className="text-surface-dark"
         style={{
           fontSize: S.fs.md,
           fontFamily: 'Poppins-Medium',
-          color: colors.surfaceDark,
         }}
       >
         Total Balance
       </Text>
+
       <Text
+        className="text-surface-dark"
         style={{
-          marginTop: 4,
-          fontSize: moderateScale(22),
+          fontSize: S.fs.lg,
           fontFamily: 'Poppins-Bold',
-          color: colors.surfaceDark,
           letterSpacing: -0.4,
         }}
       >

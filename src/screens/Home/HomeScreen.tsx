@@ -24,7 +24,7 @@ import {
   selectHomeScreenState,
 } from '../../store/selectors/home.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors } from '../../theme/colors';
+import { colors, getSemanticColors } from '../../theme/colors';
 import type { HomeStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
 
@@ -38,7 +38,7 @@ export function HomeScreen() {
     useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const headerTextColor = isDark ? colors.card : colors.surfaceDark;
+  const semanticColors = getSemanticColors(isDark);
   const { homeData, homeError, isInitialLoading, isRefreshing } = useAppStore(
     selectHomeScreenState,
   );
@@ -56,11 +56,10 @@ export function HomeScreen() {
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {isInitialLoading ? <HomeScreenSkeleton isDark={isDark} /> : null}
+      {isInitialLoading ? <HomeScreenSkeleton /> : null}
 
       {!homeData && homeError ? (
         <ScreenState
-          isDark={isDark}
           mode="error"
           title="Unable To Load Home"
           message={homeError}
@@ -71,89 +70,84 @@ export function HomeScreen() {
       ) : null}
 
       {homeData ? (
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{
-            // paddingBottom: moderateScale(150),
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={isRefreshing}
-              onRefresh={() => {
-                fetchHome({ force: true });
-              }}
-              colors={[colors.primary500]}
-              tintColor={colors.primary500}
-              progressBackgroundColor={colors.card}
-            />
-          }
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={{ gap: moderateScale(18) }}>
-            <Header
-              variant="home"
-              title={homeData.headerTitle}
-              subtitle={homeData.greeting}
-              titleColor={headerTextColor}
-              subtitleColor={headerTextColor}
-              rightAction={
-                <IconButton
-                  accessibilityLabel="Open notifications"
-                  backgroundColor={colors.primary50}
-                  borderRadius={moderateScale(21)}
-                  onPress={() => navigation.navigate('Notification')}
-                  size={moderateScale(42)}
-                >
-                  <BellIcon
-                    color={colors.surfaceDark}
-                    size={moderateScale(22)}
-                  />
-                </IconButton>
+        <>
+          <Header
+            variant="home"
+            title={homeData.headerTitle}
+            subtitle={homeData.greeting}
+            titleClassName="text-text"
+            subtitleClassName="text-text"
+            rightAction={
+              <IconButton
+                accessibilityLabel="Open notifications"
+                className="items-center justify-center bg-pill"
+                borderRadius={moderateScale(21)}
+                onPress={() => navigation.navigate('Notification')}
+                size={moderateScale(40)}
+              >
+                <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+              </IconButton>
+            }
+          />
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={
+              {
+                // paddingBottom: moderateScale(150),
               }
-            />
-
-            <HomeBalanceSection isDark={isDark} overview={homeData.overview} />
-          </View>
-
-          <View
-            className="bg-card rounded-t-[56px]"
-            style={{
-              paddingHorizontal: moderateScale(36),
-              paddingVertical: moderateScale(36),
-              gap: moderateScale(28),
-            }}
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={isRefreshing}
+                onRefresh={() => {
+                  fetchHome({ force: true });
+                }}
+                colors={[colors.primary500]}
+                tintColor={colors.primary500}
+                progressBackgroundColor={colors.card}
+              />
+            }
+            showsVerticalScrollIndicator={false}
           >
-            <HomeSavingsCard weekly={homeData.weekly} />
+            {/* <View style={{ gap: moderateScale(18) }}> */}
 
-            <SegmentedTabs
-              activeTab={activeTab}
-              onChange={setActiveTab}
-              tabs={TABS}
-              activeBackgroundColor={colors.primary500}
-              activeTextColor={colors.surfaceDark}
-              inactiveTextColor={headerTextColor}
-              containerStyle={{
-                backgroundColor: isDark
-                  ? colors.surfaceRaised
-                  : colors.primary100,
-                borderRadius: moderateScale(24),
-              }}
-              itemStyle={{
-                borderRadius: moderateScale(20),
-              }}
-            />
+            <HomeBalanceSection overview={homeData.overview} />
+            {/* </View> */}
 
-            <View style={{ gap: moderateScale(24) }}>
-              {transactions.map(item => (
-                <HomeTransactionItem
-                  key={item.id}
-                  item={item}
-                  isDark={isDark}
-                />
-              ))}
+            <View
+              className="bg-card rounded-t-[56px]"
+              style={{
+                paddingHorizontal: moderateScale(36),
+                paddingVertical: moderateScale(36),
+                gap: moderateScale(28),
+              }}
+            >
+              <HomeSavingsCard weekly={homeData.weekly} />
+
+              <SegmentedTabs
+                activeTab={activeTab}
+                onChange={setActiveTab}
+                tabs={TABS}
+                containerClassName="flex-row items-center bg-secondary-card"
+                activeItemClassName="bg-primary-500"
+                activeLabelClassName="text-surface-dark"
+                inactiveLabelClassName="text-text"
+                containerStyle={{
+                  borderRadius: moderateScale(24),
+                }}
+                itemStyle={{
+                  borderRadius: moderateScale(20),
+                }}
+              />
+
+              <View style={{ gap: moderateScale(24) }}>
+                {transactions.map(item => (
+                  <HomeTransactionItem key={item.id} item={item} />
+                ))}
+              </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </>
       ) : null}
     </SafeAreaView>
   );

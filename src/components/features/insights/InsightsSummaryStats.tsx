@@ -1,56 +1,49 @@
 import React, { memo } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, useColorScheme } from 'react-native';
+import { colors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
 import type { InsightsModel } from '../../../types/models';
 import {
   ArrowDownRightIcon,
   ArrowUpRightIcon,
 } from '../../shared/FinanceIcons';
-import { colors } from '../../../theme/colors';
-import { S } from '../../../theme/scale';
-import { moderateScale } from '../../../utils/responsive';
 
 type InsightsSummaryStatsProps = {
-  isDark: boolean;
   summary: InsightsModel['summary'];
 };
 
 function StatItem({
   label,
   value,
-  isDark,
+  iconColor,
   isExpense,
 }: {
   label: string;
   value: string;
-  isDark: boolean;
+  iconColor: string;
   isExpense?: boolean;
 }) {
-  const accent = isExpense ? colors.blue700 : colors.primary500;
   const Icon = isExpense ? ArrowDownRightIcon : ArrowUpRightIcon;
 
   return (
-    <View style={{ alignItems: 'center', flex: 1 }}>
-      <Icon color={isDark ? colors.primary50 : accent} size={26} />
+    <View className="flex-1 items-center" style={{ gap: S.space.sm }}>
+      <Icon color={iconColor} size={26} />
+
       <Text
+        className="text-text"
         style={{
-          marginTop: S.space.sm,
           fontSize: S.fs.lg,
           fontFamily: 'Poppins-Medium',
-          color: isDark ? colors.card : colors.surfaceDark,
         }}
       >
         {label}
       </Text>
+
       <Text
+        className="text-text"
         style={{
-          marginTop: 2,
-          fontSize: moderateScale(18),
-          fontFamily: 'Poppins-Bold',
-          color: isExpense
-            ? colors.blue700
-            : isDark
-              ? colors.primary50
-              : colors.surfaceDark,
+          fontSize: S.fs.md_h,
+          fontFamily: 'Poppins-SemiBold',
         }}
       >
         {value}
@@ -59,28 +52,34 @@ function StatItem({
   );
 }
 
-function InsightsSummaryStatsComponent({
-  isDark,
-  summary,
-}: InsightsSummaryStatsProps) {
+function InsightsSummaryStatsComponent({ summary }: InsightsSummaryStatsProps) {
+  const isDark = useColorScheme() === 'dark';
+
   return (
     <View
+      className="flex-row justify-between"
       style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: moderateScale(28),
-        paddingHorizontal: moderateScale(6),
+        paddingHorizontal: S.space.sm,
       }}
     >
       <StatItem
         label="Income"
         value={summary.incomeLabel}
-        isDark={isDark}
+        iconColor={isDark ? colors.primary50 : colors.primary500}
       />
+
+      <View
+        className="bg-border"
+        style={{
+          width: 1,
+          alignSelf: 'stretch',
+        }}
+      />
+
       <StatItem
         label="Expense"
         value={summary.expenseLabel}
-        isDark={isDark}
+        iconColor={isDark ? colors.primary50 : colors.blue700}
         isExpense
       />
     </View>

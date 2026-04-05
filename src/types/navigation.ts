@@ -29,12 +29,17 @@ export type SettingsStackParamList = {
   Notification: undefined;
 };
 
+export type ProfileStackParamList = {
+  Profile: undefined;
+  Notification: undefined;
+};
+
 export type BottomTabParamList = {
   HomeTab: NavigatorScreenParams<HomeStackParamList>;
   InsightsTab: NavigatorScreenParams<InsightsStackParamList>;
   TransactionsTab: NavigatorScreenParams<TransactionsStackParamList>;
   GoalsTab: NavigatorScreenParams<GoalsStackParamList>;
-  SettingsTab: NavigatorScreenParams<SettingsStackParamList>;
+  ProfileTab: NavigatorScreenParams<ProfileStackParamList>;
 };
 
 export type RootStackParamList = {
