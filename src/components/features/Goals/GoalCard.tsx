@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
-import { CalendarIcon } from '../../shared/FinanceIcons';
+import { CalendarIcon, StackCashIcon } from '../../shared/FinanceIcons';
 import type { FinanceIconProps } from '../../shared/FinanceIcons';
-import { getSemanticColors } from '../../../theme/colors';
+import { colors, getSemanticColors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
 import { moderateScale, rs } from '../../../utils/responsive';
 
@@ -27,27 +27,18 @@ export type GoalCardProps = {
   onPress?: (item: GoalCardItem) => void;
 };
 
-function InfoColumn({
+function InfoItem({
   label,
   value,
-  align = 'left',
+  icon,
 }: {
   label: string;
   value: string;
-  align?: 'left' | 'center' | 'right';
+  icon?: React.ReactNode;
 }) {
-  const alignmentClassName =
-    align === 'center'
-      ? 'items-center'
-      : align === 'right'
-      ? 'items-end'
-      : 'items-start';
-
   return (
-    <View
-      className={`flex-1 ${alignmentClassName}`}
-      style={{ gap: S.space.xs }}
-    >
+    <View className="flex-row items-center" style={{ gap: S.space.xs }}>
+      {icon}
       <Text
         className="text-text-muted"
         style={{
@@ -55,13 +46,12 @@ function InfoColumn({
           fontFamily: 'Poppins-Regular',
         }}
       >
-        {label}
+        {label}:{' '}
       </Text>
-
       <Text
-        className="text-text"
+        className="text-title"
         style={{
-          fontSize: S.fs.sm,
+          fontSize: S.fs.xs,
           fontFamily: 'Poppins-SemiBold',
         }}
       >
@@ -74,6 +64,7 @@ function InfoColumn({
 export function GoalCard({ item, onPress }: GoalCardProps) {
   const isDark = useColorScheme() === 'dark';
   const semanticColors = getSemanticColors(isDark);
+  const isPlanned = item.status.toLowerCase() === 'planned';
   const progressWidth = `${Math.max(
     0,
     Math.min(100, item.progress),
@@ -86,33 +77,37 @@ export function GoalCard({ item, onPress }: GoalCardProps) {
         borderRadius: S.radius.xxxl,
         paddingHorizontal: S.space.lg,
         paddingVertical: S.space.lg,
-        gap: S.space.lg,
+        gap: S.space.xl,
         borderWidth: 1,
-        borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+        borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+        opacity: isPlanned ? 0.9 : 1,
+        ...S.shadow.soft,
       }}
     >
+      {/* Header Section */}
       <View className="flex-row items-center">
         <View
           className="items-center justify-center"
           style={{
-            width: moderateScale(56),
-            height: moderateScale(56),
-            borderRadius: S.radius.xxl,
-            backgroundColor: item.iconBg,
+            width: moderateScale(48),
+            height: moderateScale(48),
+            borderRadius: S.radius.xl,
+            backgroundColor: isPlanned ? (isDark ? colors.surfaceMedium : colors.primary50) : item.iconBg,
           }}
         >
-          <item.Icon color={item.tint} size={28} />
+          <item.Icon color={isPlanned ? semanticColors.textMuted : item.tint} size={24} />
         </View>
 
         <View
           className="flex-1"
-          style={{ gap: S.space.xs, paddingHorizontal: S.space.md }}
+          style={{ gap: 2, paddingHorizontal: S.space.md }}
         >
           <Text
-            className="text-text"
+            className="text-title"
             style={{
               fontSize: S.fs.md_h,
               fontFamily: 'Poppins-Bold',
+              color: isPlanned ? semanticColors.text : semanticColors.title,
             }}
             numberOfLines={1}
           >
@@ -133,17 +128,23 @@ export function GoalCard({ item, onPress }: GoalCardProps) {
 
         <View
           style={{
-            borderRadius: S.radius.xl,
-            backgroundColor: item.iconBg,
+            borderRadius: S.radius.lg,
+            backgroundColor: isPlanned 
+              ? (isDark ? 'rgba(0,208,158,0.15)' : 'rgba(0,208,158,0.1)') 
+              : (isDark ? colors.surfaceMedium : colors.primary50),
             paddingHorizontal: S.space.sm,
-            paddingVertical: S.space.sm,
+            paddingVertical: rs(4),
+            borderWidth: isPlanned ? 1 : 0,
+            borderColor: isPlanned ? 'rgba(0,208,158,0.3)' : 'transparent',
           }}
         >
           <Text
             style={{
-              fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Medium',
-              color: item.tint,
+              fontSize: rs(10),
+              fontFamily: 'Poppins-Bold',
+              color: isPlanned ? colors.primary500 : item.tint,
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
             }}
           >
             {item.status}
@@ -151,102 +152,89 @@ export function GoalCard({ item, onPress }: GoalCardProps) {
         </View>
       </View>
 
-      <View style={{ gap: S.space.sm }}>
+      {/* Progress & Amounts Section */}
+      <View style={{ gap: S.space.md }}>
+        <View className="flex-row items-baseline justify-between">
+          <View className="flex-row items-baseline" style={{ gap: S.space.sm }}>
+            <Text
+              className="text-title"
+              style={{
+                fontSize: S.fs.xl,
+                fontFamily: 'Poppins-Bold',
+                color: isPlanned ? semanticColors.text : semanticColors.title,
+              }}
+            >
+              {item.savedAmount}
+            </Text>
+            <Text
+              className="text-text-muted"
+              style={{
+                fontSize: S.fs.xs,
+                fontFamily: 'Poppins-Medium',
+                marginBottom: rs(2),
+              }}
+            >
+              of {item.targetAmount}
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontSize: S.fs.sm,
+              fontFamily: 'Poppins-Bold',
+              color: isPlanned ? semanticColors.textMuted : item.tint,
+            }}
+          >
+            {Math.round(item.progress)}%
+          </Text>
+        </View>
+
         <View
           className="overflow-hidden rounded-full bg-progress"
           style={{
-            height: S.space.sm + S.space.xs,
+            height: rs(10),
+            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
           }}
         >
           <View
             style={{
               height: '100%',
               width: progressWidth,
-              borderRadius: S.radius.sm,
-              backgroundColor: item.tint,
+              borderRadius: S.radius.full,
+              backgroundColor: isPlanned ? semanticColors.textMuted : item.tint,
+              opacity: isPlanned ? 0.5 : 1,
             }}
           />
-        </View>
-
-        <View className="flex-row items-center justify-between">
-          <Text
-            style={{
-              fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Medium',
-              color: item.tint,
-            }}
-          >
-            {Math.round(item.progress)}% funded
-          </Text>
-
-          <View className="flex-row items-center" style={{ gap: S.space.xs }}>
-            <CalendarIcon color={semanticColors.textMuted} size={14} />
-            <Text
-              className="text-text-muted"
-              style={{
-                fontSize: S.fs.xs,
-                fontFamily: 'Poppins-Regular',
-              }}
-            >
-              {item.dueLabel}
-            </Text>
-          </View>
         </View>
       </View>
 
+      {/* Footer Details Section */}
       <View
-        className="bg-secondary-bg dark:bg-secondary-card"
+        className="flex-row items-center justify-between border-t border-border"
         style={{
-          borderRadius: S.radius.xxl,
-          paddingHorizontal: S.space.md,
-          paddingVertical: S.space.md,
-          gap: S.space.md,
+          paddingTop: S.space.md,
+          borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
         }}
       >
-        <View className="flex-row items-center" style={{ gap: S.space.md }}>
-          <InfoColumn label="Saved" value={item.savedAmount} />
-
-          <View
-            className="bg-border"
-            style={{
-              width: 1,
-              height: S.size.avatarSm + S.space.xs,
-            }}
-          />
-
-          <InfoColumn label="Target" value={item.targetAmount} align="center" />
-
-          <View
-            className="bg-border"
-            style={{
-              width: 1,
-              height: S.size.avatarSm + S.space.xs,
-            }}
-          />
-
-          <InfoColumn label="Left" value={item.leftAmount} align="right" />
-        </View>
+        <InfoItem
+          label="Left"
+          value={item.leftAmount}
+          icon={<StackCashIcon color={isPlanned ? semanticColors.textMuted : item.tint} size={14} />}
+        />
 
         <View
-          className="bg-pill"
-          style={{
-            borderRadius: S.radius.xl,
-            paddingHorizontal: S.space.md,
-            paddingVertical: S.space.sm,
-            marginTop: S.space.xs,
+          className="bg-border"
+          style={{ 
+            width: 1, 
+            height: rs(14),
+            backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
           }}
-        >
-          <Text
-            className="text-title"
-            style={{
-              fontSize: S.fs.xs,
-              fontFamily: 'Poppins-SemiBold',
-            }}
-          >
-            Plan: <Text className="text-text-muted" style={{ fontFamily: 'Poppins-Regular' }}>{item.monthlyPlan} / month</Text>
-          </Text>
-        </View>
+        />
 
+        <InfoItem
+          label="Plan"
+          value={item.monthlyPlan}
+          icon={<CalendarIcon color={semanticColors.textMuted} size={14} />}
+        />
       </View>
     </View>
   );
@@ -256,7 +244,11 @@ export function GoalCard({ item, onPress }: GoalCardProps) {
   }
 
   return (
-    <TouchableOpacity accessibilityRole="button" onPress={() => onPress(item)}>
+    <TouchableOpacity 
+      accessibilityRole="button" 
+      activeOpacity={1}
+      onPress={() => onPress(item)}
+    >
       {content}
     </TouchableOpacity>
   );

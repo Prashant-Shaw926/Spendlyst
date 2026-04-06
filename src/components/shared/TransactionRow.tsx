@@ -70,7 +70,7 @@ function TransactionRowComponent({
   const containerProps = onPress
     ? {
         accessibilityRole: 'button' as const,
-        activeOpacity: 0.86,
+        activeOpacity: 1,
         onPress,
       }
     : {};

@@ -123,18 +123,21 @@ export function GoalsScreen() {
             }}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={semanticColors.title} size={moderateScale(24)} />
+            <ArrowLeftIcon
+              color={semanticColors.title}
+              size={moderateScale(24)}
+            />
           </IconButton>
         }
         rightAction={
           <IconButton
             accessibilityLabel="Open notifications"
             className="items-center justify-center bg-pill"
-            borderRadius={moderateScale(21)}
+            borderRadius={moderateScale(20)}
             onPress={() => navigation.navigate('Notification')}
             size={moderateScale(40)}
           >
-            <BellIcon color={colors.primary500} size={moderateScale(18)} />
+            <BellIcon color={semanticColors.title} size={moderateScale(18)} />
           </IconButton>
         }
       />
@@ -142,10 +145,12 @@ export function GoalsScreen() {
       {!isBootstrapping ? (
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{
-            // gap: moderateScale(30),
-            // paddingBottom: S.space['4xl'],
-          }}
+          contentContainerStyle={
+            {
+              // gap: moderateScale(30),
+              // paddingBottom: S.space['4xl'],
+            }
+          }
           showsVerticalScrollIndicator={false}
         >
           <View
@@ -177,7 +182,6 @@ export function GoalsScreen() {
               marginTop: moderateScale(14),
             }}
           >
-
             <View
               className="flex-row items-center justify-between"
               style={{ paddingBottom: moderateScale(4) }}
@@ -208,7 +212,6 @@ export function GoalsScreen() {
                 <PlusIcon color={colors.surfaceDark} size={22} />
               </TouchableOpacity>
             </View>
-
 
             <GoalFilterTabs
               tabs={TABS}

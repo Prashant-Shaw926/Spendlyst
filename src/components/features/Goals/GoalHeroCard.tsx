@@ -23,6 +23,7 @@ function StatPill({ label, value }: { label: string; value: string }) {
         paddingHorizontal: S.space.md,
         paddingVertical: S.space.md,
         gap: S.space.xs,
+        ...S.shadow.soft,
       }}
     >
       <Text
@@ -78,6 +79,7 @@ export function GoalHeroCard({
         paddingHorizontal: S.space.xl,
         paddingVertical: S.space.xl,
         gap: S.space.lg,
+        ...S.shadow.md,
       }}
     >
       <View className="flex-row items-center" style={{ gap: S.space['4xl'] }}>

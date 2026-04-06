@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Image,
   ScrollView,
   StatusBar,
   Text,
@@ -10,7 +9,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeftIcon, BellIcon } from '../../components/shared/FinanceIcons';
+import { ArrowLeftIcon, BellIcon, UserIcon } from '../../components/shared/FinanceIcons';
+import { useAppStore } from '../../store/useAppStore';
 import { getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { ProfileStackParamList } from '../../types/navigation';
@@ -20,10 +20,8 @@ import { IconButton } from '../../components/shared/IconButton';
 
 type UserProfile = {
   id: string;
-  name: string;
   phone: string;
   email?: string;
-  avatar: string;
 };
 
 const fetchUserProfile = async (): Promise<UserProfile> => {
@@ -31,10 +29,8 @@ const fetchUserProfile = async (): Promise<UserProfile> => {
     setTimeout(() => {
       resolve({
         id: '25030024',
-        name: 'John Smith',
         phone: '+91 9876543210',
         email: 'john@example.com',
-        avatar: 'https://i.pravatar.cc/150',
       });
     }, 800);
   });
@@ -110,6 +106,7 @@ export function ProfileScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const semanticColors = getSemanticColors(isDark);
+  const userName = useAppStore((state) => state.userName);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -137,7 +134,7 @@ export function ProfileScreen() {
 
   const accountFields = profile
     ? [
-        { label: 'Username', value: profile.name },
+        { label: 'Username', value: userName },
         { label: 'Phone', value: profile.phone },
         ...(profile.email
           ? [{ label: 'Email Address', value: profile.email }]
@@ -207,26 +204,20 @@ export function ProfileScreen() {
               padding: moderateScale(4),
             }}
           >
-            {isLoading || !profile ? (
-              <View
-                className="bg-neutral-200"
-                style={{
-                  width: avatarInnerSize,
-                  height: avatarInnerSize,
-                  borderRadius: avatarInnerSize / 2,
-                }}
+            <View
+              className="bg-pill items-center justify-center"
+              style={{
+                width: avatarInnerSize,
+                height: avatarInnerSize,
+                borderRadius: avatarInnerSize / 2,
+              }}
+            >
+              <UserIcon
+                color={semanticColors.tabActive}
+                size={moderateScale(42)}
+                strokeWidth={2}
               />
-            ) : (
-              <Image
-                source={{ uri: profile.avatar }}
-                resizeMode="cover"
-                style={{
-                  width: avatarInnerSize,
-                  height: avatarInnerSize,
-                  borderRadius: avatarInnerSize / 2,
-                }}
-              />
-            )}
+            </View>
           </View>
         </View>
 
@@ -261,7 +252,7 @@ export function ProfileScreen() {
                   className="text-text text-center"
                   style={{ fontSize: S.fs.xl, fontFamily: 'Poppins-Bold' }}
                 >
-                  {profile?.name}
+                  {userName}
                 </Text>
                 <Text
                   className="text-text-muted text-center"

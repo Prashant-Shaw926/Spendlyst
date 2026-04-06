@@ -17,6 +17,7 @@ function TransactionBalanceCardComponent({
         borderRadius: S.radius.xl,
         paddingVertical: S.space.lg,
         gap: S.space.xs,
+        ...S.shadow.soft,
       }}
     >
       <Text

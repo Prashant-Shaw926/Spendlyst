@@ -19,6 +19,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
           gap: S.space.sm,
           paddingHorizontal: S.space.lg,
           paddingVertical: S.space.lg,
+          ...S.shadow.soft,
         }}
       >
         <Text
@@ -51,6 +52,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
         gap: S.space.md,
         paddingHorizontal: S.space.lg,
         paddingVertical: S.space.lg,
+        ...S.shadow.soft,
       }}
     >
       <View style={{ gap: S.space.xs }}>

@@ -18,6 +18,7 @@ export function TargetCard({ goal }: TargetCardProps) {
           gap: S.space.sm,
           paddingHorizontal: S.space.lg,
           paddingVertical: S.space.lg,
+          ...S.shadow.soft,
         }}
       >
         <Text
@@ -50,6 +51,7 @@ export function TargetCard({ goal }: TargetCardProps) {
         gap: S.space.md,
         paddingHorizontal: S.space.lg,
         paddingVertical: S.space.lg,
+        ...S.shadow.soft,
       }}
     >
       <View style={{ gap: S.space.xs }}>

@@ -7,6 +7,7 @@ export const createAppSlice: AppStoreSlice<AppUiSlice> = (set, get) => ({
   notificationPermissionStatus: 'not-determined',
   fcmToken: null,
   hasRequestedNotificationPermission: false,
+  userName: 'John Smith',
   clearGlobalError() {
     set({
       lastGlobalError: null,
@@ -44,6 +45,11 @@ export const createAppSlice: AppStoreSlice<AppUiSlice> = (set, get) => ({
   setFcmToken(value) {
     set({
       fcmToken: value,
+    });
+  },
+  setUserName(name) {
+    set({
+      userName: name,
     });
   },
 });

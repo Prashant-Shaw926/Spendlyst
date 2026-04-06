@@ -37,6 +37,7 @@ export interface AppUiSlice {
   notificationPermissionStatus: NotificationPermissionStatus;
   fcmToken: string | null;
   hasRequestedNotificationPermission: boolean;
+  userName: string;
   clearGlobalError: () => void;
   initializeAppData: () => void;
   setFcmToken: (value: string | null) => void;
@@ -45,6 +46,7 @@ export interface AppUiSlice {
   setNotificationPermissionStatus: (
     value: NotificationPermissionStatus,
   ) => void;
+  setUserName: (name: string) => void;
 }
 
 export interface TransactionSlice {

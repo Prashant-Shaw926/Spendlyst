@@ -688,9 +688,10 @@ export function getDominantTransactionType(
 export function buildHomeDashboard(
   transactions: TransactionModel[],
   goals: GoalModel[],
+  userName: string,
 ): HomeDashboardModel {
   return {
-    headerTitle: 'Spendlyst',
+    headerTitle: `Hi ${userName}`,
     greeting: getRelativeGreeting(),
     overview: mapBudgetOverviewFromTransactions(transactions),
     weeklyTrend: getWeeklyTrend(transactions),
