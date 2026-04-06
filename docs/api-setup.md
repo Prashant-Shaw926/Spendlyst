@@ -1,208 +1,281 @@
-# API Setup Documentation
+# API And Data Flow
 
-This project uses a small, centralized API layer built around axios, zustand, and MMKV.
-The goal is to keep request logic, error handling, caching, and persistence out of screens
-and inside a predictable data flow.
+Spendlyst uses a mock-first data layer with local persistence. The app does not depend on a live backend to demonstrate its main finance flows, but it still keeps request logic, domain mapping, state storage, and screen orchestration clearly separated.
 
-## Stack Overview
+## Current Runtime Data Sources
 
-- axios is the HTTP client used for all API requests.
-- zustand is the global store that holds remote data, loading states, and UI error state.
-- MMKV is the local storage engine used by zustand persistence.
+Not every screen is backed by the same source. The app intentionally mixes mock API responses, derived local state, and simulated async services.
 
-The main files are:
+| Area | Current source | Notes |
+| --- | --- | --- |
+| Transactions | Mock API through Axios | Loaded from `src/api/mock/routes.ts` and persisted to MMKV |
+| Home dashboard | Derived local state | Built from transactions and goals via selectors and mappers |
+| Insights | Derived local state | Computed from persisted transactions and goals |
+| Goals | Local seed + persisted state | Seeded once from `src/store/goalSeeds.ts`, then stored in MMKV |
+| Profile | Simulated async service | Served from `src/features/profile/services/profile.ts` |
+| Notifications feed | Local sample data | UI content comes from `src/features/notifications/data/notifications.ts` |
+| Push notification plumbing | Native integration | Firebase Messaging + Notifee are wired in for runtime handling |
 
-- [src/services/api/client.ts](../src/services/api/client.ts)
-- [src/services/api/request.ts](../src/services/api/request.ts)
-- [src/services/api/endpoints/home.api.ts](../src/services/api/endpoints/home.api.ts)
-- [src/services/api/endpoints/transaction.api.ts](../src/services/api/endpoints/transaction.api.ts)
-- [src/services/api/endpoints/insights.api.ts](../src/services/api/endpoints/insights.api.ts)
-- [src/store/useAppStore.ts](../src/store/useAppStore.ts)
-- [src/store/storage.ts](../src/store/storage.ts)
-- [src/store/slices/home.slice.ts](../src/store/slices/home.slice.ts)
-- [src/store/slices/transaction.slice.ts](../src/store/slices/transaction.slice.ts)
-- [src/store/slices/insights.slice.ts](../src/store/slices/insights.slice.ts)
-- [src/screens/Home/HomeScreen.tsx](../src/screens/Home/HomeScreen.tsx)
-- [src/screens/Transactions/TransactionsScreen.tsx](../src/screens/Transactions/TransactionsScreen.tsx)
-- [src/screens/Insights/InsightsScreen.tsx](../src/screens/Insights/InsightsScreen.tsx)
+## High-Level Data Flow
 
-## Request Flow
+The main transaction flow looks like this:
 
-The request flow is the same for Home, Transactions, and Insights:
+```text
+screen -> store action -> API service -> request helper -> axios client
+      -> mock route -> mapper -> normalized store state -> selector -> screen
+```
 
-1. A screen calls a store action such as `fetchHome`, `fetchTransactions`, or `fetchInsights`.
-2. The slice checks whether data already exists, whether a request is already in flight, and whether cached data is stale.
-3. The slice calls a thin endpoint wrapper, for example `getHome()` or `getTransactions()`.
-4. The endpoint wrapper calls the shared `request()` function.
-5. `request()` sends the request through the shared axios client.
-6. The response is normalized, mapped into app models, and written back to zustand state.
+Home and Insights skip the network step in the current runtime:
 
-This keeps screens simple and makes the API behavior consistent across the app.
+```text
+transactions + goals in store -> finance mappers/selectors -> dashboard models -> screen
+```
 
-## Axios Client
+## Shared API Client
 
-The shared client lives in [src/services/api/client.ts](../src/services/api/client.ts).
+The shared client lives in `src/api/client.ts`.
 
-It is configured with:
+### What it does
 
-- `baseURL` from [src/services/api/config.ts](../src/services/api/config.ts)
-- `timeout` set to 8000 ms
-- JSON content headers
-- a mock adapter when `USE_MOCK` is enabled
+- creates the Axios instance used by the app
+- switches between mock mode and real network mode through the local `USE_MOCK` flag
+- applies a request timeout
+- normalizes Axios errors into a stable `ApiClientError`
+- retries retryable failures with exponential backoff
 
-The client also has request and response interceptors:
+### Current config
 
-- request interceptor stores a `startedAt` timestamp on the request config
-- request interceptor logs the route in development builds
-- response interceptor logs the status code and request duration in development builds
-- error interceptor logs failed requests with timing information
+- `USE_MOCK = true`
+- `API_BASE_URL = '/mock-api'`
+- `API_TIMEOUT_MS = 8000`
+- `API_RETRY_COUNT = 2`
+- `API_RETRY_BASE_DELAY_MS = 300`
 
-### Mock mode
+## Mock Routes And Fixtures
 
-`USE_MOCK` is currently `true` in [src/services/api/config.ts](../src/services/api/config.ts).
-That means requests are routed to the mock adapter instead of a real backend.
+Mock routes are defined in `src/api/mock/routes.ts`.
 
-The mock adapter:
+### Active route used by the app
 
-- resolves the request route using the same URL logic as the real client
-- waits for `MOCK_API_DELAY_MS`
-- looks up the route in [src/services/mock/routes.ts](../src/services/mock/routes.ts)
-- returns JSON fixtures from `src/services/mock/home.json`, `transactions.json`, and `insights.json`
+- `/mock-api/transactions`
 
-If no mock handler exists, the adapter throws an axios error with a 400 response.
+This route powers the transaction fetch path through:
 
-## Shared Request Wrapper
+- `src/api/services/transactions.ts`
+- `src/store/modules/transactions.ts`
 
-The core request logic lives in [src/services/api/request.ts](../src/services/api/request.ts).
+### Included but not currently used as runtime fetches
 
-This file is responsible for:
+- `/mock-api/home`
+- `/mock-api/insights`
 
-- calling `apiClient.request()`
-- retrying failed requests when the error is retryable
-- normalizing axios errors into a single app error type
-- converting API responses into a consistent success/failure contract
+Those fixtures still exist as reference data, but the current app builds Home and Insights from the persisted store instead of calling separate endpoints.
 
-### Retry behavior
+## Transaction Fetch Flow
 
-Requests retry automatically using exponential backoff:
+Transactions are the primary fetched data source in the app.
 
-- default retry count comes from `API_RETRY_COUNT`
-- default base delay comes from `API_RETRY_BASE_DELAY_MS`
-- retries are only attempted for retryable failures, such as network issues or 5xx responses
+### Request path
 
-### Error normalization
+1. A screen or feature hook triggers `fetchTransactions()`.
+2. The transaction store module calls `getTransactions()` from `src/api/services/transactions.ts`.
+3. The service delegates to `request()` in `src/api/client.ts`.
+4. Axios resolves the route through the mock adapter.
+5. The response payload is normalized with finance mappers.
+6. Zustand stores the normalized entities and overview values.
+7. Screens consume the result through selectors from `src/store/index.ts`.
 
-`normalizeApiError()` converts different error shapes into `ApiClientError`.
-This gives the store and the UI a stable error structure with:
+### Normalization details
 
-- `status`
-- `code`
-- `message`
-- `retryable`
+Normalization is handled by `src/api/mappers/finance.ts`.
 
-`handleGlobalError()` in [src/services/errors/handler.ts](../src/services/errors/handler.ts) uses the normalized error to populate the store-level global error state.
+Important helpers include:
 
-## Endpoint Layer
+- `mapTransactionApiToModel()`
+- `normalizeTransactionMonths()`
+- `buildTransactionCollections()`
+- `mapTransactionsToSections()`
+- `mapBudgetOverviewFromTransactions()`
 
-Each endpoint file is intentionally small:
-
-- [src/services/api/endpoints/home.api.ts](../src/services/api/endpoints/home.api.ts) exposes `getHome()`
-- [src/services/api/endpoints/transaction.api.ts](../src/services/api/endpoints/transaction.api.ts) exposes `getTransactions()`
-- [src/services/api/endpoints/insights.api.ts](../src/services/api/endpoints/insights.api.ts) exposes `getInsights()`
-
-These wrappers keep the request details in one place and let the store actions read like feature-level operations rather than raw HTTP calls.
-
-## Zustand Store
-
-The global store is created in [src/store/useAppStore.ts](../src/store/useAppStore.ts).
-
-It combines multiple slices:
-
-- `createAppSlice` for hydration and global errors
-- `createTransactionSlice` for transaction data and fetching
-- `createHomeSlice` for the home dashboard data and fetching
-- `createInsightsSlice` for insights data and fetching
-
-The store is also wrapped with zustand `persist`, which means selected parts of state are written to local storage and restored on app launch.
-
-## MMKV Persistence
-
-Persistence is configured in [src/store/storage.ts](../src/store/storage.ts).
-
-MMKV is used as the storage engine because it is fast and works well for React Native local persistence.
-
-The setup works like this:
-
-- `createMMKV({ id: 'spendlyst-storage' })` creates the storage instance
-- `mmkvStateStorage` adapts MMKV to zustand's `StateStorage` interface
-- `createJSONStorage()` wraps that adapter so zustand can persist JSON state
-
-### What is persisted
-
-Only transaction-related data is persisted:
+These helpers transform raw transaction payloads into:
 
 - `transactionsById`
 - `transactionIds`
 - `transactionIdsByMonth`
 - `transactionMonthIds`
 - `transactionOverview`
-- `transactionsLastFetchedAt`
 
-This is controlled by `partialize` in [src/store/useAppStore.ts](../src/store/useAppStore.ts).
+## CRUD Behavior After Initial Fetch
 
-### Versioning and migration
+Once the app has loaded transactions, add, edit, and delete actions are handled locally in the store.
 
-The persisted state is versioned with `STORAGE_VERSION = 1`.
+### Add
 
-`migratePersistedTransactionsState()` handles older persisted shapes and normalizes them into the current transaction state format.
-That protects the app when the storage schema changes.
+- `addTransaction()` builds a new transaction model
+- a local entity id is generated
+- the transaction collections are rebuilt and persisted
 
-### Hydration
+### Update
 
-`onRehydrateStorage` sets `hasHydrated` once MMKV state has been restored.
-Screens use this flag to decide whether to show their initial loading state.
+- `updateTransaction()` replaces the matching entity with a rebuilt model
+- normalized collections are rebuilt to keep lists, sections, and totals in sync
 
-## Where API Calls Happen In The UI
+### Delete
 
-The actual screen-level calls happen in `useEffect` and refresh handlers.
+- `deleteTransaction()` removes the entity
+- collections and overview values are rebuilt
 
-- [src/screens/Home/HomeScreen.tsx](../src/screens/Home/HomeScreen.tsx) calls `fetchHome()` on mount and `fetchHome({ force: true })` on retry or pull-to-refresh.
-- [src/screens/Transactions/TransactionsScreen.tsx](../src/screens/Transactions/TransactionsScreen.tsx) calls `fetchTransactions()` on mount and refreshes with `force: true`.
-- [src/screens/Insights/InsightsScreen.tsx](../src/screens/Insights/InsightsScreen.tsx) calls `fetchInsights()` on mount and refreshes with `force: true`.
+This means CRUD feels instant and does not require a live backend.
 
-The screens do not call axios directly. They only call store actions.
+## Home And Insights Derivation
 
-## How Responses Are Handled
+Home and Insights are selector-driven in the current codebase.
 
-Each slice follows the same pattern:
+### Home
 
-1. Set request status to `loading` or `refreshing`.
-2. Call the endpoint.
-3. Map the API response into app models using the finance mappers.
-4. Write normalized state into zustand.
-5. Update timestamps so cache freshness can be checked later.
-6. On failure, store a feature-specific error and also populate `lastGlobalError`.
+`selectHomeDashboard` combines:
 
-Examples:
+- all transactions
+- all goals
+- the current `userName`
 
-- Home data is mapped with `mapHomeApiToModel()` and preview transactions are merged into the transaction cache.
-- Transactions data is normalized by month with `normalizeTransactionMonths()`.
-- Insights data is mapped with `mapInsightsApiToModel()`.
+It then passes that data into `buildHomeDashboard()`.
 
-## Cache Behavior
+### Insights
 
-The store avoids redundant calls when cached data is still fresh.
+`selectInsightsDashboard` combines:
 
-- `isCacheStale()` compares `lastFetchedAt` against `CACHE_TTL_MS`
-- if cached data exists and is still fresh, the slice returns early
-- `force: true` bypasses that check and refreshes immediately
+- all transactions
+- all goals
 
-This is why the app can show fast navigations without hitting the network every time.
+It then passes that data into `buildInsightsDashboard()`.
 
-## Summary
+### Why this matters
 
-The data flow is:
+There is no separate runtime `fetchHome()` or `fetchInsights()` call today. If transaction or goal data changes, Home and Insights automatically update because they are computed from the same persisted source of truth.
 
-screen -> zustand action -> endpoint wrapper -> shared request helper -> axios client -> mock or real backend -> response mapping -> zustand state -> screen rendering
+## Goal Data Flow
 
-MMKV only handles persistence. It does not call the API itself. All network behavior is centralized in the shared axios/request layer, while zustand stores the fetched data and UI state.
+Goals are fully local in the current implementation.
+
+### Initial seeding
+
+`initializeAppData()` calls `seedGoalsIfEmpty()` from the goal store module.
+
+Seed data lives in:
+
+- `src/store/goalSeeds.ts`
+
+The seed contains a mix of:
+
+- active goals
+- planned goals
+- completed goals
+
+### Goal CRUD
+
+Goal actions are stored in `src/store/modules/goals.ts`:
+
+- `addGoal()`
+- `updateGoal()`
+- `deleteGoal()`
+
+Goal models are built through:
+
+- `buildGoalModel()`
+- `buildGoalCollections()`
+
+## App Initialization And Hydration
+
+Hydration and first-load behavior are owned by `src/store/modules/app.ts`.
+
+### Initialization sequence
+
+1. Zustand rehydrates persisted MMKV state.
+2. `hasHydrated` is set once rehydration finishes.
+3. Screens call `initializeAppData()` after hydration.
+4. Initialization seeds goals if none exist.
+5. Initialization fetches transactions if the local store is empty.
+
+### Result
+
+The app can:
+
+- show persisted local data immediately on relaunch
+- avoid reseeding goals once they already exist
+- avoid refetching transactions if they were previously persisted
+
+## MMKV Persistence
+
+Persistence is configured in `src/storage/mmkv.ts`.
+
+### Stored state
+
+The app persists:
+
+- normalized transactions
+- transaction overview
+- normalized goals
+- notification permission status
+- FCM token
+- whether permission was already requested
+
+### Persistence details
+
+- Storage id: `spendlyst-storage`
+- Zustand persist key: `spendlyst-store`
+- Storage version: `3`
+
+### Migration support
+
+`migratePersistedAppState()` keeps older stored shapes from breaking the app as the persisted structure evolves.
+
+## Error Handling
+
+Error handling is centralized in the client and stored in app state.
+
+### Client level
+
+- `normalizeApiError()` converts raw Axios failures into `ApiClientError`
+- errors keep `status`, `code`, `message`, and `retryable`
+
+### Store level
+
+The transaction module writes failures into:
+
+- `transactionsStatus`
+- `lastGlobalError`
+
+### Screen level
+
+Screens show `ScreenState` when the initial data load fails and allow retrying `fetchTransactions()`.
+
+## Profile And Notifications
+
+These areas are not part of the shared Axios transaction fetch path, but they are still important to understand.
+
+### Profile
+
+- `src/features/profile/services/profile.ts` simulates an async profile request with `setTimeout`
+- `useProfileView()` manages the loading and error state for the Profile screen
+
+### Notifications
+
+- feed UI content comes from `src/features/notifications/data/notifications.ts`
+- `NotificationsBootstrap` runs on app mount
+- `index.js` registers background handlers for Firebase Messaging and Notifee
+- `src/features/notifications/services/notifications.ts` manages permission sync, FCM token sync, channel creation, and foreground display behavior
+
+## If You Want To Swap In A Real Backend
+
+The current structure already leaves room for that change.
+
+Recommended path:
+
+1. Turn off mock mode in `src/api/client.ts`
+2. Replace `/mock-api` with your real base URL
+3. Keep service functions small and feature-specific
+4. Preserve the current mapper layer so UI models stay stable
+5. Add dedicated services for Home and Insights only if those become real server-owned endpoints
+
+That approach lets the UI and selectors change as little as possible.

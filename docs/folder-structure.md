@@ -1,21 +1,42 @@
 # Folder Structure
 
-This document reflects the refactored app structure.
+This document explains how Spendlyst is organized today and where new work should live.
 
-## Source Layout
+## Top-Level Layout
+
+```text
+.
+|-- android/
+|-- ios/
+|-- docs/
+|-- src/
+|-- App.tsx
+|-- index.js
+|-- global.css
+|-- tailwind.config.js
+|-- package.json
+|-- README.md
+```
+
+## `src/` Layout
 
 ```text
 src/
   api/
     client.ts
-    services/
     mappers/
     mock/
+    services/
 
   assets/
+    icons/
+    images/
+
   components/
-    shared/
     features/
+    shared/
+    index.ts
+
   constants/
 
   features/
@@ -31,6 +52,9 @@ src/
       hooks/
 
   navigation/
+    stacks/
+    BottomTabNavigator.tsx
+    RootNavigator.tsx
 
   screens/
     Goals/
@@ -45,87 +69,192 @@ src/
     mmkv.ts
 
   store/
-    index.ts
     modules/
     goalSeeds.ts
     helpers.ts
+    index.ts
     types.ts
 
   theme/
+    colors.ts
+    index.ts
+    scale.ts
+
   types/
   utils/
 ```
 
-## Ownership Rules
+## Ownership Rules By Folder
 
 ### `src/api`
 
-- `client.ts` is the only axios entry point.
-- `services/` contains feature-facing API functions.
-- `mappers/` contains API and domain transformation logic.
-- `mock/` contains fixture-backed mock routes.
+Use this folder for request and mapping concerns.
 
-### `src/store`
+- `client.ts` is the shared Axios client and retry/error helper entry point
+- `services/` exposes feature-facing request functions
+- `mock/` contains mock routes and JSON fixtures
+- `mappers/` converts raw payloads into UI-friendly models and derived dashboards
 
-- `index.ts` is the only public Zustand entry.
-- `modules/` contains grouped internal store logic for app, transactions, and goals.
-- selectors are exported from `index.ts` instead of living in a separate selector tree.
+What should not go here:
 
-### `src/storage`
+- screen orchestration
+- persistent storage setup
+- component rendering
 
-- `mmkv.ts` centralizes persisted storage, migration, and hydration behavior.
+### `src/assets`
+
+Use this folder for static app assets.
+
+- `icons/` contains SVG-based visual assets
+- `images/` contains bitmap assets such as the splash logo
 
 ### `src/components`
 
-- `shared/` contains reusable UI shared across screens or features
-- `features/` contains feature-specific presentational components grouped by screen/feature
-- `index.ts` is the shared UI barrel
-- no API or storage usage
+Use this folder for reusable presentational UI.
+
+#### `shared/`
+
+Put cross-feature building blocks here, such as:
+
+- buttons
+- inputs
+- headers
+- charts
+- generic loading blocks
+- generic state components
+
+#### `features/`
+
+Put UI that is still reusable, but tied closely to one product area.
+
+Examples:
+
+- home transaction item
+- goal hero card
+- goal form
+- insights summary stats
+
+### `src/constants`
+
+Use this folder for static option lists and app-level constants that are not theme tokens.
+
+Current examples:
+
+- transaction category suggestions
+- goal status options
+- goal icon options
 
 ### `src/features`
 
-- owns non-UI feature logic only
-- current responsibilities: hooks, services, bootstrap behavior, and local feature data
-- current feature areas with retained logic: transactions, profile, notifications
+This folder owns non-UI logic that belongs to a single domain.
+
+Typical responsibilities:
+
+- view-model hooks
+- simulated services
+- bootstrap behavior
+- static feature data
+
+Current domains:
+
+- `notifications`
+- `profile`
+- `transactions`
+
+This is the right place for logic that is too domain-specific for `src/components`, but too small to justify new global store modules.
+
+### `src/navigation`
+
+This folder owns route structure, navigator composition, and navigation-specific presentation behavior.
+
+- `RootNavigator.tsx` handles the splash-to-main app shell transition
+- `BottomTabNavigator.tsx` owns tab bar structure and tab icons
+- `stacks/` holds per-tab stack navigators
 
 ### `src/screens`
 
-- contains the real screen implementations grouped by route area
-- is the only screen entrypoint used by navigation
-- may contain screen-level orchestration, but not direct API or storage calls
+Each route area has its own folder under `src/screens`.
 
-## Current Screen Coverage
+Screens should:
 
-- Home
-- Goals
-- Goal Detail
-- Transactions
-- Add Transaction
-- Transaction Detail
-- Insights
-- Profile
-- Notification
-- Splash
+- read store selectors
+- call feature hooks
+- orchestrate UI states
+- navigate to other screens
 
-## Removed During Refactor
+Screens should not:
 
-- `src/services/api/config.ts`
-- `src/services/api/request.ts`
-- `src/services/api/endpoints/*`
-- `src/services/errors/handler.ts`
-- `src/store/useAppStore.ts`
-- `src/store/useHomeStore.ts`
-- `src/store/useInsightsStore.ts`
-- `src/store/useTransactionStore.ts`
-- `src/store/selectors/*`
-- `src/store/slices/*`
-- `src/store/storage.ts`
-- `Settings` navigation and screen artifacts
+- implement direct Axios calls
+- own persistence
+- contain long-lived business logic that belongs in mappers, store modules, or feature hooks
 
-## Data Flow
+### `src/storage`
 
-```text
-API service -> API mapper -> Zustand store -> feature screen/component
-```
+`src/storage/mmkv.ts` is the persistence boundary.
 
-This keeps network logic, data transformation, persistence, and presentation clearly separated.
+It owns:
+
+- MMKV instance creation
+- Zustand storage adapter
+- persisted state versioning
+- migration behavior
+
+### `src/store`
+
+This folder owns global app state.
+
+- `index.ts` is the public entry for selectors and `useAppStore`
+- `modules/` contains store slices grouped by responsibility
+- `goalSeeds.ts` contains the first-run goal data
+- `helpers.ts` contains store utilities
+- `types.ts` defines store contracts and payload shapes
+
+### `src/theme`
+
+This folder owns theme tokens that are consumed from JavaScript or inline styles.
+
+- `colors.ts` for color values needed outside NativeWind classes
+- `scale.ts` for semantic spacing, radius, icon, and typography tokens
+
+### `src/types`
+
+Use this folder for shared TypeScript types that are not owned by a single feature folder.
+
+Current areas:
+
+- navigation contracts
+- API DTOs
+- domain models
+
+### `src/utils`
+
+Use this folder for framework-agnostic helpers and formatting utilities.
+
+Current areas:
+
+- responsive scaling helpers
+- currency formatting
+- date formatting
+
+## How To Decide Where New Code Belongs
+
+Use this guide when adding new work:
+
+- New route or screen shell: `src/screens`
+- New reusable UI building block: `src/components/shared`
+- New domain-specific UI for one area: `src/components/features/<Area>`
+- New view-model hook or local domain service: `src/features/<domain>`
+- New shared state or mutation: `src/store/modules`
+- New DTO-to-model mapping or derived dashboard logic: `src/api/mappers`
+- New request wrapper: `src/api/services`
+- New static fixture or mock response: `src/api/mock`
+- New persisted storage behavior: `src/storage`
+- New cross-app type: `src/types`
+
+## Practical Conventions
+
+- Keep network logic out of screens.
+- Keep data derivation out of components when it can live in selectors or mappers.
+- Prefer adding selectors in `src/store/index.ts` instead of recomputing screen models inline.
+- Prefer feature hooks for screen-specific orchestration that is still non-visual.
+- Treat `src/components` as mostly presentational and `src/store` as the source of truth.

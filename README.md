@@ -1,102 +1,143 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Spendlyst
 
-## Project Docs
+Spendlyst is a React Native personal finance companion app built to demonstrate product thinking, mobile UI design, local-first state handling, and clean feature organization. The app helps users track transactions, review spending patterns, manage savings goals, and understand everyday money habits through a mobile-first experience.
 
-- [Theme Setup](docs/theme-setup.md)
-- [API Setup](docs/api-setup.md)
+This repository is structured as an assignment-ready submission and a developer-friendly codebase. The root README gives a quick project overview, while the `docs/` folder explains setup, architecture, data flow, feature behavior, theming, and folder ownership in more depth.
 
-# Getting Started
+## What The App Includes
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+- A dashboard with current balance, income, expense, and weekly money flow
+- Transaction CRUD flows with search, category filters, and detail screens
+- Goal tracking with progress, planning, and completion states
+- An insights area with spending breakdowns, comparisons, and trends
+- Profile and notification screens that round out the mobile product experience
+- Local persistence so transactions, goals, and notification permission state survive app restarts
 
-## Step 1: Start Metro
+## Assignment Fit
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Spendlyst covers the core requirements from the personal finance companion assignment:
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- `Home Dashboard`: summary cards, balance overview, and weekly chart
+- `Transaction Tracking`: add, edit, delete, search, filter, and history views
+- `Goal Or Challenge Feature`: savings goals with progress tracking and planning states
+- `Insights Screen`: category breakdown, highest spend, trend summaries, and week-over-week comparison
+- `Smooth Mobile UX`: tab + stack navigation, screen states, validation, and touch-friendly flows
+- `Local Data Handling Or API Integration`: mock transaction fetch plus persisted client state
+- `Code Structure And State Management`: React Native + TypeScript + Zustand + MMKV with separated UI, mappers, services, and store modules
+
+## Screen Map
+
+- `Splash`
+- `Home`
+- `Insights`
+- `Transactions`
+- `Add Transaction`
+- `Transaction Detail`
+- `Goals`
+- `Goal Detail`
+- `Profile`
+- `Notification`
+
+## Tech Stack
+
+### Core app
+
+- React Native `0.84.1`
+- React `19.2.3`
+- TypeScript
+- React Navigation `7`
+
+### Styling and UI
+
+- NativeWind with Tailwind CSS
+- Custom theme tokens in `global.css` and `src/theme/*`
+- `react-native-gifted-charts` for charts
+- `react-native-svg` for icons and vector assets
+- `react-native-reanimated` and built-in React Native animation APIs
+
+### State and data
+
+- Zustand for global app state
+- MMKV for persisted local storage
+- Axios for the API client layer
+- Local mock routes and JSON fixtures for transaction fetching
+
+### Native integrations
+
+- `@react-native-firebase/app`
+- `@react-native-firebase/messaging`
+- `@notifee/react-native`
+
+## Quick Start
+
+### 1. Install dependencies
 
 ```sh
-# Using npm
+npm install
+```
+
+### 2. Start Metro
+
+```sh
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
+### 3. Run the app
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
+Android:
 
 ```sh
-# Using npm
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+iOS:
 
 ```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
 npm run ios
-
-# OR using Yarn
-yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+For complete environment setup, native notes, and troubleshooting, see [docs/setup.md](docs/setup.md).
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## Available Scripts
 
-## Step 3: Modify your app
+- `npm start` - start the Metro bundler
+- `npm run android` - build and launch the Android app
+- `npm run ios` - build and launch the iOS app
+- `npm run lint` - run ESLint across the project
+- `npm test` - run Jest
 
-Now that you have successfully run the app, let's make changes!
+## Data Strategy
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+The app uses a mixed local and mock-first data model:
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+- Transactions are fetched through the shared Axios client from mock routes in `src/api/mock/routes.ts`.
+- Transactions are normalized and then persisted in MMKV through the Zustand store.
+- Goals are seeded locally on first app initialization and then persisted in MMKV.
+- Home and Insights are not fetched from separate runtime endpoints. They are derived from the transaction and goal store through selectors and finance mappers.
+- Profile data is simulated through an async local service.
+- Notification UI content currently comes from local sample data, while Firebase Messaging and Notifee plumbing are already wired into the native project and app bootstrap.
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+## Documentation Index
 
-## Congratulations! :tada:
+- [Technical Docs Index](docs/README.md)
+- [Setup Guide](docs/setup.md)
+- [Architecture Overview](docs/architecture.md)
+- [Folder Structure](docs/folder-structure.md)
+- [API And Data Flow](docs/api-setup.md)
+- [Features And User Flows](docs/features-and-flows.md)
+- [Theme Setup](docs/theme-setup.md)
 
-You've successfully run and modified your React Native App. :partying_face:
+## Current Status
 
-### Now what?
+Spendlyst is documentation-ready and mock-first. The app structure, feature coverage, and data flow are in place for assignment review, but a few engineering follow-ups remain:
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+- Automated tests have not been added yet, so `npm test` currently exits with no tests found.
+- The codebase is not lint-clean yet. `npm run lint` currently reports one remaining error and a number of style warnings.
+- Android Firebase configuration is checked in through `android/app/google-services.json`.
+- An iOS `GoogleService-Info.plist` is not committed in this repository, so iOS Firebase messaging setup will require your own plist if you want to exercise that path locally.
 
-# Troubleshooting
+## Repository Notes
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- No backend or `.env` file is required to explore the main finance flows.
+- The current runtime behavior is centered on locally persisted state plus mock transaction loading.
+- The `docs/` folder is intended to help reviewers, collaborators, and future maintainers get oriented quickly.
