@@ -39,12 +39,14 @@ export interface BudgetOverview {
 export interface TransactionDto {
   id: string;
   title: string;
-  time: string;
-  date: string;
+  time?: string;
+  date?: string;
   category: string;
   amount: number;
   type: TransactionType;
   icon: TransactionIconKey;
+  notes?: string;
+  occurredAt?: string;
 }
 
 export interface HomeData extends BudgetOverview {

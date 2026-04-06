@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { Text, View, useColorScheme } from 'react-native';
 import { PieChart, type pieDataItem } from 'react-native-gifted-charts';
-import { colors, getSemanticColors } from '../../theme/colors';
-import { S } from '../../theme/scale';
-import { moderateScale } from '../../utils/responsive';
+import { colors, getSemanticColors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale, rs } from '../../../utils/responsive';
 
 export type GoalHeroCardProps = {
   progress: number;
@@ -14,13 +14,7 @@ export type GoalHeroCardProps = {
   monthlySaving: string;
 };
 
-function StatPill({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function StatPill({ label, value }: { label: string; value: string }) {
   return (
     <View
       className="flex-1 bg-card"
@@ -86,8 +80,11 @@ export function GoalHeroCard({
         gap: S.space.lg,
       }}
     >
-      <View className="flex-row items-center">
-        <View className="items-center" style={{ width: moderateScale(104), gap: S.space.sm }}>
+      <View className="flex-row items-center" style={{ gap: S.space['4xl'] }}>
+        <View
+          className="items-center"
+          style={{ width: moderateScale(104), gap: S.space.sm }}
+        >
           <PieChart
             donut
             data={donutData}
@@ -161,31 +158,54 @@ export function GoalHeroCard({
       <View
         className="flex-row items-center justify-between bg-primary-500"
         style={{
-          borderRadius: S.radius.xl,
+          borderRadius: S.radius.xxl,
           paddingHorizontal: S.space.lg,
-          paddingVertical: S.space.md,
+          paddingVertical: moderateScale(14),
+          marginTop: S.space.xs,
         }}
       >
-        <Text
-          className="text-surface-dark"
-          style={{
-            fontSize: S.fs.sm,
-            fontFamily: 'Poppins-Medium',
-          }}
-        >
-          Monthly saving rhythm
-        </Text>
+        <View style={{ gap: moderateScale(2) }}>
+          <Text
+            className="text-surface-dark"
+            style={{
+              fontSize: rs(13),
+              fontFamily: 'Poppins-Medium',
+              opacity: 0.8,
+            }}
+          >
+            Monthly rhythm
+          </Text>
+          <Text
+            className="text-surface-dark"
+            style={{
+              fontSize: S.fs.md_h,
+              fontFamily: 'Poppins-Bold',
+            }}
+          >
+            {monthlySaving}
+          </Text>
+        </View>
 
-        <Text
-          className="text-surface-dark"
+        <View
+          className="bg-surface-dark/10"
           style={{
-            fontSize: S.fs.md,
-            fontFamily: 'Poppins-Bold',
+            borderRadius: moderateScale(12),
+            paddingHorizontal: S.space.sm,
+            paddingVertical: rs(6),
           }}
         >
-          {monthlySaving}
-        </Text>
+          <Text
+            className="text-surface-dark"
+            style={{
+              fontSize: S.fs.xs,
+              fontFamily: 'Poppins-SemiBold',
+            }}
+          >
+            Keep it up!
+          </Text>
+        </View>
       </View>
+
     </View>
   );
 }

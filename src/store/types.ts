@@ -1,28 +1,41 @@
 import type { StateCreator } from 'zustand';
 import type {
   BudgetOverviewModel,
-  FetchOptions,
+  GoalIconKey,
+  GoalModel,
+  GoalStatus,
   GlobalAppError,
-  HomeModel,
-  InsightsModel,
-  RequestStatus,
   TransactionModel,
 } from '../types/models';
+import type { TransactionType } from '../types/api';
+
+export interface TransactionUpsertPayload {
+  title: string;
+  notes: string;
+  category: string;
+  amount: number;
+  type: TransactionType;
+  occurredAt: string;
+}
+
+export interface GoalUpsertPayload {
+  title: string;
+  subtitle: string;
+  targetAmount: number;
+  savedAmount: number;
+  monthlyTarget: number;
+  deadline: string;
+  status: GoalStatus;
+  icon: GoalIconKey;
+}
 
 export interface AppUiSlice {
   hasHydrated: boolean;
+  hasInitializedData: boolean;
   lastGlobalError: GlobalAppError | null;
   clearGlobalError: () => void;
+  initializeAppData: () => void;
   setHasHydrated: (value: boolean) => void;
-}
-
-export interface HomeSlice {
-  homeData: HomeModel | null;
-  homeStatus: RequestStatus;
-  homeError: string | null;
-  homeLastFetchedAt: number | null;
-  fetchHome: (options?: FetchOptions) => Promise<void>;
-  resetHomeError: () => void;
 }
 
 export interface TransactionSlice {
@@ -31,32 +44,32 @@ export interface TransactionSlice {
   transactionIdsByMonth: Record<string, string[]>;
   transactionMonthIds: string[];
   transactionOverview: BudgetOverviewModel | null;
-  transactionsStatus: RequestStatus;
-  transactionsError: string | null;
-  transactionsLastFetchedAt: number | null;
-  fetchTransactions: (options?: FetchOptions) => Promise<void>;
-  resetTransactionsError: () => void;
+  seedTransactionsIfEmpty: () => void;
+  addTransaction: (payload: TransactionUpsertPayload) => string;
+  updateTransaction: (transactionId: string, payload: TransactionUpsertPayload) => void;
+  deleteTransaction: (transactionId: string) => void;
 }
 
-export interface InsightsSlice {
-  insightsData: InsightsModel | null;
-  insightsStatus: RequestStatus;
-  insightsError: string | null;
-  insightsLastFetchedAt: number | null;
-  fetchInsights: (options?: FetchOptions) => Promise<void>;
-  resetInsightsError: () => void;
+export interface GoalSlice {
+  goalsById: Record<string, GoalModel>;
+  goalIds: string[];
+  seedGoalsIfEmpty: () => void;
+  addGoal: (payload: GoalUpsertPayload) => string;
+  updateGoal: (goalId: string, payload: GoalUpsertPayload) => void;
+  deleteGoal: (goalId: string) => void;
 }
 
-export type AppStore = AppUiSlice & HomeSlice & TransactionSlice & InsightsSlice;
+export type AppStore = AppUiSlice & TransactionSlice & GoalSlice;
 
-export type PersistedTransactionsState = Pick<
+export type PersistedAppState = Pick<
   AppStore,
   | 'transactionsById'
   | 'transactionIds'
   | 'transactionIdsByMonth'
   | 'transactionMonthIds'
   | 'transactionOverview'
-  | 'transactionsLastFetchedAt'
+  | 'goalsById'
+  | 'goalIds'
 >;
 
 export type AppStoreSlice<T> = StateCreator<

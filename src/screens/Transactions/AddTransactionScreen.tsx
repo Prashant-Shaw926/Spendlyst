@@ -1,20 +1,101 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { ScrollView, StatusBar, View, useColorScheme } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../../theme/colors';
+import { TransactionForm } from '../../components/features/transactions/TransactionForm';
+import { ArrowLeftIcon } from '../../components/shared/FinanceIcons';
+import { Header } from '../../components/shared/Header';
+import { IconButton } from '../../components/shared/IconButton';
+import {
+  selectHasHydrated,
+  selectInitializeAppData,
+} from '../../store/selectors/app.selectors';
+import {
+  selectAddTransaction,
+  selectTransactionById,
+  selectUpdateTransaction,
+} from '../../store/selectors/transactions.selectors';
+import { useAppStore } from '../../store/useAppStore';
+import { getSemanticColors } from '../../theme/colors';
+import { S } from '../../theme/scale';
+import type { TransactionsStackParamList } from '../../types/navigation';
+import { moderateScale } from '../../utils/responsive';
 
 export function AddTransactionScreen() {
+  const navigation = useNavigation<any>();
+  const route =
+    useRoute<RouteProp<TransactionsStackParamList, 'AddTransaction'>>();
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
+  const hasHydrated = useAppStore(selectHasHydrated);
+  const initializeAppData = useAppStore(selectInitializeAppData);
+  const addTransaction = useAppStore(selectAddTransaction);
+  const updateTransaction = useAppStore(selectUpdateTransaction);
+  const transaction = useAppStore(selectTransactionById(route.params?.transactionId));
+
+  useEffect(() => {
+    if (hasHydrated) {
+      initializeAppData();
+    }
+  }, [hasHydrated, initializeAppData]);
+
   return (
-    <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Add Transaction</Text>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']} style={{ gap: S.space.lg }}>
+      <StatusBar
+        backgroundColor={semanticColors.background}
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+      />
+
+      <Header
+        variant="centerTitle"
+        title={transaction ? 'Edit Transaction' : 'Add Transaction'}
+        titleClassName="text-text"
+        contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+        leftAction={
+          <IconButton
+            accessibilityLabel="Go back"
+            onPress={() => navigation.goBack()}
+            size={moderateScale(40)}
+          >
+            <ArrowLeftIcon color={semanticColors.text} size={24} />
+          </IconButton>
+        }
+      />
+
+      <View
+        className="flex-1 overflow-hidden bg-secondary-bg"
+        style={{
+          borderTopLeftRadius: moderateScale(72),
+          borderTopRightRadius: moderateScale(72),
+          paddingVertical: S.space.lg,
+          // marginTop: moderateScale(20),
+        }}
+      >
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: S.space.paddingHorizontal,
+            paddingTop: moderateScale(40),
+            paddingBottom: moderateScale(40),
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <TransactionForm
+            initialTransaction={transaction}
+            submitLabel={transaction ? 'Save Changes' : 'Create Transaction'}
+            onSubmit={payload => {
+              if (transaction) {
+                updateTransaction(transaction.id, payload);
+              } else {
+                addTransaction(payload);
+              }
+
+              navigation.goBack();
+            }}
+          />
+        </ScrollView>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: colors.background },
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: '600', color: colors.title },
-});

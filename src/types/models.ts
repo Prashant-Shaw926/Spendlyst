@@ -1,19 +1,17 @@
-import type {
-  InsightChartPoint,
-  InsightRange,
-  TransactionIconKey,
-  TransactionType,
-} from './api';
+import type { TransactionIconKey, TransactionType } from './api';
 
-export type RequestStatus = 'idle' | 'loading' | 'refreshing' | 'success' | 'error';
+export type GoalStatus = 'Active' | 'Planned' | 'Completed';
+export type GoalIconKey = 'savings' | 'car' | 'travel' | 'home';
 
 export interface BudgetOverviewModel {
   totalBalance: number;
+  totalIncome: number;
   totalExpense: number;
   budget: number;
   spentPercent: number;
   note: string;
   totalBalanceLabel: string;
+  totalIncomeLabel: string;
   totalExpenseLabel: string;
   budgetLabel: string;
 }
@@ -21,13 +19,15 @@ export interface BudgetOverviewModel {
 export interface TransactionModel {
   id: string;
   title: string;
+  notes: string;
+  category: string;
+  amount: number;
+  type: TransactionType;
+  occurredAt: string;
   timeLabel: string;
   dateLabel: string;
   metaLabel: string;
-  category: string;
-  amount: number;
   amountLabel: string;
-  type: TransactionType;
   isExpense: boolean;
   icon: TransactionIconKey;
   iconBackgroundColor: string;
@@ -39,53 +39,96 @@ export interface TransactionSectionModel {
   items: TransactionModel[];
 }
 
-export interface HomeModel {
+export interface GoalModel {
+  id: string;
+  title: string;
+  subtitle: string;
+  targetAmount: number;
+  savedAmount: number;
+  monthlyTarget: number;
+  deadline: string;
+  status: GoalStatus;
+  icon: GoalIconKey;
+  accentColor: string;
+  iconBackgroundColor: string;
+  createdAt: string;
+  updatedAt: string;
+  progress: number;
+  targetAmountLabel: string;
+  savedAmountLabel: string;
+  leftAmountLabel: string;
+  monthlyTargetLabel: string;
+  deadlineLabel: string;
+  projectedCompletionLabel: string;
+}
+
+export interface TrendPointModel {
+  label: string;
+  income: number;
+  expense: number;
+}
+
+export interface GoalSummaryModel {
+  totalSavedLabel: string;
+  totalTargetLabel: string;
+  completionPercent: number;
+  activeCount: number;
+  completedCount: number;
+  monthlyContributionLabel: string;
+}
+
+export interface HomeDashboardModel {
   headerTitle: string;
   greeting: string;
   overview: BudgetOverviewModel;
-  weekly: {
-    revenue: number;
-    revenueLabel: string;
-    food: number;
-    foodLabel: string;
-  };
-  previewTransactionIds: string[];
+  weeklyTrend: TrendPointModel[];
+  primaryGoal: GoalModel | null;
+  recentTransactions: TransactionModel[];
 }
 
-export interface InsightTargetModel {
-  id: string;
-  label: string;
-  savedAmount: number;
-  goalAmount: number;
+export interface CategoryBreakdownItemModel {
+  category: string;
+  amount: number;
+  amountLabel: string;
   percent: number;
-  savedAmountLabel: string;
-  goalAmountLabel: string;
+  transactionCount: number;
 }
 
-export interface InsightsModel {
+export interface InsightHighlightModel {
+  title: string;
+  value: string;
+  helper: string;
+}
+
+export interface WeekComparisonModel {
+  currentLabel: string;
+  previousLabel: string;
+  deltaLabel: string;
+  helper: string;
+  isImproving: boolean;
+}
+
+export interface InsightsDashboardModel {
   overview: BudgetOverviewModel;
-  tabs: InsightRange[];
-  activeTab: InsightRange;
-  chartTitle: string;
-  chartsByRange: Record<InsightRange, InsightChartPoint[]>;
+  monthlyTrend: TrendPointModel[];
   summary: {
     income: number;
     expense: number;
     incomeLabel: string;
     expenseLabel: string;
   };
-  targets: InsightTargetModel[];
+  highestSpendingCategory: InsightHighlightModel;
+  weekComparison: WeekComparisonModel;
+  dominantTransactionType: InsightHighlightModel;
+  categoryBreakdown: CategoryBreakdownItemModel[];
+  primaryGoal: GoalModel | null;
 }
 
 export interface GlobalAppError {
-  source: 'home' | 'transactions' | 'insights' | 'api';
+  source: 'transactions' | 'goals' | 'api';
   status: number | null;
   code: string;
   message: string;
   timestamp: number;
   retryable: boolean;
-}
-
-export interface FetchOptions {
-  force?: boolean;
 }

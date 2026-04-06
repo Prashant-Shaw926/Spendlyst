@@ -44,7 +44,7 @@ export function ProgressBar({
         </Text>
       </View>
 
-      <View
+      {/* <View
         className="flex-1 items-end justify-center"
         style={{
           height: barHeight,
@@ -60,7 +60,7 @@ export function ProgressBar({
         >
           {progressValue}
         </Text>
-      </View>
+      </View> */}
     </View>
   );
 }

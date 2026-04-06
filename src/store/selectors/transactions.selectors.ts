@@ -2,9 +2,26 @@ import { mapTransactionsToSections } from '../../utils/finance';
 import { createCachedSelector } from './helpers';
 import type { AppStore } from '../types';
 
-export const selectFetchTransactions = (state: AppStore) => state.fetchTransactions;
+export const selectAddTransaction = (state: AppStore) => state.addTransaction;
+export const selectDeleteTransaction = (state: AppStore) => state.deleteTransaction;
+export const selectSeedTransactionsIfEmpty = (state: AppStore) => state.seedTransactionsIfEmpty;
+export const selectUpdateTransaction = (state: AppStore) => state.updateTransaction;
+export const selectTransactionOverview = (state: AppStore) => state.transactionOverview;
 
-export const selectTransactionsByMonth = createCachedSelector(
+export const selectAllTransactions = createCachedSelector(
+  (
+    state,
+  ): [AppStore['transactionIds'], AppStore['transactionsById']] => [
+    state.transactionIds,
+    state.transactionsById,
+  ],
+  (transactionIds, transactionsById) =>
+    transactionIds
+      .map((transactionId) => transactionsById[transactionId])
+      .filter(Boolean),
+);
+
+export const selectTransactionSections = createCachedSelector(
   (
     state,
   ): [
@@ -24,38 +41,22 @@ export const selectTransactionsByMonth = createCachedSelector(
     ),
 );
 
-export const selectTransactionsScreenState = createCachedSelector(
+export const selectTransactionCategories = createCachedSelector(
   (
     state,
-  ): [
-    AppStore['transactionOverview'],
-    AppStore['transactionsStatus'],
-    AppStore['transactionsError'],
-    AppStore['hasHydrated'],
-    AppStore['transactionIds'],
-  ] => [
-    state.transactionOverview,
-    state.transactionsStatus,
-    state.transactionsError,
-    state.hasHydrated,
+  ): [AppStore['transactionIds'], AppStore['transactionsById']] => [
     state.transactionIds,
+    state.transactionsById,
   ],
-  (
-    transactionOverview,
-    transactionsStatus,
-    transactionsError,
-    hasHydrated,
-    transactionIds,
-  ) => ({
-    transactionOverview,
-    transactionsStatus,
-    transactionsError,
-    hasHydrated,
-    hasTransactions: transactionIds.length > 0,
-    isInitialLoading:
-      (!hasHydrated && transactionIds.length === 0) ||
-      (transactionIds.length === 0 &&
-        (transactionsStatus === 'idle' || transactionsStatus === 'loading')),
-    isRefreshing: transactionsStatus === 'refreshing',
-  }),
+  (transactionIds, transactionsById) =>
+    Array.from(
+      new Set(
+        transactionIds
+          .map((transactionId) => transactionsById[transactionId]?.category)
+          .filter(Boolean),
+      ),
+    ),
 );
+
+export const selectTransactionById = (transactionId?: string) => (state: AppStore) =>
+  transactionId ? state.transactionsById[transactionId] ?? null : null;

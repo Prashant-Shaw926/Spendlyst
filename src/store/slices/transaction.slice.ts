@@ -1,11 +1,22 @@
-import { getTransactions } from '../../services/api/endpoints/transaction.api';
-import { handleGlobalError } from '../../services/errors/handler';
+import transactionsSeed from '../../services/mock/transactions.json';
+import type { TransactionMonthDto } from '../../types/api';
 import {
-  mapBudgetOverviewApiToModel,
+  buildTransactionCollections,
+  buildTransactionModel,
   normalizeTransactionMonths,
 } from '../../utils/finance';
-import { getFetchStatus, isCacheStale } from './helpers';
+import type { TransactionModel } from '../../types/models';
 import type { AppStoreSlice, TransactionSlice } from '../types';
+import { createEntityId } from './helpers';
+
+function selectTransactions(state: {
+  transactionIds: string[];
+  transactionsById: Record<string, TransactionModel>;
+}) {
+  return state.transactionIds
+    .map((transactionId) => state.transactionsById[transactionId])
+    .filter(Boolean);
+}
 
 export const createTransactionSlice: AppStoreSlice<TransactionSlice> = (set, get) => ({
   transactionsById: {},
@@ -13,60 +24,62 @@ export const createTransactionSlice: AppStoreSlice<TransactionSlice> = (set, get
   transactionIdsByMonth: {},
   transactionMonthIds: [],
   transactionOverview: null,
-  transactionsStatus: 'idle',
-  transactionsError: null,
-  transactionsLastFetchedAt: null,
-  async fetchTransactions(options = {}) {
-    const state = get();
-    const hasCachedData = state.transactionIds.length > 0;
-    const alreadyFetching =
-      state.transactionsStatus === 'loading' || state.transactionsStatus === 'refreshing';
-
-    if (alreadyFetching) {
+  seedTransactionsIfEmpty() {
+    if (get().transactionIds.length > 0) {
       return;
     }
 
-    if (
-      !options.force &&
-      hasCachedData &&
-      !isCacheStale(state.transactionsLastFetchedAt)
-    ) {
-      return;
-    }
+    const seededCollections = normalizeTransactionMonths(
+      transactionsSeed.data.months as TransactionMonthDto[],
+    );
 
     set({
-      transactionsStatus: getFetchStatus(hasCachedData),
-      transactionsError: null,
+      ...seededCollections,
+    });
+  },
+  addTransaction(payload) {
+    const nextTransactionId = createEntityId('txn');
+    const nextTransaction = buildTransactionModel({
+      id: nextTransactionId,
+      ...payload,
+    });
+    const nextTransactions = [...selectTransactions(get()), nextTransaction];
+
+    set({
+      ...buildTransactionCollections(nextTransactions),
     });
 
-    try {
-      const response = await getTransactions();
-      const normalizedTransactions = normalizeTransactionMonths(response.data.months);
-
-      set({
-        ...normalizedTransactions,
-        transactionOverview: mapBudgetOverviewApiToModel(response.data),
-        transactionsStatus: 'success',
-        transactionsError: null,
-        transactionsLastFetchedAt: Date.now(),
-      });
-    } catch (error) {
-      const globalError = handleGlobalError(
-        error,
-        'transactions',
-        'Unable to load transactions.',
-      );
-
-      set({
-        transactionsStatus: hasCachedData ? 'success' : 'error',
-        transactionsError: hasCachedData ? null : globalError.message,
-        lastGlobalError: globalError,
-      });
-    }
+    return nextTransactionId;
   },
-  resetTransactionsError() {
+  updateTransaction(transactionId, payload) {
+    const currentTransaction = get().transactionsById[transactionId];
+
+    if (!currentTransaction) {
+      return;
+    }
+
+    const nextTransactions = selectTransactions(get()).map((transaction) => {
+      if (transaction.id !== transactionId) {
+        return transaction;
+      }
+
+      return buildTransactionModel({
+        id: transactionId,
+        ...payload,
+      });
+    });
+
     set({
-      transactionsError: null,
+      ...buildTransactionCollections(nextTransactions),
+    });
+  },
+  deleteTransaction(transactionId) {
+    const nextTransactions = selectTransactions(get()).filter(
+      (transaction) => transaction.id !== transactionId,
+    );
+
+    set({
+      ...buildTransactionCollections(nextTransactions),
     });
   },
 });

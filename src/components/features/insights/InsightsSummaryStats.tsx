@@ -2,14 +2,16 @@ import React, { memo } from 'react';
 import { Text, View, useColorScheme } from 'react-native';
 import { colors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
-import type { InsightsModel } from '../../../types/models';
 import {
   ArrowDownRightIcon,
   ArrowUpRightIcon,
 } from '../../shared/FinanceIcons';
 
 type InsightsSummaryStatsProps = {
-  summary: InsightsModel['summary'];
+  summary: {
+    incomeLabel: string;
+    expenseLabel: string;
+  };
 };
 
 function StatItem({
@@ -40,7 +42,7 @@ function StatItem({
       </Text>
 
       <Text
-        className="text-text"
+        className={`${isExpense ? 'text-finance-expense' : 'text-primary-500'}`}
         style={{
           fontSize: S.fs.md_h,
           fontFamily: 'Poppins-SemiBold',

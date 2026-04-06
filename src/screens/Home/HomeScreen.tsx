@@ -1,53 +1,89 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
-  RefreshControl,
   ScrollView,
   StatusBar,
+  Text,
+  TouchableOpacity,
   View,
   useColorScheme,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HomeBalanceSection } from '../../components/features/home/HomeBalanceSection';
 import { HomeSavingsCard } from '../../components/features/home/HomeSavingsCard';
 import { HomeTransactionItem } from '../../components/features/home/HomeTransactionItem';
-import { BellIcon } from '../../components/shared/FinanceIcons';
+import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
+import { BellIcon, PlusIcon } from '../../components/shared/FinanceIcons';
 import { Header } from '../../components/shared/Header';
 import { HomeScreenSkeleton } from '../../components/shared/HomeScreenSkeleton';
 import { IconButton } from '../../components/shared/IconButton';
-import { ScreenState } from '../../components/shared/ScreenState';
-import { SegmentedTabs } from '../../components/shared/SegmentedTabs';
+import { ChartSection } from '../../components/shared/ChartSection';
 import {
-  selectFetchHome,
-  selectHomePreviewTransactions,
-  selectHomeScreenState,
-} from '../../store/selectors/home.selectors';
+  selectHasHydrated,
+  selectHasInitializedData,
+  selectInitializeAppData,
+} from '../../store/selectors/app.selectors';
+import { selectHomeDashboard } from '../../store/selectors/home.selectors';
 import { useAppStore } from '../../store/useAppStore';
 import { colors, getSemanticColors } from '../../theme/colors';
-import type { HomeStackParamList } from '../../types/navigation';
+import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
-type TabKey = 'Daily' | 'Weekly' | 'Monthly';
-
-const TABS: readonly TabKey[] = ['Daily', 'Weekly', 'Monthly'];
+function MetricTile({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <View
+      className="bg-secondary-card"
+      style={{
+        borderRadius: S.radius.xxl,
+        flex: 1,
+        gap: S.space.xs,
+        paddingHorizontal: S.space.md,
+        paddingVertical: S.space.md,
+      }}
+    >
+      <Text
+        className="text-text-muted"
+        style={{
+          fontFamily: 'Poppins-Regular',
+          fontSize: S.fs.xs,
+        }}
+      >
+        {label}
+      </Text>
+      <Text
+        className="text-text"
+        style={{
+          fontFamily: 'Poppins-SemiBold',
+          fontSize: S.fs.md,
+        }}
+      >
+        {value}
+      </Text>
+    </View>
+  );
+}
 
 export function HomeScreen() {
-  const [activeTab, setActiveTab] = useState<TabKey>('Monthly');
-  const navigation =
-    useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const navigation = useNavigation<any>();
+  const isDark = useColorScheme() === 'dark';
   const semanticColors = getSemanticColors(isDark);
-  const { homeData, homeError, isInitialLoading, isRefreshing } = useAppStore(
-    selectHomeScreenState,
-  );
-  const transactions = useAppStore(selectHomePreviewTransactions);
-  const fetchHome = useAppStore(selectFetchHome);
+  const hasHydrated = useAppStore(selectHasHydrated);
+  const hasInitializedData = useAppStore(selectHasInitializedData);
+  const initializeAppData = useAppStore(selectInitializeAppData);
+  const dashboard = useAppStore(selectHomeDashboard);
 
   useEffect(() => {
-    fetchHome();
-  }, [fetchHome]);
+    if (hasHydrated) {
+      initializeAppData();
+    }
+  }, [hasHydrated, initializeAppData]);
+
+  const isBootstrapping = !hasHydrated || !hasInitializedData;
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
@@ -56,25 +92,14 @@ export function HomeScreen() {
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
-      {isInitialLoading ? <HomeScreenSkeleton /> : null}
+      {isBootstrapping ? <HomeScreenSkeleton /> : null}
 
-      {!homeData && homeError ? (
-        <ScreenState
-          mode="error"
-          title="Unable To Load Home"
-          message={homeError}
-          onRetry={() => {
-            fetchHome({ force: true });
-          }}
-        />
-      ) : null}
-
-      {homeData ? (
+      {!isBootstrapping ? (
         <>
           <Header
             variant="home"
-            title={homeData.headerTitle}
-            subtitle={homeData.greeting}
+            title={dashboard.headerTitle}
+            subtitle={dashboard.greeting}
             titleClassName="text-text"
             subtitleClassName="text-text"
             rightAction={
@@ -89,61 +114,160 @@ export function HomeScreen() {
               </IconButton>
             }
           />
+
           <ScrollView
-            className="flex-1"
-            contentContainerStyle={
-              {
-                // paddingBottom: moderateScale(150),
-              }
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={() => {
-                  fetchHome({ force: true });
-                }}
-                colors={[colors.primary500]}
-                tintColor={colors.primary500}
-                progressBackgroundColor={colors.card}
-              />
-            }
             showsVerticalScrollIndicator={false}
+            // contentContainerStyle={{
+            //   paddingBottom: S.space['5xl'],
+            // }}
           >
-            {/* <View style={{ gap: moderateScale(18) }}> */}
-
-            <HomeBalanceSection overview={homeData.overview} />
-            {/* </View> */}
-
             <View
-              className="bg-card rounded-t-[56px]"
               style={{
-                paddingHorizontal: moderateScale(36),
-                paddingVertical: moderateScale(36),
-                gap: moderateScale(28),
+                gap: S.space.xl,
+                paddingHorizontal: S.space.paddingHorizontal,
+                paddingVertical: S.space.md,
               }}
             >
-              <HomeSavingsCard weekly={homeData.weekly} />
+              <View
+                className="bg-card"
+                style={{
+                  borderRadius: S.radius.xxxl,
+                  gap: S.space.lg,
+                  paddingHorizontal: S.space.lg,
+                  paddingVertical: S.space.xl,
+                }}
+              >
+                <View style={{ gap: S.space.xs }}>
+                  <Text
+                    className="text-text-muted"
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: S.fs.sm,
+                    }}
+                  >
+                    Current balance
+                  </Text>
+                  <Text
+                    className="text-text"
+                    style={{
+                      fontFamily: 'Poppins-Bold',
+                      fontSize: S.fs.xl,
+                    }}
+                  >
+                    {dashboard.overview.totalBalanceLabel}
+                  </Text>
+                  <Text
+                    className="text-text-muted"
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: S.fs.xs,
+                    }}
+                  >
+                    {dashboard.overview.note}
+                  </Text>
+                </View>
 
-              <SegmentedTabs
-                activeTab={activeTab}
-                onChange={setActiveTab}
-                tabs={TABS}
-                containerClassName="flex-row items-center bg-secondary-card"
-                activeItemClassName="bg-primary-500"
-                activeLabelClassName="text-surface-dark"
-                inactiveLabelClassName="text-text"
+                <View style={{ flexDirection: 'row', gap: S.space.md }}>
+                  <MetricTile
+                    label="Total income"
+                    value={dashboard.overview.totalIncomeLabel}
+                  />
+                  <MetricTile
+                    label="Total expenses"
+                    value={dashboard.overview.totalExpenseLabel}
+                  />
+                </View>
+
+              </View>
+            </View>
+
+            <View
+              className="bg-card"
+              style={{
+                borderTopLeftRadius: moderateScale(56),
+                borderTopRightRadius: moderateScale(56),
+                gap: S.space.xl,
+                marginTop: S.space.md,
+                paddingHorizontal: S.space.paddingHorizontal,
+                paddingTop: S.space['2xl'],
+                paddingBottom: S.space['4xl'],
+              }}
+            >
+              <ChartSection
+                title="Weekly money flow"
+                titleClassName="text-surface-dark"
+                titleStyle={{
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: S.fs.md_h,
+                }}
+                containerClassName="bg-primary-100"
                 containerStyle={{
-                  borderRadius: moderateScale(24),
+                  borderRadius: S.radius.xxxl,
                 }}
-                itemStyle={{
-                  borderRadius: moderateScale(20),
-                }}
-              />
+              >
+                {({ width }) =>
+                  width > 0 ? (
+                    <IncomeExpenseBarChart
+                      width={width - S.space['2xl']}
+                      height={moderateScale(168)}
+                      data={dashboard.weeklyTrend}
+                    />
+                  ) : null
+                }
+              </ChartSection>
 
-              <View style={{ gap: moderateScale(24) }}>
-                {transactions.map(item => (
-                  <HomeTransactionItem key={item.id} item={item} />
-                ))}
+              <View style={{ gap: S.space.lg }}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Text
+                    className="text-text"
+                    style={{
+                      fontFamily: 'Poppins-SemiBold',
+                      fontSize: S.fs.md_h,
+                    }}
+                  >
+                    Recent activity
+                  </Text>
+
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    onPress={() =>
+                      navigation.getParent()?.navigate('TransactionsTab', {
+                        screen: 'Transactions',
+                      })
+                    }
+                  >
+                    <Text
+                      className="text-blue-700"
+                      style={{
+                        fontFamily: 'Poppins-SemiBold',
+                        fontSize: S.fs.sm,
+                      }}
+                    >
+                      View all
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={{ gap: S.space.lg }}>
+                  {dashboard.recentTransactions.map((transaction) => (
+                    <HomeTransactionItem
+                      key={transaction.id}
+                      item={transaction}
+                      onPress={() =>
+                        navigation.getParent()?.navigate('TransactionsTab', {
+                          screen: 'TransactionDetail',
+                          params: { transactionId: transaction.id },
+                        })
+                      }
+                    />
+                  ))}
+                </View>
               </View>
             </View>
           </ScrollView>

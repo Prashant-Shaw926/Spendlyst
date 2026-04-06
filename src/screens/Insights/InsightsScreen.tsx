@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
-  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -8,91 +7,110 @@ import {
   useColorScheme,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  ArrowLeftIcon,
-  BellIcon,
-  CalendarIcon,
-  CheckSquareIcon,
-  SearchIcon,
-} from '../../components/shared/FinanceIcons';
 import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
 import { InsightsSummaryStats } from '../../components/features/insights/InsightsSummaryStats';
 import { TargetCard } from '../../components/features/insights/TargetCard';
 import { BudgetOverview } from '../../components/shared/BudgetOverview';
 import { ChartSection } from '../../components/shared/ChartSection';
+import {
+  ArrowDownRightIcon,
+  ArrowLeftIcon,
+  ArrowUpRightIcon,
+  BellIcon,
+} from '../../components/shared/FinanceIcons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import { InsightsScreenSkeleton } from '../../components/shared/InsightsScreenSkeleton';
-import { ScreenState } from '../../components/shared/ScreenState';
-import { SegmentedTabs } from '../../components/shared/SegmentedTabs';
 import {
-  selectFetchInsights,
-  selectInsightsScreenState,
-} from '../../store/selectors/insights.selectors';
+  selectHasHydrated,
+  selectHasInitializedData,
+  selectInitializeAppData,
+} from '../../store/selectors/app.selectors';
+import { selectInsightsDashboard } from '../../store/selectors/insights.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
-import type { InsightRange } from '../../types/api';
-import type { InsightsStackParamList } from '../../types/navigation';
-import { getInsightChartData } from '../../utils/finance';
 import { moderateScale } from '../../utils/responsive';
 
+function InsightCard({
+  title,
+  value,
+  helper,
+}: {
+  title: string;
+  value: string;
+  helper: string;
+}) {
+  return (
+    <View
+      className="bg-secondary-card"
+      style={{
+        borderRadius: S.radius.xxxl,
+        flex: 1,
+        gap: S.space.sm,
+        paddingHorizontal: S.space.lg,
+        paddingVertical: S.space.lg,
+      }}
+    >
+      <Text
+        className="text-text-muted"
+        style={{
+          fontFamily: 'Poppins-Regular',
+          fontSize: S.fs.xs,
+        }}
+      >
+        {title}
+      </Text>
+      <Text
+        className="text-text"
+        style={{
+          fontFamily: 'Poppins-SemiBold',
+          fontSize: S.fs.md_h,
+        }}
+      >
+        {value}
+      </Text>
+      <Text
+        className="text-text-muted"
+        style={{
+          fontFamily: 'Poppins-Regular',
+          fontSize: S.fs.xs,
+        }}
+      >
+        {helper}
+      </Text>
+    </View>
+  );
+}
+
 export function InsightsScreen() {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<InsightsStackParamList>>();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const [activeTab, setActiveTab] = useState<InsightRange>('Daily');
-  const { insightsData, insightsError, isInitialLoading, isRefreshing } =
-    useAppStore(selectInsightsScreenState);
-  const fetchInsights = useAppStore(selectFetchInsights);
-
+  const navigation = useNavigation<any>();
+  const isDark = useColorScheme() === 'dark';
   const semanticColors = getSemanticColors(isDark);
-  const fallbackTabs: InsightRange[] = ['Daily', 'Weekly', 'Monthly', 'Year'];
-  const tabs = insightsData?.tabs ?? fallbackTabs;
-  const dayData = getInsightChartData(insightsData, activeTab);
+  const hasHydrated = useAppStore(selectHasHydrated);
+  const hasInitializedData = useAppStore(selectHasInitializedData);
+  const initializeAppData = useAppStore(selectInitializeAppData);
+  const insights = useAppStore(selectInsightsDashboard);
 
   useEffect(() => {
-    fetchInsights();
-  }, [fetchInsights]);
-
-  useEffect(() => {
-    if (!insightsData) {
-      return;
+    if (hasHydrated) {
+      initializeAppData();
     }
+  }, [hasHydrated, initializeAppData]);
 
-    setActiveTab(current => {
-      if (insightsData.tabs.includes(current)) {
-        return current;
-      }
-
-      return insightsData.activeTab;
-    });
-  }, [insightsData]);
+  const isBootstrapping = !hasHydrated || !hasInitializedData;
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={['top']} style={{}}>
+    <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
         backgroundColor={semanticColors.background}
       />
 
-      {isInitialLoading ? <InsightsScreenSkeleton /> : null}
+      {isBootstrapping ? <InsightsScreenSkeleton /> : null}
 
-      {!insightsData && insightsError ? (
-        <ScreenState
-          mode="error"
-          title="Unable To Load Insights"
-          message={insightsError}
-          onRetry={() => {
-            fetchInsights({ force: true });
-          }}
-        />
-      ) : null}
-
-      {insightsData ? (
+      {!isBootstrapping ? (
         <>
           <Header
             variant="centerTitle"
@@ -121,171 +139,184 @@ export function InsightsScreen() {
                 onPress={() => navigation.navigate('Notification')}
                 size={moderateScale(40)}
               >
-                <BellIcon
-                  color={semanticColors.title}
-                  size={moderateScale(18)}
-                />
+                <BellIcon color={semanticColors.title} size={moderateScale(18)} />
               </IconButton>
             }
           />
+
           <ScrollView
             style={{ flex: 1 }}
-            // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
-            refreshControl={
-              <RefreshControl
-                refreshing={isRefreshing}
-                onRefresh={() => {
-                  fetchInsights({ force: true });
-                }}
-                colors={[colors.primary500]}
-                tintColor={colors.primary500}
-                progressBackgroundColor={
-                  isDark ? colors.cardDark : colors.cardLight
-                }
-              />
-            }
             showsVerticalScrollIndicator={false}
+            // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
           >
             <View
               style={{
-                paddingHorizontal: moderateScale(36),
+                gap: S.space.xl,
+                paddingHorizontal: S.space.paddingHorizontal,
                 paddingVertical: S.space.md,
-                gap: moderateScale(26),
               }}
             >
-              <View>
-                <BudgetOverview
-                  leftMetric={{
-                    label: 'Total Balance',
-                    value: insightsData.overview.totalBalanceLabel,
-                    labelClassName: 'text-text',
-                    valueClassName: 'text-text',
-                    icon: (
-                      <CheckSquareIcon color={semanticColors.text} size={13} />
-                    ),
-                  }}
-                  rightMetric={{
-                    label: 'Total Expense',
-                    value: insightsData.overview.totalExpenseLabel,
-                    labelClassName: 'text-text',
-                    valueClassName: 'text-finance-expense',
-                    icon: (
-                      <CheckSquareIcon color={semanticColors.text} size={13} />
-                    ),
-                  }}
-                  progressPercent={insightsData.overview.spentPercent}
-                  progressValue={insightsData.overview.budgetLabel}
-                  note={insightsData.overview.note}
-                  noteClassName="text-text"
-                  noteIconColor={semanticColors.text}
-                  dividerClassName="bg-primary-50"
-                />
-              </View>
+              <BudgetOverview
+                leftMetric={{
+                  label: 'Total Balance',
+                  value: insights.overview.totalBalanceLabel,
+                  labelClassName: 'text-text',
+                  valueClassName: 'text-text',
+                  icon: <ArrowUpRightIcon color={semanticColors.text} size={15} />,
+                }}
+                rightMetric={{
+                  label: 'Total Expense',
+                  value: insights.overview.totalExpenseLabel,
+                  labelClassName: 'text-text',
+                  valueClassName: 'text-finance-expense',
+                  icon: <ArrowDownRightIcon color={semanticColors.text} size={15} />,
+                }}
+                progressPercent={insights.overview.spentPercent}
+                progressValue={insights.overview.budgetLabel}
+                note={insights.overview.note}
+                noteClassName="text-text"
+                noteIconColor={semanticColors.text}
+                dividerClassName="bg-primary-50"
+              />
             </View>
 
             <View
               className="bg-card"
               style={{
-                marginTop: moderateScale(20),
                 borderTopLeftRadius: moderateScale(72),
                 borderTopRightRadius: moderateScale(72),
-                paddingTop: moderateScale(32),
-                paddingHorizontal: moderateScale(36),
-                paddingBottom: moderateScale(34),
+                gap: S.space.xl,
+                marginTop: moderateScale(16),
+                paddingHorizontal: S.space.paddingHorizontal,
+                paddingTop: S.space['2xl'],
+                paddingBottom: S.space['4xl'],
               }}
             >
-              <SegmentedTabs
-                activeTab={activeTab}
-                tabs={tabs}
-                onChange={setActiveTab}
-                containerClassName="flex-row items-center bg-secondary-card"
-                activeItemClassName="bg-primary-500"
-                activeLabelClassName="text-surface-dark"
-                inactiveLabelClassName="text-text"
-                containerPadding={5}
-                gap={0}
-                containerStyle={{
-                  borderRadius: moderateScale(24),
-                }}
-                itemStyle={{
-                  borderRadius: moderateScale(20),
-                }}
-                labelStyle={{
-                  fontSize: moderateScale(14),
-                }}
-              />
-
               <ChartSection
-                title={insightsData.chartTitle}
+                title="Monthly trend"
                 titleClassName="text-surface-dark"
                 titleStyle={{
-                  fontSize: moderateScale(18),
                   fontFamily: 'Poppins-SemiBold',
+                  fontSize: S.fs.md_h,
                 }}
                 containerClassName="bg-primary-100"
                 containerStyle={{
-                  marginTop: moderateScale(30),
-                  borderRadius: moderateScale(46),
-                  paddingHorizontal: moderateScale(28),
-                  paddingTop: moderateScale(18),
-                  paddingBottom: moderateScale(22),
+                  borderRadius: S.radius.xxxl,
                 }}
-                headerStyle={{
-                  marginBottom: moderateScale(14),
-                }}
-                actions={
-                  <View className="flex-row" style={{ gap: S.space.sm }}>
-                    <IconButton
-                      accessibilityLabel="Search analytics"
-                      className="items-center justify-center bg-primary-500"
-                      borderRadius={moderateScale(17)}
-                      size={moderateScale(34)}
-                    >
-                      <SearchIcon color={colors.surfaceDark} size={18} />
-                    </IconButton>
-
-                    <IconButton
-                      accessibilityLabel="Open calendar"
-                      className="items-center justify-center bg-primary-500"
-                      borderRadius={moderateScale(17)}
-                      size={moderateScale(34)}
-                    >
-                      <CalendarIcon color={colors.surfaceDark} size={18} />
-                    </IconButton>
-                  </View>
-                }
               >
                 {({ width }) =>
                   width > 0 ? (
                     <IncomeExpenseBarChart
-                      width={width - moderateScale(56)}
-                      height={moderateScale(162)}
-                      data={dayData}
+                      width={width - S.space['2xl']}
+                      height={moderateScale(168)}
+                      data={insights.monthlyTrend}
                     />
                   ) : null
                 }
               </ChartSection>
 
-              <InsightsSummaryStats summary={insightsData.summary} />
+              <InsightsSummaryStats summary={insights.summary} />
 
-              <View style={{ marginTop: moderateScale(30) }}>
+              <View style={{ flexDirection: 'row', gap: S.space.md }}>
+                <InsightCard
+                  title={insights.highestSpendingCategory.title}
+                  value={insights.highestSpendingCategory.value}
+                  helper={insights.highestSpendingCategory.helper}
+                />
+                <InsightCard
+                  title="Week vs last week"
+                  value={insights.weekComparison.deltaLabel}
+                  helper={insights.weekComparison.helper}
+                />
+              </View>
+
+              <InsightCard
+                title={insights.dominantTransactionType.title}
+                value={insights.dominantTransactionType.value}
+                helper={insights.dominantTransactionType.helper}
+              />
+
+              <View style={{ gap: S.space.md }}>
                 <Text
                   className="text-text"
                   style={{
-                    fontSize: S.fs.lg,
                     fontFamily: 'Poppins-SemiBold',
-                    marginBottom: moderateScale(16),
+                    fontSize: S.fs.md_h,
                   }}
                 >
-                  My Targets
+                  Spending by category
                 </Text>
 
-                <View style={{ flexDirection: 'row', gap: moderateScale(14) }}>
-                  {insightsData.targets.map(target => (
-                    <TargetCard key={target.id} target={target} />
+                <View style={{ gap: S.space.md }}>
+                  {insights.categoryBreakdown.map((item) => (
+                    <View
+                      key={item.category}
+                      className="bg-secondary-card"
+                      style={{
+                        borderRadius: S.radius.xxxl,
+                        gap: S.space.sm,
+                        paddingHorizontal: S.space.lg,
+                        paddingVertical: S.space.lg,
+                      }}
+                    >
+                      <View
+                        style={{
+                          alignItems: 'center',
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <Text
+                          className="text-text"
+                          style={{
+                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: S.fs.md,
+                          }}
+                        >
+                          {item.category}
+                        </Text>
+                        <Text
+                          className="text-text"
+                          style={{
+                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: S.fs.sm,
+                          }}
+                        >
+                          {item.amountLabel}
+                        </Text>
+                      </View>
+
+                      <View
+                        className="bg-primary-50"
+                        style={{
+                          borderRadius: S.radius.full,
+                          height: moderateScale(10),
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <View
+                          className="bg-primary-500"
+                          style={{
+                            height: '100%',
+                            width: `${item.percent}%`,
+                          }}
+                        />
+                      </View>
+
+                      <Text
+                        className="text-text-muted"
+                        style={{
+                          fontFamily: 'Poppins-Regular',
+                          fontSize: S.fs.xs,
+                        }}
+                      >
+                        {item.percent}% of recorded expenses across {item.transactionCount} entries
+                      </Text>
+                    </View>
                   ))}
                 </View>
               </View>
+
             </View>
           </ScrollView>
         </>

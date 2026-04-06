@@ -1,8 +1,8 @@
 import { createMMKV } from 'react-native-mmkv';
 import { createJSONStorage, type StateStorage } from 'zustand/middleware';
 import type { TransactionsData } from '../types/api';
-import { mapBudgetOverviewApiToModel, normalizeTransactionMonths } from '../utils/finance';
-import type { PersistedTransactionsState } from './types';
+import { normalizeTransactionMonths } from '../utils/finance';
+import type { PersistedAppState } from './types';
 
 export const storage = createMMKV({
   id: 'spendlyst-storage',
@@ -21,36 +21,36 @@ const mmkvStateStorage: StateStorage = {
 };
 
 export const persistStorage = createJSONStorage(() => mmkvStateStorage);
-export const STORAGE_VERSION = 1;
-export const TRANSACTION_STORAGE_KEY = 'transaction-store';
+export const STORAGE_VERSION = 2;
+export const APP_STORAGE_KEY = 'spendlyst-store';
 
-export const EMPTY_PERSISTED_TRANSACTIONS_STATE: PersistedTransactionsState = {
+export const EMPTY_PERSISTED_APP_STATE: PersistedAppState = {
   transactionsById: {},
   transactionIds: [],
   transactionIdsByMonth: {},
   transactionMonthIds: [],
   transactionOverview: null,
-  transactionsLastFetchedAt: null,
+  goalsById: {},
+  goalIds: [],
 };
 
 function normalizeLegacyTransactionsState(
   data: TransactionsData,
-): PersistedTransactionsState {
+): PersistedAppState {
   const normalizedTransactions = normalizeTransactionMonths(data.months);
 
   return {
+    ...EMPTY_PERSISTED_APP_STATE,
     ...normalizedTransactions,
-    transactionOverview: mapBudgetOverviewApiToModel(data),
-    transactionsLastFetchedAt: null,
   };
 }
 
-export function migratePersistedTransactionsState(
+export function migratePersistedAppState(
   persistedState: unknown,
   version: number,
-): PersistedTransactionsState {
+): PersistedAppState {
   if (!persistedState || typeof persistedState !== 'object') {
-    return EMPTY_PERSISTED_TRANSACTIONS_STATE;
+    return EMPTY_PERSISTED_APP_STATE;
   }
 
   if (version === 0 && 'data' in persistedState) {
@@ -59,13 +59,13 @@ export function migratePersistedTransactionsState(
     };
 
     if (!legacyState.data) {
-      return EMPTY_PERSISTED_TRANSACTIONS_STATE;
+      return EMPTY_PERSISTED_APP_STATE;
     }
 
     return normalizeLegacyTransactionsState(legacyState.data);
   }
 
-  const nextState = persistedState as Partial<PersistedTransactionsState>;
+  const nextState = persistedState as Partial<PersistedAppState>;
 
   return {
     transactionsById: nextState.transactionsById ?? {},
@@ -73,6 +73,7 @@ export function migratePersistedTransactionsState(
     transactionIdsByMonth: nextState.transactionIdsByMonth ?? {},
     transactionMonthIds: nextState.transactionMonthIds ?? [],
     transactionOverview: nextState.transactionOverview ?? null,
-    transactionsLastFetchedAt: nextState.transactionsLastFetchedAt ?? null,
+    goalsById: nextState.goalsById ?? {},
+    goalIds: nextState.goalIds ?? [],
   };
 }

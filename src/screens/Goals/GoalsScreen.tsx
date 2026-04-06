@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -8,128 +8,97 @@ import {
   useColorScheme,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GoalCard, type GoalCardItem } from '../../components/Goals/GoalCard';
-import { GoalFilterTabs } from '../../components/Goals/GoalFilterTabs';
-import { GoalHeroCard } from '../../components/Goals/GoalHeroCard';
+import {
+  GoalCard,
+  type GoalCardItem,
+} from '../../components/features/Goals/GoalCard';
+import { GoalFilterTabs } from '../../components/features/Goals/GoalFilterTabs';
+import { GoalHeroCard } from '../../components/features/Goals/GoalHeroCard';
 import {
   ArrowLeftIcon,
-  BagIcon,
   BellIcon,
   CarIcon,
   HomeIcon,
   PlusIcon,
   StackCashIcon,
+  BagIcon,
 } from '../../components/shared/FinanceIcons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
+import {
+  selectHasHydrated,
+  selectHasInitializedData,
+  selectInitializeAppData,
+} from '../../store/selectors/app.selectors';
+import {
+  selectAllGoals,
+  selectGoalSummary,
+} from '../../store/selectors/goals.selectors';
+import { useAppStore } from '../../store/useAppStore';
 import { colors, getSemanticColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
-import type { GoalsStackParamList } from '../../types/navigation';
-import { moderateScale } from '../../utils/responsive';
+import type { GoalModel, GoalStatus } from '../../types/models';
+import { moderateScale, rs } from '../../utils/responsive';
 
-type GoalTab = 'Active' | 'Planned' | 'Completed';
+type GoalTab = GoalStatus;
 
-const TABS: GoalTab[] = ['Active', 'Planned', 'Completed'];
+const TABS: readonly GoalTab[] = ['Active', 'Planned', 'Completed'];
 
-type GoalStatus = GoalTab;
+function mapGoalIcon(goal: GoalModel) {
+  switch (goal.icon) {
+    case 'car':
+      return CarIcon;
+    case 'home':
+      return HomeIcon;
+    case 'travel':
+      return BagIcon;
+    case 'savings':
+    default:
+      return StackCashIcon;
+  }
+}
 
-type ScreenGoal = GoalCardItem & {
-  statusGroup: GoalStatus;
-};
+function toGoalCardItem(goal: GoalModel): GoalCardItem {
+  return {
+    id: goal.id,
+    title: goal.title,
+    subtitle: goal.subtitle,
+    savedAmount: goal.savedAmountLabel,
+    targetAmount: goal.targetAmountLabel,
+    leftAmount: goal.leftAmountLabel,
+    dueLabel: goal.deadlineLabel,
+    monthlyPlan: `${goal.monthlyTargetLabel} / month`,
+    progress: goal.progress,
+    tint: goal.accentColor,
+    iconBg: goal.iconBackgroundColor,
+    status: goal.status === 'Completed' ? 'Achieved' : goal.status,
+    Icon: mapGoalIcon(goal),
+  };
+}
 
 export function GoalsScreen() {
-  const [activeTab, setActiveTab] = useState<GoalTab>('Active');
-  const navigation =
-    useNavigation<NativeStackNavigationProp<GoalsStackParamList>>();
+  const navigation = useNavigation<any>();
   const isDark = useColorScheme() === 'dark';
   const semanticColors = getSemanticColors(isDark);
+  const hasHydrated = useAppStore(selectHasHydrated);
+  const hasInitializedData = useAppStore(selectHasInitializedData);
+  const initializeAppData = useAppStore(selectInitializeAppData);
+  const goals = useAppStore(selectAllGoals);
+  const goalSummary = useAppStore(selectGoalSummary);
+  const [activeTab, setActiveTab] = useState<GoalTab>('Active');
 
-  const goals = useMemo<ScreenGoal[]>(
-    () => [
-      {
-        id: 'emergency-fund',
-        title: 'Emergency Fund',
-        subtitle: 'Peace-of-mind savings',
-        savedAmount: '$8,400',
-        targetAmount: '$12,000',
-        leftAmount: '$3,600',
-        dueLabel: 'Nov 2026',
-        monthlyPlan: '$450 / month',
-        progress: 70,
-        tint: colors.primary500,
-        iconBg: isDark ? 'rgba(0,208,158,0.18)' : colors.primary100,
-        status: 'On Track',
-        statusGroup: 'Active',
-        Icon: StackCashIcon,
-      },
-      {
-        id: 'dream-car',
-        title: 'Dream Car',
-        subtitle: 'Upgrade your ride',
-        savedAmount: '$5,600',
-        targetAmount: '$10,000',
-        leftAmount: '$4,400',
-        dueLabel: 'Jun 2027',
-        monthlyPlan: '$600 / month',
-        progress: 56,
-        tint: colors.blue700,
-        iconBg: isDark ? 'rgba(50,153,255,0.18)' : '#E8F2FF',
-        status: 'Building',
-        statusGroup: 'Active',
-        Icon: CarIcon,
-      },
-      {
-        id: 'home-deposit',
-        title: 'Home Deposit',
-        subtitle: 'Down payment plan',
-        savedAmount: '$18,500',
-        targetAmount: '$40,000',
-        leftAmount: '$21,500',
-        dueLabel: 'Dec 2027',
-        monthlyPlan: '$1,200 / month',
-        progress: 46,
-        tint: colors.surfaceDark,
-        iconBg: isDark ? 'rgba(255,255,255,0.08)' : colors.primary100,
-        status: 'Planning',
-        statusGroup: 'Planned',
-        Icon: HomeIcon,
-      },
-      {
-        id: 'summer-trip',
-        title: 'Summer Trip',
-        subtitle: 'Portugal getaway',
-        savedAmount: '$2,400',
-        targetAmount: '$2,400',
-        leftAmount: '$0',
-        dueLabel: 'Completed',
-        monthlyPlan: 'Finished in Apr 2026',
-        progress: 100,
-        tint: colors.primary500,
-        iconBg: isDark ? 'rgba(0,208,158,0.18)' : colors.primary100,
-        status: 'Achieved',
-        statusGroup: 'Completed',
-        Icon: BagIcon,
-      },
-    ],
-    [isDark],
-  );
+  useEffect(() => {
+    if (hasHydrated) {
+      initializeAppData();
+    }
+  }, [hasHydrated, initializeAppData]);
 
   const filteredGoals = useMemo(
-    () => goals.filter((goal) => goal.statusGroup === activeTab),
+    () => goals.filter(goal => goal.status === activeTab),
     [activeTab, goals],
   );
-
-  const activeGoalsCount = useMemo(
-    () => goals.filter((goal) => goal.statusGroup === 'Active').length,
-    [goals],
-  );
-
-  const completedGoalsCount = useMemo(
-    () => goals.filter((goal) => goal.statusGroup === 'Completed').length,
-    [goals],
-  );
+  const isBootstrapping = !hasHydrated || !hasInitializedData;
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
@@ -138,123 +107,161 @@ export function GoalsScreen() {
         backgroundColor={semanticColors.background}
       />
 
-                  <Header
-              variant="centerTitle"
-              title="My Goals"
-              titleClassName="text-text"
-              contentStyle={{ paddingHorizontal: 0, paddingVertical: 0,}}
-              leftAction={
-                <IconButton
-                  accessibilityLabel="Go back"
-                  disabled={!navigation.canGoBack()}
-                  onPress={() => {
-                    if (navigation.canGoBack()) {
-                      navigation.goBack();
-                    }
-                  }}
-                  size={moderateScale(40)}
-                >
-                  <ArrowLeftIcon color={semanticColors.text} size={24} />
-                </IconButton>
+      <Header
+        variant="centerTitle"
+        title="My Goals"
+        titleClassName="text-title"
+        contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+        leftAction={
+          <IconButton
+            accessibilityLabel="Go back"
+            disabled={!navigation.canGoBack()}
+            onPress={() => {
+              if (navigation.canGoBack()) {
+                navigation.goBack();
               }
-             rightAction={
-               <IconButton
-                 accessibilityLabel="Open notifications"
-                 className="items-center justify-center bg-pill"
-                 borderRadius={moderateScale(21)}
-                 onPress={() => navigation.navigate('Notification')}
-                 size={moderateScale(40)}
-               >
-                 <BellIcon color={semanticColors.title} size={moderateScale(18)} />
-               </IconButton>
-             }
+            }}
+            size={moderateScale(40)}
+          >
+            <ArrowLeftIcon color={semanticColors.title} size={moderateScale(24)} />
+          </IconButton>
+        }
+        rightAction={
+          <IconButton
+            accessibilityLabel="Open notifications"
+            className="items-center justify-center bg-pill"
+            borderRadius={moderateScale(21)}
+            onPress={() => navigation.navigate('Notification')}
+            size={moderateScale(40)}
+          >
+            <BellIcon color={colors.primary500} size={moderateScale(18)} />
+          </IconButton>
+        }
+      />
+
+      {!isBootstrapping ? (
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            // gap: moderateScale(30),
+            // paddingBottom: S.space['4xl'],
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View
+            style={{
+              paddingHorizontal: S.space.paddingHorizontal,
+              paddingVertical: S.space.md,
+              gap: moderateScale(26),
+            }}
+          >
+            <GoalHeroCard
+              progress={goalSummary.completionPercent}
+              savedAmount={goalSummary.totalSavedLabel}
+              targetAmount={goalSummary.totalTargetLabel}
+              activeGoals={goalSummary.activeCount}
+              completedGoals={goalSummary.completedCount}
+              monthlySaving={goalSummary.monthlyContributionLabel}
             />
+          </View>
 
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          gap: moderateScale(30),
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View
-          style={{
-            paddingHorizontal: S.space.paddingHorizontal,
-            paddingVertical: S.space.md,
-            gap: moderateScale(26),
-          }}
-        >
+          <View
+            className="bg-secondary-bg"
+            style={{
+              borderTopLeftRadius: moderateScale(72),
+              borderTopRightRadius: moderateScale(72),
+              gap: moderateScale(22),
+              paddingHorizontal: S.space.paddingHorizontal,
+              paddingTop: moderateScale(40),
+              paddingBottom: S.space['4xl'],
+              marginTop: moderateScale(14),
+            }}
+          >
 
-
-          <GoalHeroCard
-            progress={61}
-            savedAmount="$34,900"
-            targetAmount="$64,400"
-            activeGoals={activeGoalsCount}
-            completedGoals={completedGoalsCount}
-            monthlySaving="$2,250"
-          />
-        </View>
-
-        <View
-          className="bg-secondary-bg"
-          style={{
-            borderTopLeftRadius: moderateScale(72),
-            borderTopRightRadius: moderateScale(72),
-            paddingHorizontal: S.space.paddingHorizontal,
-            paddingVertical: S.space['4xl'],
-            gap: moderateScale(22),
-          }}
-        >
-          <View className="flex-row items-center justify-between">
-            <Text
-              className="text-title"
-              style={{
-                fontSize: S.fs.lg,
-                fontFamily: 'Poppins-SemiBold',
-              }}
+            <View
+              className="flex-row items-center justify-between"
+              style={{ paddingBottom: moderateScale(4) }}
             >
-              Goal Plans
-            </Text>
-
-            <TouchableOpacity
-              accessibilityRole="button"
-              className="flex-row items-center bg-primary-500"
-              style={{
-                borderRadius: moderateScale(18),
-                paddingHorizontal: moderateScale(14),
-                paddingVertical: moderateScale(10),
-                gap: moderateScale(6),
-              }}
-            >
-              <PlusIcon
-                color={colors.black}
-                size={16}
-              />
               <Text
-                className="text-black"
+                className="text-title"
                 style={{
-                  fontSize: S.fs.sm,
+                  fontFamily: 'Poppins-Bold',
+                  fontSize: S.fs.lg,
                 }}
               >
-                New Goal
+                Goal plans
               </Text>
-            </TouchableOpacity>
-          </View>
 
-          <GoalFilterTabs
-            tabs={TABS}
-            activeTab={activeTab}
-            onChange={setActiveTab}
-          />
+              <TouchableOpacity
+                accessibilityRole="button"
+                activeOpacity={0.85}
+                className="items-center justify-center bg-primary-500"
+                onPress={() =>
+                  navigation.navigate('GoalDetail', { startInEditMode: true })
+                }
+                style={{
+                  borderRadius: S.radius.lg,
+                  height: moderateScale(44),
+                  width: moderateScale(44),
+                }}
+              >
+                <PlusIcon color={colors.surfaceDark} size={22} />
+              </TouchableOpacity>
+            </View>
 
-          <View style={{ gap: moderateScale(16) }}>
-            {filteredGoals.map((goal) => (
-              <GoalCard key={goal.id} item={goal} />
-            ))}
+
+            <GoalFilterTabs
+              tabs={TABS}
+              activeTab={activeTab}
+              onChange={setActiveTab}
+            />
+
+            <View style={{ gap: moderateScale(16) }}>
+              {filteredGoals.length > 0 ? (
+                filteredGoals.map(goal => (
+                  <GoalCard
+                    key={goal.id}
+                    item={toGoalCardItem(goal)}
+                    onPress={() =>
+                      navigation.navigate('GoalDetail', { goalId: goal.id })
+                    }
+                  />
+                ))
+              ) : (
+                <View
+                  className="bg-card"
+                  style={{
+                    borderRadius: S.radius.xxxl,
+                    gap: S.space.sm,
+                    paddingHorizontal: S.space.lg,
+                    paddingVertical: S.space.xl,
+                  }}
+                >
+                  <Text
+                    className="text-text"
+                    style={{
+                      fontFamily: 'Poppins-SemiBold',
+                      fontSize: S.fs.md_h,
+                    }}
+                  >
+                    No {activeTab.toLowerCase()} goals yet
+                  </Text>
+                  <Text
+                    className="text-text-muted"
+                    style={{
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: S.fs.sm,
+                    }}
+                  >
+                    Create a new savings goal to start tracking progress in this
+                    tab.
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      ) : null}
     </SafeAreaView>
   );
 }

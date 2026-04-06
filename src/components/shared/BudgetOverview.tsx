@@ -76,6 +76,7 @@ function OverviewMetric({
         className={valueClassName ?? 'text-text'}
         style={[
           {
+            fontFamily: 'Poppins-Bold',
             fontSize: moderateScale(22),
             lineHeight: moderateScale(26),
           },

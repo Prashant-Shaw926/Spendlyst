@@ -1,30 +1,22 @@
+import { buildInsightsDashboard } from '../../utils/finance';
 import { createCachedSelector } from './helpers';
 import type { AppStore } from '../types';
 
-export const selectFetchInsights = (state: AppStore) => state.fetchInsights;
-
-export const selectInsightsScreenState = createCachedSelector(
+export const selectInsightsDashboard = createCachedSelector(
   (
     state,
-  ): [
-    AppStore['insightsData'],
-    AppStore['insightsStatus'],
-    AppStore['insightsError'],
-    AppStore['hasHydrated'],
-  ] => [
-    state.insightsData,
-    state.insightsStatus,
-    state.insightsError,
-    state.hasHydrated,
+  ): [AppStore['transactionIds'], AppStore['transactionsById'], AppStore['goalIds'], AppStore['goalsById']] => [
+    state.transactionIds,
+    state.transactionsById,
+    state.goalIds,
+    state.goalsById,
   ],
-  (insightsData, insightsStatus, insightsError, hasHydrated) => ({
-    insightsData,
-    insightsStatus,
-    insightsError,
-    hasHydrated,
-    isInitialLoading:
-      (!hasHydrated && !insightsData) ||
-      (!insightsData && (insightsStatus === 'idle' || insightsStatus === 'loading')),
-    isRefreshing: insightsStatus === 'refreshing',
-  }),
+  (transactionIds, transactionsById, goalIds, goalsById) => {
+    const transactions = transactionIds
+      .map((transactionId) => transactionsById[transactionId])
+      .filter(Boolean);
+    const goals = goalIds.map((goalId) => goalsById[goalId]).filter(Boolean);
+
+    return buildInsightsDashboard(transactions, goals);
+  },
 );

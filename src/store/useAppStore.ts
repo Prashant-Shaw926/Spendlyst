@@ -1,14 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { createAppSlice } from './slices/app.slice';
-import { createHomeSlice } from './slices/home.slice';
-import { createInsightsSlice } from './slices/insights.slice';
+import { createGoalSlice } from './slices/goal.slice';
 import { createTransactionSlice } from './slices/transaction.slice';
 import {
-  migratePersistedTransactionsState,
+  APP_STORAGE_KEY,
+  migratePersistedAppState,
   persistStorage,
   STORAGE_VERSION,
-  TRANSACTION_STORAGE_KEY,
 } from './storage';
 import type { AppStore } from './types';
 
@@ -17,22 +16,22 @@ export const useAppStore = create<AppStore>()(
     (...storeArgs) => ({
       ...createAppSlice(...storeArgs),
       ...createTransactionSlice(...storeArgs),
-      ...createHomeSlice(...storeArgs),
-      ...createInsightsSlice(...storeArgs),
+      ...createGoalSlice(...storeArgs),
     }),
     {
-      name: TRANSACTION_STORAGE_KEY,
+      name: APP_STORAGE_KEY,
       storage: persistStorage,
       version: STORAGE_VERSION,
       migrate: (persistedState, version) =>
-        migratePersistedTransactionsState(persistedState, version),
+        migratePersistedAppState(persistedState, version),
       partialize: (state) => ({
         transactionsById: state.transactionsById,
         transactionIds: state.transactionIds,
         transactionIdsByMonth: state.transactionIdsByMonth,
         transactionMonthIds: state.transactionMonthIds,
         transactionOverview: state.transactionOverview,
-        transactionsLastFetchedAt: state.transactionsLastFetchedAt,
+        goalsById: state.goalsById,
+        goalIds: state.goalIds,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

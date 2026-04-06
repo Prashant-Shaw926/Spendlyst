@@ -1,43 +1,36 @@
-import { selectHomePreviewTransactions } from '../src/store/selectors/home.selectors';
-import { selectTransactionsByMonth } from '../src/store/selectors/transactions.selectors';
-import { migratePersistedTransactionsState } from '../src/store/storage';
+import { selectHomeDashboard } from '../src/store/selectors/home.selectors';
+import { selectInsightsDashboard } from '../src/store/selectors/insights.selectors';
+import { selectGoalSummary } from '../src/store/selectors/goals.selectors';
+import {
+  EMPTY_PERSISTED_APP_STATE,
+  migratePersistedAppState,
+  storage,
+} from '../src/store/storage';
+import { useAppStore } from '../src/store/useAppStore';
 import type { TransactionsData } from '../src/types/api';
-import type { AppStore } from '../src/store/types';
 
-function createBaseStore(overrides: Partial<AppStore>): AppStore {
-  return {
+function resetStore() {
+  storage.clearAll();
+  useAppStore.setState({
     hasHydrated: true,
+    hasInitializedData: false,
     lastGlobalError: null,
-    clearGlobalError: jest.fn(),
-    setHasHydrated: jest.fn(),
-    homeData: null,
-    homeStatus: 'idle',
-    homeError: null,
-    homeLastFetchedAt: null,
-    fetchHome: jest.fn(),
-    resetHomeError: jest.fn(),
     transactionsById: {},
     transactionIds: [],
     transactionIdsByMonth: {},
     transactionMonthIds: [],
     transactionOverview: null,
-    transactionsStatus: 'idle',
-    transactionsError: null,
-    transactionsLastFetchedAt: null,
-    fetchTransactions: jest.fn(),
-    resetTransactionsError: jest.fn(),
-    insightsData: null,
-    insightsStatus: 'idle',
-    insightsError: null,
-    insightsLastFetchedAt: null,
-    fetchInsights: jest.fn(),
-    resetInsightsError: jest.fn(),
-    ...overrides,
-  };
+    goalsById: {},
+    goalIds: [],
+  });
 }
 
-describe('store persistence and selectors', () => {
-  it('migrates legacy transaction persistence into normalized state', () => {
+describe('app store persistence, seeding, and CRUD', () => {
+  beforeEach(() => {
+    resetStore();
+  });
+
+  it('migrates legacy transaction persistence into the new persisted app shape', () => {
     const legacyData: TransactionsData = {
       totalBalance: 7783,
       totalExpense: 1187.4,
@@ -64,7 +57,7 @@ describe('store persistence and selectors', () => {
     };
 
     expect(
-      migratePersistedTransactionsState(
+      migratePersistedAppState(
         {
           data: legacyData,
         },
@@ -73,73 +66,151 @@ describe('store persistence and selectors', () => {
     ).toEqual(
       expect.objectContaining({
         transactionIds: ['txn_1'],
-        transactionMonthIds: ['April'],
-        transactionOverview: expect.objectContaining({
-          totalBalanceLabel: '$7,783.00',
-        }),
+        transactionMonthIds: [expect.stringContaining('April')],
+        goalsById: {},
+        goalIds: [],
       }),
     );
   });
 
-  it('builds stable grouped transaction sections and home previews from normalized state', () => {
-    const store = createBaseStore({
-      transactionsById: {
-        txn_1: {
-          id: 'txn_1',
-          title: 'Salary',
-          timeLabel: '18:27',
-          dateLabel: 'April 30',
-          metaLabel: '18:27 - April 30',
-          category: 'Monthly',
-          amount: 4000,
-          amountLabel: '$4,000.00',
-          type: 'income',
-          isExpense: false,
-          icon: 'salary',
-          iconBackgroundColor: '#6DB6FE',
-          monthLabel: 'April',
-        },
-      },
-      transactionIds: ['txn_1'],
-      transactionIdsByMonth: {
-        April: ['txn_1'],
-      },
-      transactionMonthIds: ['April'],
-      homeData: {
-        headerTitle: 'Hi, Welcome Back',
-        greeting: 'Good Morning',
-        overview: {
-          totalBalance: 7783,
-          totalExpense: 1187.4,
-          budget: 20000,
-          spentPercent: 30,
-          note: '30% Of Your Expenses, Looks Good.',
-          totalBalanceLabel: '$7,783.00',
-          totalExpenseLabel: '-$1,187.40',
-          budgetLabel: '$20,000.00',
-        },
-        weekly: {
-          revenue: 4000,
-          revenueLabel: '$4,000.00',
-          food: -100,
-          foodLabel: '-$100.00',
-        },
-        previewTransactionIds: ['txn_1'],
-      },
+  it('seeds demo data only once and marks the app as initialized', () => {
+    const state = useAppStore.getState();
+
+    expect(state.transactionIds).toHaveLength(0);
+    expect(state.goalIds).toHaveLength(0);
+
+    state.initializeAppData();
+    const initializedState = useAppStore.getState();
+
+    expect(initializedState.hasInitializedData).toBe(true);
+    expect(initializedState.transactionIds.length).toBeGreaterThan(0);
+    expect(initializedState.goalIds.length).toBeGreaterThan(0);
+  });
+
+  it('supports transaction and goal CRUD while keeping derived dashboards in sync', () => {
+    const state = useAppStore.getState();
+
+    const goalId = state.addGoal({
+      title: 'Rainy Day Fund',
+      subtitle: 'Small buffer for surprises',
+      targetAmount: 3000,
+      savedAmount: 600,
+      monthlyTarget: 200,
+      deadline: '2026-12-31T12:00:00.000Z',
+      status: 'Active',
+      icon: 'savings',
     });
 
-    expect(selectTransactionsByMonth(store)).toEqual([
-      {
-        title: 'April',
-        items: [expect.objectContaining({ id: 'txn_1' })],
-      },
-    ]);
+    const incomeId = state.addTransaction({
+      title: 'Salary',
+      notes: 'Monthly paycheck',
+      category: 'Salary',
+      amount: 5000,
+      type: 'income',
+      occurredAt: '2026-04-01T09:00:00.000Z',
+    });
 
-    expect(selectHomePreviewTransactions(store)).toEqual([
+    const expenseId = state.addTransaction({
+      title: 'Groceries',
+      notes: 'Weekly haul',
+      category: 'Groceries',
+      amount: 250,
+      type: 'expense',
+      occurredAt: '2026-04-03T18:00:00.000Z',
+    });
+
+    let nextState = useAppStore.getState();
+
+    expect(nextState.transactionOverview).toEqual(
       expect.objectContaining({
-        id: 'txn_1',
-        amountLabel: '$4,000.00',
+        totalBalanceLabel: '$4,750.00',
       }),
-    ]);
+    );
+    expect(nextState.transactionsById[incomeId]).toEqual(
+      expect.objectContaining({
+        title: 'Salary',
+      }),
+    );
+
+    nextState.updateTransaction(expenseId, {
+      title: 'Weekend Trip',
+      notes: 'Train and hotel',
+      category: 'Travel',
+      amount: 600,
+      type: 'expense',
+      occurredAt: '2026-05-05T09:00:00.000Z',
+    });
+
+    const coffeeId = nextState.addTransaction({
+      title: 'Coffee',
+      notes: 'Team catch-up',
+      category: 'Food',
+      amount: 20,
+      type: 'expense',
+      occurredAt: '2026-05-06T10:00:00.000Z',
+    });
+
+    nextState.updateGoal(goalId, {
+      title: 'Rainy Day Fund',
+      subtitle: 'Small buffer for surprises',
+      targetAmount: 3000,
+      savedAmount: 1000,
+      monthlyTarget: 250,
+      deadline: '2026-12-31T12:00:00.000Z',
+      status: 'Active',
+      icon: 'savings',
+    });
+
+    nextState = useAppStore.getState();
+
+    expect(nextState.transactionsById[expenseId]).toEqual(
+      expect.objectContaining({
+        category: 'Travel',
+        monthLabel: 'May 2026',
+        notes: 'Train and hotel',
+      }),
+    );
+
+    expect(selectHomeDashboard(nextState)).toMatchObject({
+      recentTransactions: expect.arrayContaining([
+        expect.objectContaining({
+          id: coffeeId,
+        }),
+        expect.objectContaining({
+          id: expenseId,
+        }),
+      ]),
+      overview: expect.objectContaining({
+        totalExpenseLabel: '-$620.00',
+      }),
+    });
+
+    expect(selectInsightsDashboard(nextState)).toMatchObject({
+      highestSpendingCategory: expect.objectContaining({
+        value: 'Travel',
+      }),
+      dominantTransactionType: expect.objectContaining({
+        value: 'Expense entries',
+      }),
+    });
+
+    expect(selectGoalSummary(nextState)).toMatchObject({
+      activeCount: 1,
+      totalSavedLabel: '$1,000.00',
+    });
+
+    nextState.deleteTransaction(coffeeId);
+    nextState = useAppStore.getState();
+
+    expect(nextState.transactionsById[coffeeId]).toBeUndefined();
+    expect(nextState.transactionOverview).toEqual(
+      expect.objectContaining({
+        totalBalanceLabel: '$4,400.00',
+      }),
+    );
+  });
+
+  it('returns an empty persisted shape when migration receives invalid input', () => {
+    expect(migratePersistedAppState(null, 2)).toEqual(EMPTY_PERSISTED_APP_STATE);
   });
 });

@@ -1,36 +1,39 @@
 import {
-  mapHomeApiToModel,
-  mapInsightsApiToModel,
+  buildGoalModel,
+  buildHomeDashboard,
+  buildInsightsDashboard,
+  mapBudgetOverviewFromTransactions,
   mapTransactionApiToModel,
   normalizeTransactionMonths,
 } from '../src/utils/finance';
-import type { HomeData, InsightsData, TransactionDto, TransactionMonthDto } from '../src/types/api';
+import type { TransactionDto, TransactionMonthDto } from '../src/types/api';
 
-describe('finance mappers', () => {
-  it('maps transaction DTOs into UI-ready models', () => {
+describe('finance mappers and dashboard builders', () => {
+  it('maps transaction DTOs into richer UI-ready models', () => {
     const apiTransaction: TransactionDto = {
       id: 'txn_demo',
       title: 'Groceries',
-      time: '17:00',
-      date: 'April 24',
       category: 'Pantry',
       amount: -100,
       type: 'expense',
       icon: 'groceries',
+      notes: 'Weekly restock',
+      occurredAt: '2026-04-24T17:00:00.000Z',
     };
 
-    expect(mapTransactionApiToModel(apiTransaction, 'April')).toEqual(
+    expect(mapTransactionApiToModel(apiTransaction)).toEqual(
       expect.objectContaining({
         id: 'txn_demo',
-        metaLabel: '17:00 - April 24',
+        notes: 'Weekly restock',
+        amount: 100,
         amountLabel: '-$100.00',
         isExpense: true,
-        monthLabel: 'April',
+        monthLabel: 'April 2026',
       }),
     );
   });
 
-  it('normalizes monthly transaction groups into ids and entities', () => {
+  it('normalizes monthly transaction groups into ids, entities, and overview totals', () => {
     const months: TransactionMonthDto[] = [
       {
         month: 'April',
@@ -38,12 +41,11 @@ describe('finance mappers', () => {
           {
             id: 'txn_1',
             title: 'Salary',
-            time: '18:27',
-            date: 'April 30',
-            category: 'Monthly',
+            category: 'Salary',
             amount: 4000,
             type: 'income',
             icon: 'salary',
+            occurredAt: '2026-04-01T09:00:00.000Z',
           },
         ],
       },
@@ -53,87 +55,92 @@ describe('finance mappers', () => {
       transactionsById: {
         txn_1: expect.objectContaining({
           id: 'txn_1',
-          monthLabel: 'April',
+          monthLabel: 'April 2026',
         }),
       },
       transactionIds: ['txn_1'],
       transactionIdsByMonth: {
-        April: ['txn_1'],
+        'April 2026': ['txn_1'],
       },
-      transactionMonthIds: ['April'],
+      transactionMonthIds: ['April 2026'],
+      transactionOverview: expect.objectContaining({
+        totalIncomeLabel: '$4,000.00',
+      }),
     });
   });
 
-  it('maps home and insights payloads into presentation-friendly models', () => {
-    const homePayload: HomeData = {
-      headerTitle: 'Hi, Welcome Back',
-      greeting: 'Good Morning',
-      totalBalance: 7783,
-      totalExpense: 1187.4,
-      budget: 20000,
-      spentPercent: 30,
-      note: '30% Of Your Expenses, Looks Good.',
-      weekly: {
-        revenue: 4000,
-        food: -100,
-      },
-      transactionsPreview: [],
-    };
+  it('builds derived home and insights data from shared transactions and goals', () => {
+    const salary = mapTransactionApiToModel({
+      id: 'txn_salary',
+      title: 'Salary',
+      category: 'Salary',
+      amount: 4200,
+      type: 'income',
+      icon: 'salary',
+      occurredAt: '2026-04-01T09:00:00.000Z',
+    });
+    const groceries = mapTransactionApiToModel({
+      id: 'txn_groceries',
+      title: 'Groceries',
+      category: 'Groceries',
+      amount: -220,
+      type: 'expense',
+      icon: 'groceries',
+      occurredAt: '2026-04-04T18:30:00.000Z',
+    });
+    const fuel = mapTransactionApiToModel({
+      id: 'txn_fuel',
+      title: 'Fuel',
+      category: 'Transport',
+      amount: -80,
+      type: 'expense',
+      icon: 'transport',
+      occurredAt: '2026-04-05T08:30:00.000Z',
+    });
+    const goal = buildGoalModel({
+      id: 'goal_1',
+      title: 'Emergency Fund',
+      subtitle: 'Peace of mind',
+      targetAmount: 12000,
+      savedAmount: 8400,
+      monthlyTarget: 450,
+      deadline: '2026-11-30T12:00:00.000Z',
+      status: 'Active',
+      icon: 'savings',
+    });
 
-    const insightsPayload: InsightsData = {
-      totalBalance: 7783,
-      totalExpense: 1187.4,
-      budget: 20000,
-      spentPercent: 30,
-      note: '30% Of Your Expenses, Looks Good.',
-      tabs: ['Daily', 'Weekly', 'Monthly', 'Year'],
-      activeTab: 'Daily',
-      chartTitle: 'Income & Expenses',
-      charts: [
-        {
-          key: 'Daily',
-          points: [{ label: 'Mon', income: 300, expense: 100 }],
-        },
-      ],
-      summary: {
-        income: 4120,
-        expense: 1187.4,
-      },
-      targets: [
-        {
-          id: 'target_travel',
-          label: 'Travel',
-          savedAmount: 600,
-          goalAmount: 2000,
-          percent: 30,
-        },
-      ],
-    };
-
-    expect(mapHomeApiToModel(homePayload)).toEqual(
+    expect(mapBudgetOverviewFromTransactions([salary, groceries, fuel])).toEqual(
       expect.objectContaining({
-        headerTitle: 'Hi, Welcome Back',
-        overview: expect.objectContaining({
-          totalBalanceLabel: '$7,783.00',
-          totalExpenseLabel: '-$1,187.40',
-        }),
+        totalBalanceLabel: '$3,900.00',
+        totalIncomeLabel: '$4,200.00',
+        totalExpenseLabel: '-$300.00',
       }),
     );
 
-    expect(mapInsightsApiToModel(insightsPayload)).toEqual(
-      expect.objectContaining({
-        overview: expect.objectContaining({
-          budgetLabel: '$20,000.00',
-        }),
-        summary: expect.objectContaining({
-          incomeLabel: '$4,120.00',
-        }),
-        targets: [
-          expect.objectContaining({
-            savedAmountLabel: '$600.00',
-          }),
-        ],
+    expect(buildHomeDashboard([salary, groceries, fuel], [goal])).toMatchObject({
+      primaryGoal: expect.objectContaining({
+        title: 'Emergency Fund',
       }),
-    );
+      recentTransactions: expect.arrayContaining([
+        expect.objectContaining({ id: 'txn_fuel' }),
+      ]),
+    });
+
+    expect(buildInsightsDashboard([salary, groceries, fuel], [goal])).toMatchObject({
+      highestSpendingCategory: expect.objectContaining({
+        value: 'Groceries',
+      }),
+      dominantTransactionType: expect.objectContaining({
+        value: 'Expense entries',
+      }),
+      categoryBreakdown: expect.arrayContaining([
+        expect.objectContaining({
+          category: 'Groceries',
+        }),
+        expect.objectContaining({
+          category: 'Transport',
+        }),
+      ]),
+    });
   });
 });

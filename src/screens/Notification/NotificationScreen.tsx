@@ -108,8 +108,13 @@ const NOTIFICATIONS: NotifGroup[] = [
 ];
 
 function NotifIcon({ type }: { type: NotifType }) {
-  const iconSize = moderateScale(18);
-  const iconColor = colors.surfaceDark;
+  const iconSize = moderateScale(22);
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
+  
+  // Icon color and Bg based on theme/type to feel premium
+  const iconColor = colors.primary500;
+  const bgColor = isDark ? 'rgba(0, 168, 120, 0.15)' : 'rgba(0, 168, 120, 0.1)';
 
   const icon = (() => {
     switch (type) {
@@ -128,11 +133,14 @@ function NotifIcon({ type }: { type: NotifType }) {
 
   return (
     <View
-      className="shrink-0 items-center justify-center bg-primary-500"
+      items-center justify-center
       style={{
-        width: moderateScale(40),
-        height: moderateScale(40),
-        borderRadius: moderateScale(12),
+        width: moderateScale(48),
+        height: moderateScale(48),
+        borderRadius: moderateScale(14),
+        backgroundColor: bgColor,
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       {icon}
@@ -147,63 +155,69 @@ function NotificationRow({
   item: NotifItem;
   isLast: boolean;
 }) {
+  const isDark = useColorScheme() === 'dark';
+  const semanticColors = getSemanticColors(isDark);
+
   return (
     <View
-      className={isLast ? 'border-b-0' : 'border-b border-primary-500 dark:border-border'}
       style={{
-        paddingVertical: moderateScale(14),
+        paddingVertical: moderateScale(16),
+        borderBottomWidth: isLast ? 0 : 0.5,
+        borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
       }}
     >
-      <View style={{ gap: moderateScale(6) }}>
-        <View className="flex-row items-start" style={{ gap: moderateScale(12) }}>
-          <NotifIcon type={item.type} />
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: moderateScale(14) }}>
+        <NotifIcon type={item.type} />
 
-          <View className="flex-1" style={{ gap: moderateScale(4) }}>
+        <View style={{ flex: 1, gap: moderateScale(2) }}>
+          <Text
+            className="text-title"
+            style={{
+              fontSize: S.fs.md_h,
+              fontFamily: 'Poppins-SemiBold',
+            }}
+          >
+            {item.title}
+          </Text>
+
+          <Text
+            className="text-text"
+            style={{
+              fontSize: S.fs.sm,
+              fontFamily: 'Poppins-Regular',
+              opacity: 0.8,
+              lineHeight: S.fs.sm * 1.4,
+            }}
+          >
+            {item.body}
+          </Text>
+
+          {item.tags ? (
             <Text
-              className="text-text"
+              className="text-primary-500"
               style={{
-                fontSize: S.fs.md,
+                fontSize: S.fs.xs,
                 fontFamily: 'Poppins-SemiBold',
-                lineHeight: S.fs.md * 1.3,
+                marginTop: moderateScale(2),
               }}
             >
-              {item.title}
+              {item.tags.map(tag => tag.label).join(' | ')}
             </Text>
+          ) : null}
 
-            <Text
-              className="text-text opacity-75"
-              style={{
-                fontSize: S.fs.sm,
-                fontFamily: 'Poppins-Regular',
-                lineHeight: S.fs.sm * 1.45,
-              }}
-            >
-              {item.body}
-            </Text>
-
-            {item.tags ? (
-              <Text
-                className="text-primary-500"
-                style={{
-                  fontSize: S.fs.xs,
-                  fontFamily: 'Poppins-SemiBold',
-                }}
-              >
-                {item.tags.map(tag => tag.label).join(' | ')}
-              </Text>
-            ) : null}
-          </View>
+          <Text
+            style={{
+              fontSize: S.fs.xs,
+              fontFamily: 'Poppins-Regular',
+              color: isDark ? colors.primary300 : colors.primary600,
+              textAlign: 'right',
+              marginTop: moderateScale(4),
+              opacity: 0.9,
+            }}
+          >
+            {item.time}
+          </Text>
         </View>
-
-        <Text
-          className="text-right text-blue-700"
-          style={{
-            fontSize: S.fs.xs,
-            fontFamily: 'Poppins-Regular',
-          }}
-        >
-          {item.time}
-        </Text>
       </View>
     </View>
   );
@@ -243,19 +257,20 @@ export default function NotificationScreen() {
       />
 
       <View
-        className="flex-1 overflow-hidden bg-card"
+        className="flex-1 overflow-hidden bg-secondary-bg"
         style={{
-          borderTopLeftRadius: moderateScale(56),
-          borderTopRightRadius: moderateScale(56),
-          paddingVertical: S.space.lg,
+          borderTopLeftRadius: moderateScale(72),
+          borderTopRightRadius: moderateScale(72),
+          paddingTop: S.space.lg,
         }}
       >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
-            paddingHorizontal: moderateScale(28),
-            paddingVertical: moderateScale(28),
-            gap: moderateScale(20),
+            paddingHorizontal: S.space.paddingHorizontal,
+            paddingTop: moderateScale(32),
+            paddingBottom: moderateScale(40),
+            gap: moderateScale(24),
           }}
           showsVerticalScrollIndicator={false}
         >

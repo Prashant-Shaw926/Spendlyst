@@ -1,9 +1,10 @@
 import React from 'react';
 import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
-import { CalendarIcon } from '../shared/FinanceIcons';
-import type { FinanceIconProps } from '../shared/FinanceIcons';
-import { getSemanticColors } from '../../theme/colors';
-import { S } from '../../theme/scale';
+import { CalendarIcon } from '../../shared/FinanceIcons';
+import type { FinanceIconProps } from '../../shared/FinanceIcons';
+import { getSemanticColors } from '../../../theme/colors';
+import { S } from '../../../theme/scale';
+import { moderateScale, rs } from '../../../utils/responsive';
 
 export type GoalCardItem = {
   id: string;
@@ -39,11 +40,14 @@ function InfoColumn({
     align === 'center'
       ? 'items-center'
       : align === 'right'
-        ? 'items-end'
-        : 'items-start';
+      ? 'items-end'
+      : 'items-start';
 
   return (
-    <View className={`flex-1 ${alignmentClassName}`} style={{ gap: S.space.xs }}>
+    <View
+      className={`flex-1 ${alignmentClassName}`}
+      style={{ gap: S.space.xs }}
+    >
       <Text
         className="text-text-muted"
         style={{
@@ -70,24 +74,29 @@ function InfoColumn({
 export function GoalCard({ item, onPress }: GoalCardProps) {
   const isDark = useColorScheme() === 'dark';
   const semanticColors = getSemanticColors(isDark);
-  const progressWidth = `${Math.max(0, Math.min(100, item.progress))}%` as `${number}%`;
+  const progressWidth = `${Math.max(
+    0,
+    Math.min(100, item.progress),
+  )}%` as `${number}%`;
 
   const content = (
     <View
-      className="bg-card border border-border dark:border-transparent dark:bg-secondary-card"
+      className="bg-card"
       style={{
         borderRadius: S.radius.xxxl,
         paddingHorizontal: S.space.lg,
         paddingVertical: S.space.lg,
         gap: S.space.lg,
+        borderWidth: 1,
+        borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
       }}
     >
       <View className="flex-row items-center">
         <View
           className="items-center justify-center"
           style={{
-            width: S.size.avatarLg - S.space.xs,
-            height: S.size.avatarLg - S.space.xs,
+            width: moderateScale(56),
+            height: moderateScale(56),
             borderRadius: S.radius.xxl,
             backgroundColor: item.iconBg,
           }}
@@ -95,7 +104,10 @@ export function GoalCard({ item, onPress }: GoalCardProps) {
           <item.Icon color={item.tint} size={28} />
         </View>
 
-        <View className="flex-1" style={{ gap: S.space.xs, paddingHorizontal: S.space.md }}>
+        <View
+          className="flex-1"
+          style={{ gap: S.space.xs, paddingHorizontal: S.space.md }}
+        >
           <Text
             className="text-text"
             style={{
@@ -216,23 +228,25 @@ export function GoalCard({ item, onPress }: GoalCardProps) {
         </View>
 
         <View
-          className="bg-pill dark:bg-secondary-bg"
+          className="bg-pill"
           style={{
             borderRadius: S.radius.xl,
             paddingHorizontal: S.space.md,
             paddingVertical: S.space.sm,
+            marginTop: S.space.xs,
           }}
         >
           <Text
             className="text-title"
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Medium',
+              fontFamily: 'Poppins-SemiBold',
             }}
           >
-            Saving plan: {item.monthlyPlan}
+            Plan: <Text className="text-text-muted" style={{ fontFamily: 'Poppins-Regular' }}>{item.monthlyPlan} / month</Text>
           </Text>
         </View>
+
       </View>
     </View>
   );

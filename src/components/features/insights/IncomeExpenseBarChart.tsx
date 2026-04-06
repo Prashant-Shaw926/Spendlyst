@@ -145,10 +145,11 @@ export function IncomeExpenseBarChart({
         color: colors.blue300,
       }}
       xAxisLabelTextStyle={{
-        fontSize: S.fs.sm,
+        fontSize: S.fs.xs,
         fontFamily: 'Poppins-Regular',
-        color: colors.surfaceDark,
+        color: colors.blue300,
       }}
+      labelWidth={moderateScale(60)}
       yAxisLabelWidth={yAxisLabelWidth}
       labelsDistanceFromXaxis={moderateScale(8)}
     />

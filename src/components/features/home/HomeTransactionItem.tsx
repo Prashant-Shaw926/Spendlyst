@@ -4,10 +4,11 @@ import { TransactionRow } from '../../shared/TransactionRow';
 
 type HomeTransactionItemProps = {
   item: TransactionModel;
+  onPress?: () => void;
 };
 
-function HomeTransactionItemComponent({ item }: HomeTransactionItemProps) {
-  return <TransactionRow item={item} variant="preview" />;
+function HomeTransactionItemComponent({ item, onPress }: HomeTransactionItemProps) {
+  return <TransactionRow item={item} variant="detailed" onPress={onPress} />;
 }
 
 export const HomeTransactionItem = memo(HomeTransactionItemComponent);

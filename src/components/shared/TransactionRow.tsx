@@ -1,5 +1,10 @@
 import React, { memo } from 'react';
-import { Text, View, useColorScheme } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 import {
   CarIcon,
@@ -27,6 +32,7 @@ export type TransactionRowVariant = 'preview' | 'detailed';
 type TransactionRowProps = {
   item: TransactionModel;
   variant: TransactionRowVariant;
+  onPress?: () => void;
 };
 
 type AssetIcon = React.ComponentType<SvgProps>;
@@ -57,15 +63,28 @@ const DETAILED_ICONS: Record<
 function TransactionRowComponent({
   item,
   variant,
+  onPress,
 }: TransactionRowProps) {
   const isDark = useColorScheme() === 'dark';
+  const Container = onPress ? TouchableOpacity : View;
+  const containerProps = onPress
+    ? {
+        accessibilityRole: 'button' as const,
+        activeOpacity: 0.86,
+        onPress,
+      }
+    : {};
 
   if (variant === 'preview') {
     const Icon = PREVIEW_ICONS[item.icon] ?? SalaryIcon;
     const iconColor = isDark ? colors.primary50 : colors.card;
 
     return (
-      <View className="flex-row items-center" style={{ gap: S.space.md }}>
+      <Container
+        className="flex-row items-center"
+        style={{ gap: S.space.md }}
+        {...containerProps}
+      >
         <View
           className="items-center justify-center"
           style={{
@@ -111,36 +130,7 @@ function TransactionRowComponent({
             </Text>
           </View>
 
-          <View
-            className="bg-primary-500"
-            style={{
-              width: 1,
-              height: moderateScale(42),
-            }}
-          />
-
-          <View className="items-start" style={{ width: moderateScale(64) }}>
-            <Text
-              className="text-text-muted"
-              numberOfLines={1}
-              style={{
-                fontFamily: 'Poppins-Regular',
-                fontSize: S.fs.sm,
-              }}
-            >
-              {item.category}
-            </Text>
-          </View>
-
-          <View
-            className="bg-primary-500"
-            style={{
-              width: 1,
-              height: moderateScale(42),
-            }}
-          />
-
-          <View className="items-end" style={{ width: moderateScale(92) }}>
+          <View className="items-end">
             <Text
               className={item.isExpense ? 'text-finance-expense' : 'text-text'}
               numberOfLines={1}
@@ -154,31 +144,35 @@ function TransactionRowComponent({
             </Text>
           </View>
         </View>
-      </View>
+      </Container>
     );
   }
 
   const Icon = DETAILED_ICONS[item.icon] ?? StackCashIcon;
 
   return (
-    <View className="flex-row items-center" style={{ gap: S.space.md }}>
+    <Container
+      className="flex-row items-center"
+      style={{ gap: S.space.md }}
+      {...containerProps}
+    >
       <View
         className="items-center justify-center"
         style={{
-          width: moderateScale(56),
-          height: moderateScale(56),
-          borderRadius: S.radius.xl,
-          backgroundColor: item.iconBackgroundColor,
+          width: S.size.avatarMd,
+          height: S.size.avatarMd,
+          borderRadius: moderateScale(999),
+          backgroundColor: colors.blue500,
         }}
       >
-        <Icon color={colors.card} size={24} />
+        <Icon color={colors.white} size={24} />
       </View>
 
       <View
         className="flex-1 flex-row items-center"
-        style={{ gap: S.space.md }}
+        style={{ gap: S.space.sm }}
       >
-        <View style={{ flex: 1.4, gap: S.space.xs }}>
+        <View className="flex-1" style={{ gap: S.space.xs }}>
           <Text
             className="text-text"
             numberOfLines={1}
@@ -191,7 +185,7 @@ function TransactionRowComponent({
           </Text>
 
           <Text
-            className="text-blue-700"
+            className="text-text"
             numberOfLines={1}
             style={{
               fontSize: S.fs.xs,
@@ -202,38 +196,9 @@ function TransactionRowComponent({
           </Text>
         </View>
 
-        <View
-          className="self-stretch bg-primary-500"
-          style={{
-            width: 1,
-            opacity: 0.75,
-          }}
-        />
-
-        <View className="flex-1 items-start">
+        <View className="items-end">
           <Text
-            className="text-text-muted"
-            numberOfLines={1}
-            style={{
-              fontSize: S.fs.sm,
-              fontFamily: 'Poppins-Regular',
-            }}
-          >
-            {item.category}
-          </Text>
-        </View>
-
-        <View
-          className="self-stretch bg-primary-500"
-          style={{
-            width: 1,
-            opacity: 0.75,
-          }}
-        />
-
-        <View className="items-end" style={{ minWidth: moderateScale(88) }}>
-          <Text
-            className={item.isExpense ? 'text-blue-700' : 'text-text'}
+            className={item.isExpense ? 'text-finance-expense' : 'text-text'}
             numberOfLines={1}
             style={{
               fontSize: S.fs.md,
@@ -245,7 +210,7 @@ function TransactionRowComponent({
           </Text>
         </View>
       </View>
-    </View>
+    </Container>
   );
 }
 

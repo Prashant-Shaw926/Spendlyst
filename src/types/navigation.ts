@@ -15,7 +15,7 @@ export type TransactionsStackParamList = {
 
 export type GoalsStackParamList = {
   Goals: undefined;
-  GoalDetail: { goalId: string };
+  GoalDetail: { goalId?: string; startInEditMode?: boolean } | undefined;
   Notification: undefined;
 };
 

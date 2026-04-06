@@ -1,40 +1,35 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import type { GoalModel } from '../../../types/models';
 import { colors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
-import type { HomeModel } from '../../../types/models';
-import {
-  CarIcon,
-  ForkKnifeIcon,
-  StackCashIcon,
-} from '../../shared/FinanceIcons';
-
-type FinanceIconComponent = React.ComponentType<{
-  color?: string;
-  size?: number;
-  strokeWidth?: number;
-}>;
+import { ProgressBar } from '../../shared/ProgressBar';
 
 type HomeSavingsCardProps = {
-  weekly: HomeModel['weekly'];
+  goal: GoalModel | null;
 };
 
-function SavingsStat({
-  Icon,
-  label,
-  value,
-  valueClassName,
-}: {
-  Icon: FinanceIconComponent;
-  label: string;
-  value: string;
-  valueClassName: string;
-}) {
-  return (
-    <View className="flex-row items-center" style={{ gap: S.space.md }}>
-      <Icon color={colors.surfaceDark} size={S.icon.xl} />
-
-      <View style={{ gap: S.space.xs }}>
+export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
+  if (!goal) {
+    return (
+      <View
+        className="bg-primary-100"
+        style={{
+          borderRadius: S.radius.xxxl,
+          gap: S.space.sm,
+          paddingHorizontal: S.space.lg,
+          paddingVertical: S.space.lg,
+        }}
+      >
+        <Text
+          className="text-surface-dark"
+          style={{
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: S.fs.md_h,
+          }}
+        >
+          Savings goal
+        </Text>
         <Text
           className="text-surface-dark"
           style={{
@@ -42,88 +37,98 @@ function SavingsStat({
             fontSize: S.fs.sm,
           }}
         >
-          {label}
-        </Text>
-
-        <Text
-          className={valueClassName}
-          style={{
-            fontFamily: 'Poppins-Bold',
-            fontSize: S.fs.md,
-            lineHeight: S.fs.md * 1.35,
-          }}
-        >
-          {value}
+          Add your first goal to track progress from the dashboard.
         </Text>
       </View>
-    </View>
-  );
-}
+    );
+  }
 
-export function HomeSavingsCard({ weekly }: HomeSavingsCardProps) {
   return (
     <View
-      className="flex-row items-center bg-primary-500"
+      className="bg-primary-100"
       style={{
         borderRadius: S.radius.xxxl,
+        gap: S.space.md,
         paddingHorizontal: S.space.lg,
         paddingVertical: S.space.lg,
-        gap: S.space.lg,
       }}
     >
-      <View className="items-center justify-center" style={{ gap: S.space.md }}>
-        <View
-          className="items-center justify-center rounded-full border-2 border-blue-700"
+      <View style={{ gap: S.space.xs }}>
+        <Text
+          className="text-surface-dark"
           style={{
-            width: S.size.avatarLg + S.space.sm,
-            height: S.size.avatarLg + S.space.sm,
+            fontFamily: 'Poppins-Bold',
+            fontSize: S.fs.md_h,
           }}
         >
-          <CarIcon color={colors.surfaceDark} size={S.icon.xl} />
-        </View>
-
+          {goal.title}
+        </Text>
         <Text
-          className="text-center text-surface-dark"
+          className="text-surface-dark"
           style={{
             fontFamily: 'Poppins-Regular',
-            fontSize: S.fs.md,
-            lineHeight: S.fs.md * 1.25,
+            fontSize: S.fs.sm,
           }}
         >
-          {'Savings\nOn Goals'}
+          {goal.subtitle}
         </Text>
       </View>
 
-      <View
-        className="self-stretch bg-white"
+      <ProgressBar
+        progressPercent={goal.progress}
+        progressValue={goal.targetAmountLabel}
         style={{
-          width: 1,
-          opacity: 0.5,
+          backgroundColor: colors.white,
         }}
       />
 
-      <View className="flex-1" style={{ gap: S.space.md }}>
-        <SavingsStat
-          Icon={StackCashIcon}
-          label="Revenue Last Week"
-          value={weekly.revenueLabel}
-          valueClassName="text-surface-dark"
-        />
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: S.space.md,
+        }}
+      >
+        <View style={{ flex: 1, gap: S.space.xs }}>
+          <Text
+            className="text-text-muted"
+            style={{
+              fontFamily: 'Poppins-Regular',
+              fontSize: S.fs.xs,
+            }}
+          >
+            Saved
+          </Text>
+          <Text
+            className="text-surface-dark"
+            style={{
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: S.fs.md,
+            }}
+          >
+            {goal.savedAmountLabel}
+          </Text>
+        </View>
 
-        <View
-          className="bg-white"
-          style={{
-            height: 1,
-            opacity: 0.5,
-          }}
-        />
-
-        <SavingsStat
-          Icon={ForkKnifeIcon}
-          label="Food Last Week"
-          value={weekly.foodLabel}
-          valueClassName="text-finance-expense"
-        />
+        <View style={{ flex: 1, gap: S.space.xs }}>
+          <Text
+            className="text-text-muted"
+            style={{
+              fontFamily: 'Poppins-Regular',
+              fontSize: S.fs.xs,
+            }}
+          >
+            Monthly plan
+          </Text>
+          <Text
+            className="text-surface-dark"
+            style={{
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: S.fs.md,
+            }}
+          >
+            {goal.monthlyTargetLabel}
+          </Text>
+        </View>
       </View>
     </View>
   );

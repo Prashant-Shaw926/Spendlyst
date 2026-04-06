@@ -1,38 +1,22 @@
-import { createCachedSelector, isDefined } from './helpers';
+import { buildHomeDashboard } from '../../utils/finance';
+import { createCachedSelector } from './helpers';
 import type { AppStore } from '../types';
 
-export const selectFetchHome = (state: AppStore) => state.fetchHome;
-
-export const selectHomeScreenState = createCachedSelector(
+export const selectHomeDashboard = createCachedSelector(
   (
     state,
-  ): [
-    AppStore['homeData'],
-    AppStore['homeStatus'],
-    AppStore['homeError'],
-    AppStore['hasHydrated'],
-  ] => [state.homeData, state.homeStatus, state.homeError, state.hasHydrated],
-  (homeData, homeStatus, homeError, hasHydrated) => ({
-    homeData,
-    homeStatus,
-    homeError,
-    hasHydrated,
-    isInitialLoading:
-      (!hasHydrated && !homeData) ||
-      (!homeData && (homeStatus === 'idle' || homeStatus === 'loading')),
-    isRefreshing: homeStatus === 'refreshing',
-  }),
-);
-
-export const selectHomePreviewTransactions = createCachedSelector(
-  (
-    state,
-  ): [string[] | undefined, AppStore['transactionsById']] => [
-    state.homeData?.previewTransactionIds,
+  ): [AppStore['transactionIds'], AppStore['transactionsById'], AppStore['goalIds'], AppStore['goalsById']] => [
+    state.transactionIds,
     state.transactionsById,
+    state.goalIds,
+    state.goalsById,
   ],
-  (previewTransactionIds, transactionsById) =>
-    (previewTransactionIds ?? [])
+  (transactionIds, transactionsById, goalIds, goalsById) => {
+    const transactions = transactionIds
       .map((transactionId) => transactionsById[transactionId])
-      .filter(isDefined),
+      .filter(Boolean);
+    const goals = goalIds.map((goalId) => goalsById[goalId]).filter(Boolean);
+
+    return buildHomeDashboard(transactions, goals);
+  },
 );
