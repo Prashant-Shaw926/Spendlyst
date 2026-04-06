@@ -5,6 +5,7 @@ import type {
   GoalModel,
   GoalStatus,
   GlobalAppError,
+  NotificationPermissionStatus,
   TransactionModel,
 } from '../types/models';
 import type { TransactionType } from '../types/api';
@@ -33,9 +34,17 @@ export interface AppUiSlice {
   hasHydrated: boolean;
   hasInitializedData: boolean;
   lastGlobalError: GlobalAppError | null;
+  notificationPermissionStatus: NotificationPermissionStatus;
+  fcmToken: string | null;
+  hasRequestedNotificationPermission: boolean;
   clearGlobalError: () => void;
   initializeAppData: () => void;
+  setFcmToken: (value: string | null) => void;
   setHasHydrated: (value: boolean) => void;
+  setHasRequestedNotificationPermission: (value: boolean) => void;
+  setNotificationPermissionStatus: (
+    value: NotificationPermissionStatus,
+  ) => void;
 }
 
 export interface TransactionSlice {
@@ -68,6 +77,9 @@ export type PersistedAppState = Pick<
   | 'transactionIdsByMonth'
   | 'transactionMonthIds'
   | 'transactionOverview'
+  | 'notificationPermissionStatus'
+  | 'fcmToken'
+  | 'hasRequestedNotificationPermission'
   | 'goalsById'
   | 'goalIds'
 >;

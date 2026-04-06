@@ -21,7 +21,7 @@ const mmkvStateStorage: StateStorage = {
 };
 
 export const persistStorage = createJSONStorage(() => mmkvStateStorage);
-export const STORAGE_VERSION = 2;
+export const STORAGE_VERSION = 3;
 export const APP_STORAGE_KEY = 'spendlyst-store';
 
 export const EMPTY_PERSISTED_APP_STATE: PersistedAppState = {
@@ -30,6 +30,9 @@ export const EMPTY_PERSISTED_APP_STATE: PersistedAppState = {
   transactionIdsByMonth: {},
   transactionMonthIds: [],
   transactionOverview: null,
+  notificationPermissionStatus: 'not-determined',
+  fcmToken: null,
+  hasRequestedNotificationPermission: false,
   goalsById: {},
   goalIds: [],
 };
@@ -73,6 +76,11 @@ export function migratePersistedAppState(
     transactionIdsByMonth: nextState.transactionIdsByMonth ?? {},
     transactionMonthIds: nextState.transactionMonthIds ?? [],
     transactionOverview: nextState.transactionOverview ?? null,
+    notificationPermissionStatus:
+      nextState.notificationPermissionStatus ?? 'not-determined',
+    fcmToken: nextState.fcmToken ?? null,
+    hasRequestedNotificationPermission:
+      nextState.hasRequestedNotificationPermission ?? false,
     goalsById: nextState.goalsById ?? {},
     goalIds: nextState.goalIds ?? [],
   };

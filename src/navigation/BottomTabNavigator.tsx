@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, useColorScheme } from 'react-native';
+import { View, useColorScheme, Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { SvgProps } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,21 +27,28 @@ type FinanceTabIconComponent = React.ComponentType<{
 }>;
 
 function TabBubble({
-  focused,
   children,
+  focused,
 }: {
-  focused: boolean;
   children: React.ReactNode;
+  focused: boolean;
 }) {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <View
       style={{
         width: moderateScale(50),
         height: moderateScale(50),
-        borderRadius: moderateScale(25),
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: focused ? colors.primary500 : 'transparent',
+        borderRadius: moderateScale(25),
+        backgroundColor: focused
+          ? isDark
+            ? colors.primary500 + '33'
+            : colors.primary500 + '1A'
+          : 'transparent',
       }}
     >
       {children}
@@ -58,7 +65,7 @@ function TabBarIcon({
   focused: boolean;
   inactiveColor: string;
 }) {
-  const iconColor = focused ? colors.surfaceDark : inactiveColor;
+  const iconColor = focused ? colors.primary500 : inactiveColor;
 
   return (
     <TabBubble focused={focused}>
@@ -76,7 +83,7 @@ function TabBarFinanceIcon({
   focused: boolean;
   inactiveColor: string;
 }) {
-  const iconColor = focused ? colors.surfaceDark : inactiveColor;
+  const iconColor = focused ? colors.primary500 : inactiveColor;
 
   return (
     <TabBubble focused={focused}>
@@ -114,6 +121,16 @@ export function BottomTabNavigator() {
         tabBarItemStyle: {
           alignItems: 'center',
           justifyContent: 'center',
+        },
+        tabBarButton: (props) => {
+          const { style, ...rest } = props as any;
+          return (
+            <Pressable
+              {...rest}
+              android_ripple={null}
+              style={style}
+            />
+          );
         },
       }}
     >

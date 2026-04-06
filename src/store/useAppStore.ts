@@ -30,6 +30,10 @@ export const useAppStore = create<AppStore>()(
         transactionIdsByMonth: state.transactionIdsByMonth,
         transactionMonthIds: state.transactionMonthIds,
         transactionOverview: state.transactionOverview,
+        notificationPermissionStatus: state.notificationPermissionStatus,
+        fcmToken: state.fcmToken,
+        hasRequestedNotificationPermission:
+          state.hasRequestedNotificationPermission,
         goalsById: state.goalsById,
         goalIds: state.goalIds,
       }),

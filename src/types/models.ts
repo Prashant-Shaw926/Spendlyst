@@ -2,6 +2,12 @@ import type { TransactionIconKey, TransactionType } from './api';
 
 export type GoalStatus = 'Active' | 'Planned' | 'Completed';
 export type GoalIconKey = 'savings' | 'car' | 'travel' | 'home';
+export type NotificationPermissionStatus =
+  | 'not-determined'
+  | 'denied'
+  | 'authorized'
+  | 'provisional'
+  | 'ephemeral';
 
 export interface BudgetOverviewModel {
   totalBalance: number;
