@@ -10,7 +10,7 @@ import { name as appName } from './app.json';
 import {
   handleBackgroundMessage,
   handleNotificationBackgroundEvent,
-} from './src/services/notifications/notifications';
+} from './src/features/notifications/services/notifications';
 
 messaging().setBackgroundMessageHandler(handleBackgroundMessage);
 notifee.onBackgroundEvent(handleNotificationBackgroundEvent);

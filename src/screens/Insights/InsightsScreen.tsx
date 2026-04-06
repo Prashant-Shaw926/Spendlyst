@@ -8,29 +8,33 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
-import { InsightsSummaryStats } from '../../components/features/insights/InsightsSummaryStats';
-import { BudgetOverview } from '../../components/shared/BudgetOverview';
-import { ChartSection } from '../../components/shared/ChartSection';
 import {
   ArrowDownRightIcon,
   ArrowLeftIcon,
   ArrowUpRightIcon,
   BellIcon,
-} from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
-import { InsightsScreenSkeleton } from '../../components/shared/InsightsScreenSkeleton';
+  BudgetOverview,
+  ChartSection,
+  Header,
+  IconButton,
+  IncomeExpenseBarChart,
+  InsightsScreenSkeleton,
+  ScreenState,
+} from '../../components';
 import {
+  selectAllTransactions,
+  selectFetchTransactions,
   selectHasHydrated,
   selectHasInitializedData,
   selectInitializeAppData,
-} from '../../store/selectors/app.selectors';
-import { selectInsightsDashboard } from '../../store/selectors/insights.selectors';
-import { useAppStore } from '../../store/useAppStore';
+  selectInsightsDashboard,
+  selectLastGlobalError,
+  useAppStore,
+} from '../../store';
 import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
+import { InsightsSummaryStats } from '../../components/features/Insights/InsightsSummaryStats';
 
 function InsightCard({
   title,
@@ -93,7 +97,10 @@ export function InsightsScreen() {
     : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const hasInitializedData = useAppStore(selectHasInitializedData);
+  const fetchTransactions = useAppStore(selectFetchTransactions);
   const initializeAppData = useAppStore(selectInitializeAppData);
+  const lastGlobalError = useAppStore(selectLastGlobalError);
+  const transactions = useAppStore(selectAllTransactions);
   const insights = useAppStore(selectInsightsDashboard);
 
   useEffect(() => {
@@ -103,6 +110,10 @@ export function InsightsScreen() {
   }, [hasHydrated, initializeAppData]);
 
   const isBootstrapping = !hasHydrated || !hasInitializedData;
+  const hasLoadError =
+    !isBootstrapping &&
+    transactions.length === 0 &&
+    lastGlobalError?.source === 'api';
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
@@ -113,7 +124,18 @@ export function InsightsScreen() {
 
       {isBootstrapping ? <InsightsScreenSkeleton /> : null}
 
-      {!isBootstrapping ? (
+      {!isBootstrapping && hasLoadError ? (
+        <ScreenState
+          mode="error"
+          title="Unable to load insights"
+          message={lastGlobalError?.message ?? 'Please try again in a moment.'}
+          onRetry={() => {
+            fetchTransactions();
+          }}
+        />
+      ) : null}
+
+      {!isBootstrapping && !hasLoadError ? (
         <>
           <Header
             variant="centerTitle"
@@ -252,7 +274,7 @@ export function InsightsScreen() {
                 </Text>
 
                 <View style={{ gap: S.space.md }}>
-                  {insights.categoryBreakdown.map(item => (
+                  {insights.categoryBreakdown.map((item) => (
                     <View
                       key={item.category}
                       className="bg-secondary-card"

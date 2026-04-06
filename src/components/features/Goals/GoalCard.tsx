@@ -61,7 +61,7 @@ function InfoItem({
   );
 }
 
-export function GoalCard({ item, onPress }: GoalCardProps) {
+export default function GoalCard({ item, onPress }: GoalCardProps) {
   const isDark = useColorScheme() === 'dark';
   const status = item.status.toLowerCase();
   const isPlanned = status === 'planned';

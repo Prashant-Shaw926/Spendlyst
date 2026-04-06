@@ -10,19 +10,14 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PrimaryButton } from '../../components/shared/PrimaryButton';
-import { ArrowLeftIcon } from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
-import {
-  selectHasHydrated,
-  selectInitializeAppData,
-} from '../../store/selectors/app.selectors';
+import { ArrowLeftIcon, Header, IconButton, PrimaryButton } from '../../components';
 import {
   selectDeleteTransaction,
+  selectHasHydrated,
+  selectInitializeAppData,
   selectTransactionById,
-} from '../../store/selectors/transactions.selectors';
-import { useAppStore } from '../../store/useAppStore';
+  useAppStore,
+} from '../../store';
 import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { TransactionsStackParamList } from '../../types/navigation';

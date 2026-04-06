@@ -33,13 +33,14 @@ export interface GoalUpsertPayload {
 export interface AppUiSlice {
   hasHydrated: boolean;
   hasInitializedData: boolean;
+  isInitializingApp: boolean;
   lastGlobalError: GlobalAppError | null;
   notificationPermissionStatus: NotificationPermissionStatus;
   fcmToken: string | null;
   hasRequestedNotificationPermission: boolean;
   userName: string;
   clearGlobalError: () => void;
-  initializeAppData: () => void;
+  initializeAppData: () => Promise<void>;
   setFcmToken: (value: string | null) => void;
   setHasHydrated: (value: boolean) => void;
   setHasRequestedNotificationPermission: (value: boolean) => void;
@@ -55,7 +56,8 @@ export interface TransactionSlice {
   transactionIdsByMonth: Record<string, string[]>;
   transactionMonthIds: string[];
   transactionOverview: BudgetOverviewModel | null;
-  seedTransactionsIfEmpty: () => void;
+  transactionsStatus: 'idle' | 'loading' | 'success' | 'error';
+  fetchTransactions: (params?: Record<string, unknown>) => Promise<void>;
   addTransaction: (payload: TransactionUpsertPayload) => string;
   updateTransaction: (transactionId: string, payload: TransactionUpsertPayload) => void;
   deleteTransaction: (transactionId: string) => void;

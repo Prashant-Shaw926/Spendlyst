@@ -10,26 +10,21 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GoalForm } from '../../components/features/Goals/GoalForm';
-import { ArrowLeftIcon } from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
-import { PrimaryButton } from '../../components/shared/PrimaryButton';
-import {
-  selectHasHydrated,
-  selectInitializeAppData,
-} from '../../store/selectors/app.selectors';
+import { ArrowLeftIcon, Header, IconButton, PrimaryButton } from '../../components';
 import {
   selectAddGoal,
   selectDeleteGoal,
   selectGoalById,
+  selectHasHydrated,
+  selectInitializeAppData,
   selectUpdateGoal,
-} from '../../store/selectors/goals.selectors';
-import { useAppStore } from '../../store/useAppStore';
+  useAppStore,
+} from '../../store';
 import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { GoalsStackParamList } from '../../types/navigation';
 import { moderateScale, rs } from '../../utils/responsive';
+import { GoalForm } from '../../components/features/Goals/GoalForm';
 
 function DetailBlock({ label, value }: { label: string; value: string }) {
   return (
@@ -152,7 +147,7 @@ export function GoalDetailScreen() {
             <GoalForm
               initialGoal={goal}
               submitLabel={goal ? 'Save Goal' : 'Create Goal'}
-              onSubmit={payload => {
+              onSubmit={(payload) => {
                 if (goal) {
                   updateGoal(goal.id, payload);
                   setIsEditing(false);

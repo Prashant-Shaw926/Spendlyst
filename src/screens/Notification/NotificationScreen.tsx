@@ -16,92 +16,16 @@ import {
   ArrowLeftIcon,
   BellIcon,
   DollarIcon,
+  Header,
+  IconButton,
   StarIcon,
   TrendDownIcon,
-} from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
+} from '../../components';
 import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
-
-type NotifType = 'reminder' | 'update' | 'transaction' | 'expense';
-type Tag = { label: string };
-type NotifItem = {
-  id: string;
-  type: NotifType;
-  title: string;
-  body: string;
-  time: string;
-  tags?: Tag[];
-};
-type NotifGroup = { section: string; items: NotifItem[] };
-
-const NOTIFICATIONS: NotifGroup[] = [
-  {
-    section: 'Today',
-    items: [
-      {
-        id: 't1',
-        type: 'reminder',
-        title: 'Reminder!',
-        body: 'Set up your automatic saving to meet your savings goal...',
-        time: '17:00 - April 24',
-      },
-      {
-        id: 't2',
-        type: 'update',
-        title: 'New Update',
-        body: 'Set up your automatic saving to meet your savings goal...',
-        time: '17:00 - April 24',
-      },
-    ],
-  },
-  {
-    section: 'Yesterday',
-    items: [
-      {
-        id: 'y1',
-        type: 'transaction',
-        title: 'Transactions',
-        body: 'A new transaction has been registered',
-        time: '17:00 - April 24',
-        tags: [
-          { label: 'Groceries' },
-          { label: 'Pantry' },
-          { label: '-$100,00' },
-        ],
-      },
-      {
-        id: 'y2',
-        type: 'reminder',
-        title: 'Reminder!',
-        body: 'Set up your automatic saving to meet your savings goal...',
-        time: '17:00 - April 24',
-      },
-    ],
-  },
-  {
-    section: 'This Weekend',
-    items: [
-      {
-        id: 'w1',
-        type: 'expense',
-        title: 'Expense Record',
-        body: 'We recommend that you be more attentive to your finances.',
-        time: '17:00 - April 24',
-      },
-      {
-        id: 'w2',
-        type: 'transaction',
-        title: 'Transactions',
-        body: 'A new transaction has been registered',
-        time: '17:00 - April 24',
-        tags: [{ label: 'Food' }, { label: 'Dinner' }, { label: '-$70,40' }],
-      },
-    ],
-  },
-];
+import type { NotificationItem, NotifType } from '../../features/notifications/data/notifications';
+import { useNotificationFeed } from '../../features/notifications/hooks/useNotificationFeed';
 
 function NotifIcon({ type }: { type: NotifType }) {
   const iconSize = moderateScale(22);
@@ -140,7 +64,7 @@ function NotificationRow({
   item,
   isLast,
 }: {
-  item: NotifItem;
+  item: NotificationItem;
   isLast: boolean;
 }) {
   return (
@@ -188,7 +112,7 @@ function NotificationRow({
                 marginTop: moderateScale(2),
               }}
             >
-              {item.tags.map(tag => tag.label).join(' | ')}
+              {item.tags.map((tag) => tag.label).join(' | ')}
             </Text>
           ) : null}
 
@@ -212,6 +136,7 @@ function NotificationRow({
 export default function NotificationScreen() {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const isDark = useColorScheme() === 'dark';
+  const { groups, isEmpty } = useNotificationFeed();
   const headerIconColor = isDark ? darkColors.title : lightColors.title;
   const statusBarBackgroundColor = isDark
     ? darkColors.background
@@ -263,7 +188,38 @@ export default function NotificationScreen() {
           }}
           showsVerticalScrollIndicator={false}
         >
-          {NOTIFICATIONS.map(group => (
+          {isEmpty ? (
+            <View
+              className="bg-card"
+              style={{
+                borderRadius: moderateScale(28),
+                gap: moderateScale(8),
+                paddingHorizontal: S.space.lg,
+                paddingVertical: S.space.xl,
+              }}
+            >
+              <Text
+                className="text-text"
+                style={{
+                  fontSize: S.fs.md_h,
+                  fontFamily: 'Poppins-SemiBold',
+                }}
+              >
+                No notifications yet
+              </Text>
+              <Text
+                className="text-text-muted"
+                style={{
+                  fontSize: S.fs.sm,
+                  fontFamily: 'Poppins-Regular',
+                }}
+              >
+                We&apos;ll show reminders, updates, and finance activity here.
+              </Text>
+            </View>
+          ) : null}
+
+          {groups.map((group) => (
             <View key={group.section} style={{ gap: moderateScale(4) }}>
               <Text
                 className="text-text opacity-50"

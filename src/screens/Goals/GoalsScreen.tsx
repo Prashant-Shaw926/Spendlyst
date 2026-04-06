@@ -10,32 +10,29 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  GoalCard,
+  ArrowLeftIcon,
+  BagIcon,
+  BellIcon,
+  CarIcon,
+  Header,
+  HomeIcon,
+  IconButton,
+  PlusIcon,
+  StackCashIcon,
+} from '../../components';
+import GoalCard, {
   type GoalCardItem,
 } from '../../components/features/Goals/GoalCard';
 import { GoalFilterTabs } from '../../components/features/Goals/GoalFilterTabs';
 import { GoalHeroCard } from '../../components/features/Goals/GoalHeroCard';
 import {
-  ArrowLeftIcon,
-  BellIcon,
-  CarIcon,
-  HomeIcon,
-  PlusIcon,
-  StackCashIcon,
-  BagIcon,
-} from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
-import {
+  selectAllGoals,
+  selectGoalSummary,
   selectHasHydrated,
   selectHasInitializedData,
   selectInitializeAppData,
-} from '../../store/selectors/app.selectors';
-import {
-  selectAllGoals,
-  selectGoalSummary,
-} from '../../store/selectors/goals.selectors';
-import { useAppStore } from '../../store/useAppStore';
+  useAppStore,
+} from '../../store';
 import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { GoalModel, GoalStatus } from '../../types/models';
@@ -98,7 +95,7 @@ export function GoalsScreen() {
   }, [hasHydrated, initializeAppData]);
 
   const filteredGoals = useMemo(
-    () => goals.filter(goal => goal.status === activeTab),
+    () => goals.filter((goal) => goal.status === activeTab),
     [activeTab, goals],
   );
   const isBootstrapping = !hasHydrated || !hasInitializedData;
@@ -212,7 +209,7 @@ export function GoalsScreen() {
 
             <View style={{ gap: moderateScale(16) }}>
               {filteredGoals.length > 0 ? (
-                filteredGoals.map(goal => (
+                filteredGoals.map((goal: GoalModel) => (
                   <GoalCard
                     key={goal.id}
                     item={toGoalCardItem(goal)}

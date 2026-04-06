@@ -2,7 +2,6 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 
 export type HomeStackParamList = {
   Home: undefined;
-  Settings: undefined;
   Notification: undefined;
 };
 
@@ -21,11 +20,6 @@ export type GoalsStackParamList = {
 
 export type InsightsStackParamList = {
   Insights: undefined;
-  Notification: undefined;
-};
-
-export type SettingsStackParamList = {
-  Settings: undefined;
   Notification: undefined;
 };
 

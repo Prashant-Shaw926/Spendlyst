@@ -3,8 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useColorScheme } from 'react-native';
 import type { InsightsStackParamList } from '../../types/navigation';
 import { InsightsScreen } from '../../screens/Insights/InsightsScreen';
-import { darkColors, lightColors } from '../../theme/colors';
 import NotificationScreen from '../../screens/Notification/NotificationScreen';
+import { darkColors, lightColors } from '../../theme/colors';
 
 const Stack = createNativeStackNavigator<InsightsStackParamList>();
 

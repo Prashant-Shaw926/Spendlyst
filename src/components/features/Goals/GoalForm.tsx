@@ -6,7 +6,7 @@ import { S } from '../../../theme/scale';
 import {
   createIsoDateTimeFromInput,
   formatDateInputValue,
-} from '../../../utils/finance';
+} from '../../../api/mappers/finance';
 import type { GoalUpsertPayload } from '../../../store/types';
 import { PillChip } from '../../shared/PillChip';
 import { PrimaryButton } from '../../shared/PrimaryButton';

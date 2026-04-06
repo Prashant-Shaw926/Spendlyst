@@ -9,23 +9,29 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HomeTransactionItem } from '../../components/features/home/HomeTransactionItem';
-import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
-import { BellIcon } from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { HomeScreenSkeleton } from '../../components/shared/HomeScreenSkeleton';
-import { IconButton } from '../../components/shared/IconButton';
-import { ChartSection } from '../../components/shared/ChartSection';
 import {
+  BellIcon,
+  ChartSection,
+  Header,
+  HomeScreenSkeleton,
+  IconButton,
+  IncomeExpenseBarChart,
+  ScreenState,
+} from '../../components';
+import {
+  selectAllTransactions,
+  selectFetchTransactions,
   selectHasHydrated,
   selectHasInitializedData,
+  selectHomeDashboard,
   selectInitializeAppData,
-} from '../../store/selectors/app.selectors';
-import { selectHomeDashboard } from '../../store/selectors/home.selectors';
-import { useAppStore } from '../../store/useAppStore';
+  selectLastGlobalError,
+  useAppStore,
+} from '../../store';
 import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
+import { HomeTransactionItem } from '../../components/features/Home/HomeTransactionItem';
 
 function MetricTile({ label, value }: { label: string; value: string }) {
   return (
@@ -67,7 +73,10 @@ export function HomeScreen() {
   const headerActionIconColor = isDark ? darkColors.title : lightColors.title;
   const hasHydrated = useAppStore(selectHasHydrated);
   const hasInitializedData = useAppStore(selectHasInitializedData);
+  const fetchTransactions = useAppStore(selectFetchTransactions);
   const initializeAppData = useAppStore(selectInitializeAppData);
+  const lastGlobalError = useAppStore(selectLastGlobalError);
+  const transactions = useAppStore(selectAllTransactions);
   const dashboard = useAppStore(selectHomeDashboard);
 
   useEffect(() => {
@@ -77,6 +86,10 @@ export function HomeScreen() {
   }, [hasHydrated, initializeAppData]);
 
   const isBootstrapping = !hasHydrated || !hasInitializedData;
+  const hasLoadError =
+    !isBootstrapping &&
+    transactions.length === 0 &&
+    lastGlobalError?.source === 'api';
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
@@ -87,7 +100,20 @@ export function HomeScreen() {
 
       {isBootstrapping ? <HomeScreenSkeleton /> : null}
 
-      {!isBootstrapping ? (
+      {!isBootstrapping && hasLoadError ? (
+        <ScreenState
+          mode="error"
+          title="Unable to load your dashboard"
+          message={
+            lastGlobalError?.message ?? 'Please try again in a moment.'
+          }
+          onRetry={() => {
+            fetchTransactions();
+          }}
+        />
+      ) : null}
+
+      {!isBootstrapping && !hasLoadError ? (
         <>
           <Header
             variant="home"
@@ -245,7 +271,7 @@ export function HomeScreen() {
                 </View>
 
                 <View style={{ gap: S.space.lg }}>
-                  {dashboard.recentTransactions.map(transaction => (
+                  {dashboard.recentTransactions.map((transaction) => (
                     <HomeTransactionItem
                       key={transaction.id}
                       item={transaction}

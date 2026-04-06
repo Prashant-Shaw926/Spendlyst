@@ -5,8 +5,8 @@ import type { TransactionsStackParamList } from '../../types/navigation';
 import { TransactionsScreen } from '../../screens/Transactions/TransactionsScreen';
 import { AddTransactionScreen } from '../../screens/Transactions/AddTransactionScreen';
 import { TransactionDetailScreen } from '../../screens/Transactions/TransactionDetailScreen';
-import { darkColors, lightColors } from '../../theme/colors';
 import NotificationScreen from '../../screens/Notification/NotificationScreen';
+import { darkColors, lightColors } from '../../theme/colors';
 
 const Stack = createNativeStackNavigator<TransactionsStackParamList>();
 

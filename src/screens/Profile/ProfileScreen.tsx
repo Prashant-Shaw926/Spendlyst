@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -12,33 +12,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeftIcon,
   BellIcon,
+  Header,
+  IconButton,
+  ScreenState,
   UserIcon,
-} from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
-import { useAppStore } from '../../store/useAppStore';
+} from '../../components';
 import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { ProfileStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
-
-type UserProfile = {
-  id: string;
-  phone: string;
-  email?: string;
-};
-
-const fetchUserProfile = async (): Promise<UserProfile> => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve({
-        id: '25030024',
-        phone: '+91 9876543210',
-        email: 'john@example.com',
-      });
-    }, 800);
-  });
-};
+import { useProfileView } from '../../features/profile/hooks/useProfileView';
 
 function ProfileField({ label, value }: { label: string; value: string }) {
   return (
@@ -110,46 +93,11 @@ export function ProfileScreen() {
   const statusBarBackgroundColor = isDark
     ? darkColors.background
     : lightColors.background;
-  const userName = useAppStore(state => state.userName);
-
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadProfile = async () => {
-      try {
-        const data = await fetchUserProfile();
-        if (isMounted) {
-          setProfile(data);
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadProfile();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const { accountFields, errorMessage, isLoading, profile, userName } =
+    useProfileView();
 
   const avatarSize = moderateScale(96);
   const avatarInnerSize = avatarSize - moderateScale(6) * 2;
-
-  const accountFields = profile
-    ? [
-        { label: 'Username', value: userName },
-        { label: 'Phone', value: profile.phone },
-        ...(profile.email
-          ? [{ label: 'Email Address', value: profile.email }]
-          : []),
-      ]
-    : [];
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
@@ -190,106 +138,116 @@ export function ProfileScreen() {
         }
       />
 
-      <ScrollView
-        style={{ flex: 1 }}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
-        <View
-          className="bg-bg"
-          style={{
-            alignItems: 'center',
-            paddingVertical: S.space.lg,
-          }}
+      {!isLoading && errorMessage ? (
+        <ScreenState
+          mode="error"
+          title="Unable to load profile"
+          message={errorMessage}
+        />
+      ) : null}
+
+      {!errorMessage ? (
+        <ScrollView
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1 }}
         >
           <View
             className="bg-bg"
             style={{
-              width: avatarSize,
-              height: avatarSize,
-              borderRadius: avatarSize / 2,
-              padding: moderateScale(4),
+              alignItems: 'center',
+              paddingVertical: S.space.lg,
             }}
           >
             <View
-              className="bg-pill items-center justify-center"
+              className="bg-bg"
               style={{
-                width: avatarInnerSize,
-                height: avatarInnerSize,
-                borderRadius: avatarInnerSize / 2,
+                width: avatarSize,
+                height: avatarSize,
+                borderRadius: avatarSize / 2,
+                padding: moderateScale(4),
               }}
             >
-              <UserIcon
-                color={colors.primary500}
-                size={moderateScale(42)}
-                strokeWidth={2}
-              />
+              <View
+                className="bg-pill items-center justify-center"
+                style={{
+                  width: avatarInnerSize,
+                  height: avatarInnerSize,
+                  borderRadius: avatarInnerSize / 2,
+                }}
+              >
+                <UserIcon
+                  color={colors.primary500}
+                  size={moderateScale(42)}
+                  strokeWidth={2}
+                />
+              </View>
             </View>
           </View>
-        </View>
 
-        <View
-          className="bg-card"
-          style={{
-            flex: 1,
-            borderTopLeftRadius: moderateScale(40),
-            borderTopRightRadius: moderateScale(40),
-            gap: S.space['2xl'],
-            paddingHorizontal: S.space.paddingHorizontal,
-            paddingVertical: S.space['2xl'],
-          }}
-        >
-          <View style={{ alignItems: 'center', gap: S.space.xs }}>
-            {isLoading ? (
-              <>
-                <SkeletonBar
-                  width={moderateScale(156)}
-                  height={moderateScale(22)}
-                />
-                <SkeletonBar
-                  width={moderateScale(110)}
-                  height={moderateScale(14)}
-                />
-              </>
-            ) : (
-              <>
-                <Text
-                  className="text-text text-center"
-                  style={{ fontSize: S.fs.xl, fontFamily: 'Poppins-Bold' }}
-                >
-                  {userName}
-                </Text>
-                <Text
-                  className="text-text-muted text-center"
-                  style={{ fontSize: S.fs.sm, fontFamily: 'Poppins-Regular' }}
-                >
-                  ID: {profile?.id}
-                </Text>
-              </>
-            )}
-          </View>
-
-          <View style={{ gap: S.space.lg }}>
-            <View style={{ gap: S.space.md }}>
+          <View
+            className="bg-card"
+            style={{
+              flex: 1,
+              borderTopLeftRadius: moderateScale(40),
+              borderTopRightRadius: moderateScale(40),
+              gap: S.space['2xl'],
+              paddingHorizontal: S.space.paddingHorizontal,
+              paddingVertical: S.space['2xl'],
+            }}
+          >
+            <View style={{ alignItems: 'center', gap: S.space.xs }}>
               {isLoading ? (
                 <>
-                  <SkeletonField />
-                  <SkeletonField />
-                  <SkeletonField />
+                  <SkeletonBar
+                    width={moderateScale(156)}
+                    height={moderateScale(22)}
+                  />
+                  <SkeletonBar
+                    width={moderateScale(110)}
+                    height={moderateScale(14)}
+                  />
                 </>
               ) : (
-                accountFields.map(item => (
-                  <ProfileField
-                    key={item.label}
-                    label={item.label}
-                    value={item.value}
-                  />
-                ))
+                <>
+                  <Text
+                    className="text-text text-center"
+                    style={{ fontSize: S.fs.xl, fontFamily: 'Poppins-Bold' }}
+                  >
+                    {userName}
+                  </Text>
+                  <Text
+                    className="text-text-muted text-center"
+                    style={{ fontSize: S.fs.sm, fontFamily: 'Poppins-Regular' }}
+                  >
+                    ID: {profile?.id}
+                  </Text>
+                </>
               )}
             </View>
+
+            <View style={{ gap: S.space.lg }}>
+              <View style={{ gap: S.space.md }}>
+                {isLoading ? (
+                  <>
+                    <SkeletonField />
+                    <SkeletonField />
+                    <SkeletonField />
+                  </>
+                ) : (
+                  accountFields.map((item) => (
+                    <ProfileField
+                      key={item.label}
+                      label={item.label}
+                      value={item.value}
+                    />
+                  ))
+                )}
+              </View>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      ) : null}
     </SafeAreaView>
   );
 }

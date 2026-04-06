@@ -1,44 +1,5 @@
-export { formatCurrency } from './formatters/currency';
-export {
-  addDays,
-  addMonths,
-  createIsoDateTimeFromInput,
-  endOfWeek,
-  formatDateInputValue,
-  formatDateLabel,
-  formatMonthLabel,
-  formatShortDayLabel,
-  formatShortMonthLabel,
-  formatTimeLabel,
-  formatTransactionMeta,
-  getRelativeGreeting,
-  isValidDateInput,
-  startOfDay,
-  startOfWeek,
-} from './formatters/date';
-export {
-  buildGoalCollections,
-  buildGoalInputFromModel,
-  buildGoalModel,
-  buildHomeDashboard,
-  buildInsightsDashboard,
-  buildTransactionCollections,
-  buildTransactionModel,
-  getDominantTransactionType,
-  getExpenseCategoryBreakdown,
-  getGoalLeftAmount,
-  getGoalSummary,
-  getGoalsByStatus,
-  getHighestSpendingCategory,
-  getMonthlyTrend,
-  getPrimaryGoal,
-  getRecentTransactions,
-  getSignedTransactionAmountLabel,
-  getTransactionIconBackground,
-  getWeekComparison,
-  getWeeklyTrend,
-  mapBudgetOverviewFromTransactions,
-  mapTransactionApiToModel,
-  mapTransactionsToSections,
-  normalizeTransactionMonths,
-} from './mappers/finance';
+// Temporary compatibility surface for stale Metro/native caches during the refactor.
+// New code should import directly from the formatter modules or src/api/mappers/finance.
+export * from './formatters/currency';
+export * from './formatters/date';
+export * from '../api/mappers/finance';

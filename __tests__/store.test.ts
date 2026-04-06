@@ -1,27 +1,26 @@
-import { selectHomeDashboard } from '../src/store/selectors/home.selectors';
-import { selectInsightsDashboard } from '../src/store/selectors/insights.selectors';
-import { selectGoalSummary } from '../src/store/selectors/goals.selectors';
 import {
   EMPTY_PERSISTED_APP_STATE,
   migratePersistedAppState,
   storage,
-} from '../src/store/storage';
-import { useAppStore } from '../src/store/useAppStore';
+} from '../src/storage/mmkv';
+import {
+  selectGoalSummary,
+  selectHomeDashboard,
+  selectInsightsDashboard,
+  useAppStore,
+} from '../src/store';
 import type { TransactionsData } from '../src/types/api';
 
 function resetStore() {
   storage.clearAll();
   useAppStore.setState({
+    ...EMPTY_PERSISTED_APP_STATE,
     hasHydrated: true,
     hasInitializedData: false,
+    isInitializingApp: false,
     lastGlobalError: null,
-    transactionsById: {},
-    transactionIds: [],
-    transactionIdsByMonth: {},
-    transactionMonthIds: [],
-    transactionOverview: null,
-    goalsById: {},
-    goalIds: [],
+    transactionsStatus: 'idle',
+    userName: 'John Smith',
   });
 }
 
@@ -73,13 +72,13 @@ describe('app store persistence, seeding, and CRUD', () => {
     );
   });
 
-  it('seeds demo data only once and marks the app as initialized', () => {
+  it('seeds demo data only once and marks the app as initialized', async () => {
     const state = useAppStore.getState();
 
     expect(state.transactionIds).toHaveLength(0);
     expect(state.goalIds).toHaveLength(0);
 
-    state.initializeAppData();
+    await state.initializeAppData();
     const initializedState = useAppStore.getState();
 
     expect(initializedState.hasInitializedData).toBe(true);

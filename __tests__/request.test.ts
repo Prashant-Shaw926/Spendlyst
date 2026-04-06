@@ -1,4 +1,4 @@
-import { request } from '../src/services/api/request';
+import { request } from '../src/api/client';
 
 describe('request', () => {
   it('returns the standardized success payload for mock responses', async () => {

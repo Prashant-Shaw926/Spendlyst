@@ -4,8 +4,8 @@ import { useColorScheme } from 'react-native';
 import type { GoalsStackParamList } from '../../types/navigation';
 import { GoalsScreen } from '../../screens/Goals/GoalsScreen';
 import { GoalDetailScreen } from '../../screens/Goals/GoalDetailScreen';
-import { darkColors, lightColors } from '../../theme/colors';
 import NotificationScreen from '../../screens/Notification/NotificationScreen';
+import { darkColors, lightColors } from '../../theme/colors';
 
 const Stack = createNativeStackNavigator<GoalsStackParamList>();
 

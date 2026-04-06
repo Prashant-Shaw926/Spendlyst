@@ -3,9 +3,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useColorScheme } from 'react-native';
 import type { HomeStackParamList } from '../../types/navigation';
 import { HomeScreen } from '../../screens/Home/HomeScreen';
-import { SettingsScreen } from '../../screens/Settings/SettingsScreen';
-import { darkColors, lightColors } from '../../theme/colors';
 import NotificationScreen from '../../screens/Notification/NotificationScreen';
+import { darkColors, lightColors } from '../../theme/colors';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 
@@ -23,7 +22,6 @@ export function HomeStack() {
         animation: 'slide_from_right',
       }}>
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen name="Notification" component={NotificationScreen} />
     </Stack.Navigator>
   );

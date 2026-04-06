@@ -5,7 +5,7 @@ import {
   mapBudgetOverviewFromTransactions,
   mapTransactionApiToModel,
   normalizeTransactionMonths,
-} from '../src/utils/finance';
+} from '../src/api/mappers/finance';
 import type { TransactionDto, TransactionMonthDto } from '../src/types/api';
 
 describe('finance mappers and dashboard builders', () => {
@@ -117,7 +117,9 @@ describe('finance mappers and dashboard builders', () => {
       }),
     );
 
-    expect(buildHomeDashboard([salary, groceries, fuel], [goal])).toMatchObject({
+    expect(
+      buildHomeDashboard([salary, groceries, fuel], [goal], 'John Smith'),
+    ).toMatchObject({
       primaryGoal: expect.objectContaining({
         title: 'Emergency Fund',
       }),

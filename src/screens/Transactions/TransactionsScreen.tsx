@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StatusBar,
@@ -9,44 +9,29 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { transactionCategorySuggestions } from '../../constants/finance';
-import { TransactionBalanceCard } from '../../components/features/transactions/TransactionBalanceCard';
-import { BudgetOverview } from '../../components/shared/BudgetOverview';
 import {
   ArrowDownRightIcon,
   ArrowLeftIcon,
   ArrowUpRightIcon,
   BellIcon,
+  BudgetOverview,
+  Header,
+  IconButton,
+  PillChip,
   PlusIcon,
-} from '../../components/shared/Icons';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
-import { PillChip } from '../../components/shared/PillChip';
-import { TextField } from '../../components/shared/TextField';
-import { TransactionRow } from '../../components/shared/TransactionRow';
-import { TransactionsScreenSkeleton } from '../../components/shared/TransactionsScreenSkeleton';
-import {
-  selectHasHydrated,
-  selectHasInitializedData,
-  selectInitializeAppData,
-} from '../../store/selectors/app.selectors';
-import {
-  selectAllTransactions,
-  selectTransactionCategories,
-  selectTransactionOverview,
-} from '../../store/selectors/transactions.selectors';
-import { useAppStore } from '../../store/useAppStore';
+  ScreenState,
+  TextField,
+  TransactionRow,
+  TransactionsScreenSkeleton,
+} from '../../components';
 import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
-import {
-  buildTransactionCollections,
-  mapTransactionsToSections,
-} from '../../utils/finance';
 import { moderateScale } from '../../utils/responsive';
-
-type TypeFilter = 'All' | 'Income' | 'Expense';
-
-const typeFilters: readonly TypeFilter[] = ['All', 'Income', 'Expense'];
+import { TransactionBalanceCard } from '../../components/features/Transactions/TransactionBalanceCard';
+import {
+  typeFilters,
+  useTransactionsView,
+} from '../../features/transactions/hooks/useTransactionsView';
 
 export function TransactionsScreen() {
   const navigation = useNavigation<any>();
@@ -56,57 +41,21 @@ export function TransactionsScreen() {
   const statusBarBackgroundColor = isDark
     ? darkColors.background
     : lightColors.background;
-  const hasHydrated = useAppStore(selectHasHydrated);
-  const hasInitializedData = useAppStore(selectHasInitializedData);
-  const initializeAppData = useAppStore(selectInitializeAppData);
-  const transactions = useAppStore(selectAllTransactions);
-  const transactionOverview = useAppStore(selectTransactionOverview);
-  const dynamicCategories = useAppStore(selectTransactionCategories);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<TypeFilter>('All');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-
-  useEffect(() => {
-    if (hasHydrated) {
-      initializeAppData();
-    }
-  }, [hasHydrated, initializeAppData]);
-
-  const categories = useMemo(() => {
-    return Array.from(
-      new Set(['All', ...dynamicCategories, ...transactionCategorySuggestions]),
-    );
-  }, [dynamicCategories]);
-
-  const filteredTransactions = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    return transactions.filter(transaction => {
-      const matchesQuery =
-        normalizedQuery.length === 0 ||
-        transaction.title.toLowerCase().includes(normalizedQuery) ||
-        transaction.category.toLowerCase().includes(normalizedQuery) ||
-        transaction.notes.toLowerCase().includes(normalizedQuery);
-      const matchesType =
-        typeFilter === 'All' || transaction.type === typeFilter.toLowerCase();
-      const matchesCategory =
-        categoryFilter === 'All' ||
-        transaction.category.toLowerCase() === categoryFilter.toLowerCase();
-
-      return matchesQuery && matchesType && matchesCategory;
-    });
-  }, [categoryFilter, searchQuery, transactions, typeFilter]);
-
-  const filteredSections = useMemo(() => {
-    const filteredCollections =
-      buildTransactionCollections(filteredTransactions);
-
-    return mapTransactionsToSections(
-      filteredCollections.transactionMonthIds,
-      filteredCollections.transactionIdsByMonth,
-      filteredCollections.transactionsById,
-    );
-  }, [filteredTransactions]);
+  const {
+    categories,
+    categoryFilter,
+    fetchTransactions,
+    filteredSections,
+    hasHydrated,
+    hasInitializedData,
+    hasLoadError,
+    searchQuery,
+    setCategoryFilter,
+    setSearchQuery,
+    setTypeFilter,
+    transactionOverview,
+    typeFilter,
+  } = useTransactionsView();
 
   const isBootstrapping = !hasHydrated || !hasInitializedData;
 
@@ -123,7 +72,18 @@ export function TransactionsScreen() {
 
       {isBootstrapping ? <TransactionsScreenSkeleton /> : null}
 
-      {!isBootstrapping && transactionOverview ? (
+      {!isBootstrapping && hasLoadError ? (
+        <ScreenState
+          mode="error"
+          title="Unable to load transactions"
+          message="Please try again in a moment."
+          onRetry={() => {
+            fetchTransactions();
+          }}
+        />
+      ) : null}
+
+      {!isBootstrapping && !hasLoadError && transactionOverview ? (
         <>
           <Header
             variant="centerTitle"
@@ -215,8 +175,8 @@ export function TransactionsScreen() {
               <View style={{ gap: S.space.lg }}>
                 <View
                   style={{
-                    flexDirection: 'row',
                     alignItems: 'center',
+                    flexDirection: 'row',
                     gap: S.space.md,
                   }}
                 >
@@ -251,7 +211,7 @@ export function TransactionsScreen() {
                     paddingRight: S.space.paddingHorizontal,
                   }}
                 >
-                  {typeFilters.map(filter => (
+                  {typeFilters.map((filter) => (
                     <PillChip
                       key={filter}
                       label={filter}
@@ -262,7 +222,7 @@ export function TransactionsScreen() {
                       }}
                     />
                   ))}
-                  {categories.slice(1, 5).map(category => (
+                  {categories.slice(1, 5).map((category) => (
                     <PillChip
                       key={category}
                       label={category}
@@ -278,7 +238,7 @@ export function TransactionsScreen() {
 
               <View style={{ gap: S.space['2xl'] }}>
                 {filteredSections.length > 0 ? (
-                  filteredSections.map(section => (
+                  filteredSections.map((section) => (
                     <View key={section.title} style={{ gap: S.space.lg }}>
                       <Text
                         className="text-title"
@@ -291,7 +251,7 @@ export function TransactionsScreen() {
                       </Text>
 
                       <View style={{ gap: S.space.lg }}>
-                        {section.items.map(transaction => (
+                        {section.items.map((transaction) => (
                           <TransactionRow
                             key={transaction.id}
                             item={transaction}

@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, useColorScheme, Pressable, ColorValue } from 'react-native';
+import { View, useColorScheme, Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import type { SvgProps } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   GoalsIcon,
@@ -9,7 +8,7 @@ import {
   InsightsIcon,
   TransactionsIcon,
 } from '../assets/icons';
-import { UserIcon } from '../components/shared/Icons';
+import { UserIcon } from '../components';
 import type { BottomTabParamList } from '../types/navigation';
 import { HomeStack } from './stacks/HomeStack';
 import { TransactionsStack } from './stacks/TransactionsStack';
@@ -21,11 +20,6 @@ import { moderateScale } from '../utils/responsive';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 type TabIconComponent = React.ComponentType<any>;
-type FinanceTabIconComponent = React.ComponentType<{
-  size?: number;
-  color?: ColorValue;
-}>;
-
 function TabBubble({
   children,
   focused,
@@ -70,24 +64,6 @@ function TabBarIcon({
   return (
     <TabBubble focused={focused}>
       <Icon width={24} height={24} color={iconColor} />
-    </TabBubble>
-  );
-}
-
-function TabBarFinanceIcon({
-  Icon,
-  focused,
-  inactiveColor,
-}: {
-  Icon: FinanceTabIconComponent;
-  focused: boolean;
-  inactiveColor: string;
-}) {
-  const iconColor = focused ? colors.primary500 : inactiveColor;
-
-  return (
-    <TabBubble focused={focused}>
-      <Icon size={24} color={iconColor} />
     </TabBubble>
   );
 }
