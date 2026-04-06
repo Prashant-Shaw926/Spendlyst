@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "data": {
+    "totalBalance": 7783,
+    "totalExpense": 1187.4,
+    "budget": 20000,
+    "spentPercent": 30,
+    "note": "30% Of Your Expenses, Looks Good.",
+    "tabs": [
+      "Daily",
+      "Weekly",
+      "Monthly",
+      "Year"
+    ],
+    "activeTab": "Daily",
+    "chartTitle": "Income & Expenses",
+    "charts": [
+      {
+        "key": "Daily",
+        "points": [
+          { "label": "Mon", "income": 3500, "expense": 8000 },
+          { "label": "Tue", "income": 1200, "expense": 2500 },
+          { "label": "Wed", "income": 7200, "expense": 3100 },
+          { "label": "Thu", "income": 900, "expense": 4600 },
+          { "label": "Fri", "income": 10000, "expense": 8800 },
+          { "label": "Sat", "income": 2100, "expense": 900 },
+          { "label": "Sun", "income": 1900, "expense": 6000 }
+        ]
+      },
+      {
+        "key": "Weekly",
+        "points": [
+          { "label": "W1", "income": 6400, "expense": 2400 },
+          { "label": "W2", "income": 5400, "expense": 3200 },
+          { "label": "W3", "income": 7600, "expense": 2800 },
+          { "label": "W4", "income": 8100, "expense": 3600 }
+        ]
+      },
+      {
+        "key": "Monthly",
+        "points": [
+          { "label": "Jan", "income": 9500, "expense": 6200 },
+          { "label": "Feb", "income": 8400, "expense": 5900 },
+          { "label": "Mar", "income": 10200, "expense": 7300 },
+          { "label": "Apr", "income": 11800, "expense": 6800 }
+        ]
+      },
+      {
+        "key": "Year",
+        "points": [
+          { "label": "2023", "income": 74000, "expense": 51000 },
+          { "label": "2024", "income": 82100, "expense": 56600 },
+          { "label": "2025", "income": 90400, "expense": 62400 },
+          { "label": "2026", "income": 96200, "expense": 65100 }
+        ]
+      }
+    ],
+    "summary": {
+      "income": 4120,
+      "expense": 1187.4
+    },
+    "targets": [
+      {
+        "id": "target_travel",
+        "label": "Travel",
+        "savedAmount": 600,
+        "goalAmount": 2000,
+        "percent": 30
+      },
+      {
+        "id": "target_car",
+        "label": "Car",
+        "savedAmount": 5000,
+        "goalAmount": 10000,
+        "percent": 50
+      }
+    ]
+  }
+}

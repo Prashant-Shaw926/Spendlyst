@@ -1,0 +1,72 @@
+{
+  "success": true,
+  "data": {
+    "totalBalance": 7783,
+    "totalExpense": 1187.4,
+    "budget": 20000,
+    "spentPercent": 30,
+    "note": "30% Of Your Expenses, Looks Good.",
+    "months": [
+      {
+        "month": "April",
+        "transactions": [
+          {
+            "id": "txn_1",
+            "title": "Salary",
+            "time": "18:27",
+            "date": "April 30",
+            "category": "Monthly",
+            "amount": 4000,
+            "type": "income",
+            "icon": "salary"
+          },
+          {
+            "id": "txn_2",
+            "title": "Groceries",
+            "time": "17:00",
+            "date": "April 24",
+            "category": "Pantry",
+            "amount": -100,
+            "type": "expense",
+            "icon": "groceries"
+          },
+          {
+            "id": "txn_3",
+            "title": "Rent",
+            "time": "08:30",
+            "date": "April 15",
+            "category": "Rent",
+            "amount": -674.4,
+            "type": "expense",
+            "icon": "rent"
+          },
+          {
+            "id": "txn_4",
+            "title": "Transport",
+            "time": "09:30",
+            "date": "April 08",
+            "category": "Fuel",
+            "amount": -4.13,
+            "type": "expense",
+            "icon": "transport"
+          }
+        ]
+      },
+      {
+        "month": "March",
+        "transactions": [
+          {
+            "id": "txn_5",
+            "title": "Food",
+            "time": "19:30",
+            "date": "March 31",
+            "category": "Dinner",
+            "amount": -70.4,
+            "type": "expense",
+            "icon": "food"
+          }
+        ]
+      }
+    ]
+  }
+}

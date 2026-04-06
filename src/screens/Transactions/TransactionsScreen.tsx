@@ -1,0 +1,303 @@
+import React from 'react';
+import {
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ArrowDownRightIcon,
+  ArrowLeftIcon,
+  ArrowUpRightIcon,
+  BudgetOverview,
+  Header,
+  IconButton,
+  NotificationIcon,
+  PillChip,
+  PlusIcon,
+  ScreenState,
+  TextField,
+  TransactionRow,
+  TransactionsScreenSkeleton,
+} from '../../components';
+import { colors, darkColors, lightColors } from '../../theme/colors';
+import { S } from '../../theme/scale';
+import { moderateScale } from '../../utils/responsive';
+import { TransactionBalanceCard } from '../../components/features/Transactions/TransactionBalanceCard';
+import {
+  typeFilters,
+  useTransactionsView,
+} from '../../features/transactions/hooks/useTransactionsView';
+
+export function TransactionsScreen() {
+  const navigation = useNavigation<any>();
+  const isDark = useColorScheme() === 'dark';
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const headerActionIconColor = isDark ? darkColors.title : lightColors.title;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
+  const {
+    categories,
+    categoryFilter,
+    fetchTransactions,
+    filteredSections,
+    hasHydrated,
+    hasInitializedData,
+    hasLoadError,
+    searchQuery,
+    setCategoryFilter,
+    setSearchQuery,
+    setTypeFilter,
+    transactionOverview,
+    typeFilter,
+  } = useTransactionsView();
+
+  const isBootstrapping = !hasHydrated || !hasInitializedData;
+
+  return (
+    <SafeAreaView
+      className="flex-1 bg-bg"
+      edges={['top']}
+      style={{ gap: S.space.md }}
+    >
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={statusBarBackgroundColor}
+      />
+
+      {isBootstrapping ? <TransactionsScreenSkeleton /> : null}
+
+      {!isBootstrapping && hasLoadError ? (
+        <ScreenState
+          mode="error"
+          title="Unable to load transactions"
+          message="Please try again in a moment."
+          onRetry={() => {
+            fetchTransactions();
+          }}
+        />
+      ) : null}
+
+      {!isBootstrapping && !hasLoadError && transactionOverview ? (
+        <>
+          <Header
+            variant="centerTitle"
+            title="Transactions"
+            titleClassName="text-text"
+            contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+            leftAction={
+              <IconButton
+                accessibilityLabel="Go back"
+                disabled={!navigation.canGoBack()}
+                onPress={() => {
+                  if (navigation.canGoBack()) {
+                    navigation.goBack();
+                  }
+                }}
+                size={moderateScale(40)}
+              >
+                <ArrowLeftIcon color={headerIconColor} size={24} />
+              </IconButton>
+            }
+            rightAction={
+              <IconButton
+                accessibilityLabel="Open notifications"
+                className="items-center justify-center bg-pill"
+                borderRadius={moderateScale(21)}
+                onPress={() => navigation.navigate('Notification')}
+                size={moderateScale(40)}
+              >
+                <NotificationIcon
+                  color={headerActionIconColor}
+                  size={moderateScale(18)}
+                />
+              </IconButton>
+            }
+          />
+
+          <ScrollView
+            style={{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ flexGrow: 1 }}
+          >
+            <View
+              style={{
+                gap: S.space.xl,
+                paddingHorizontal: S.space.paddingHorizontal,
+                paddingVertical: S.space.md,
+              }}
+            >
+              <TransactionBalanceCard overview={transactionOverview} />
+
+              <BudgetOverview
+                leftMetric={{
+                  label: 'Total Balance',
+                  value: transactionOverview.totalIncomeLabel,
+                  labelClassName: 'text-text',
+                  valueClassName: 'text-text',
+                  icon: <ArrowUpRightIcon color={headerIconColor} size={15} />,
+                }}
+                rightMetric={{
+                  label: 'Total Expense',
+                  value: transactionOverview.totalExpenseLabel,
+                  labelClassName: 'text-text',
+                  valueClassName: 'text-finance-expense',
+                  icon: (
+                    <ArrowDownRightIcon color={headerIconColor} size={15} />
+                  ),
+                }}
+                progressPercent={transactionOverview.spentPercent}
+                note={transactionOverview.note}
+                noteClassName="text-text"
+                noteIconColor={headerIconColor}
+                dividerClassName="bg-primary-50"
+              />
+            </View>
+
+            <View
+              className="bg-secondary-bg"
+              style={{
+                flex: 1,
+                borderTopLeftRadius: moderateScale(72),
+                borderTopRightRadius: moderateScale(72),
+                gap: S.space.xl,
+                paddingHorizontal: S.space.paddingHorizontal,
+                paddingTop: S.space['2xl'],
+                paddingBottom: S.space['4xl'],
+              }}
+            >
+              <View style={{ gap: S.space.lg }}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    gap: S.space.md,
+                  }}
+                >
+                  <View style={{ flex: 1 }}>
+                    <TextField
+                      value={searchQuery}
+                      onChangeText={setSearchQuery}
+                      placeholder="Search title, category..."
+                    />
+                  </View>
+
+                  <TouchableOpacity
+                    accessibilityRole="button"
+                    activeOpacity={0.88}
+                    className="items-center justify-center bg-primary-500"
+                    onPress={() => navigation.navigate('AddTransaction')}
+                    style={{
+                      borderRadius: S.radius.lg,
+                      height: moderateScale(44),
+                      width: moderateScale(44),
+                    }}
+                  >
+                    <PlusIcon color={colors.surfaceDark} size={22} />
+                  </TouchableOpacity>
+                </View>
+
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{
+                    gap: S.space.sm,
+                    paddingRight: S.space.paddingHorizontal,
+                  }}
+                >
+                  {typeFilters.map(filter => (
+                    <PillChip
+                      key={filter}
+                      label={filter}
+                      active={filter === typeFilter && categoryFilter === 'All'}
+                      onPress={() => {
+                        setTypeFilter(filter);
+                        setCategoryFilter('All');
+                      }}
+                    />
+                  ))}
+                  {categories.slice(1, 5).map(category => (
+                    <PillChip
+                      key={category}
+                      label={category}
+                      active={category === categoryFilter}
+                      onPress={() => {
+                        setCategoryFilter(category);
+                        setTypeFilter('All');
+                      }}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+
+              <View style={{ gap: S.space['2xl'] }}>
+                {filteredSections.length > 0 ? (
+                  filteredSections.map(section => (
+                    <View key={section.title} style={{ gap: S.space.lg }}>
+                      <Text
+                        className="text-title"
+                        style={{
+                          fontSize: S.fs.lg,
+                        }}
+                      >
+                        {section.title}
+                      </Text>
+
+                      <View style={{ gap: S.space.lg }}>
+                        {section.items.map(transaction => (
+                          <TransactionRow
+                            key={transaction.id}
+                            item={transaction}
+                            variant="detailed"
+                            onPress={() =>
+                              navigation.navigate('TransactionDetail', {
+                                transactionId: transaction.id,
+                              })
+                            }
+                          />
+                        ))}
+                      </View>
+                    </View>
+                  ))
+                ) : (
+                  <View
+                    className="bg-card"
+                    style={{
+                      borderRadius: S.radius.xxxl,
+                      gap: S.space.sm,
+                      paddingHorizontal: S.space.lg,
+                      paddingVertical: S.space.xl,
+                    }}
+                  >
+                    <Text
+                      className="text-text"
+                      style={{
+                        fontSize: S.fs.md_h,
+                      }}
+                    >
+                      No transactions match these filters
+                    </Text>
+                    <Text
+                      className="text-text-muted"
+                      style={{
+                        fontSize: S.fs.sm,
+                      }}
+                    >
+                      Try clearing the search, choosing a different category, or
+                      adding a new entry.
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </ScrollView>
+        </>
+      ) : null}
+    </SafeAreaView>
+  );
+}
