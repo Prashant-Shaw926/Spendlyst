@@ -1,4 +1,5 @@
 import React from 'react';
+import { ColorValue } from 'react-native';
 import Svg, {
   Circle,
   Line,
@@ -10,7 +11,7 @@ import { colors } from '../../theme/colors';
 
 export type FinanceIconProps = {
   size?: number;
-  color?: string;
+  color?: ColorValue;
   strokeWidth?: number;
 };
 

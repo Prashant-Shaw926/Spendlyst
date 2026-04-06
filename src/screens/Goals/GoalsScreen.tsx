@@ -23,7 +23,7 @@ import {
   PlusIcon,
   StackCashIcon,
   BagIcon,
-} from '../../components/shared/FinanceIcons';
+} from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import {
@@ -36,10 +36,10 @@ import {
   selectGoalSummary,
 } from '../../store/selectors/goals.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { GoalModel, GoalStatus } from '../../types/models';
-import { moderateScale, rs } from '../../utils/responsive';
+import { moderateScale } from '../../utils/responsive';
 
 type GoalTab = GoalStatus;
 
@@ -80,7 +80,10 @@ function toGoalCardItem(goal: GoalModel): GoalCardItem {
 export function GoalsScreen() {
   const navigation = useNavigation<any>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.title : lightColors.title;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const hasInitializedData = useAppStore(selectHasInitializedData);
   const initializeAppData = useAppStore(selectInitializeAppData);
@@ -104,7 +107,7 @@ export function GoalsScreen() {
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
       />
 
       <Header
@@ -123,10 +126,7 @@ export function GoalsScreen() {
             }}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon
-              color={semanticColors.title}
-              size={moderateScale(24)}
-            />
+            <ArrowLeftIcon color={headerIconColor} size={moderateScale(24)} />
           </IconButton>
         }
         rightAction={
@@ -137,22 +137,13 @@ export function GoalsScreen() {
             onPress={() => navigation.navigate('Notification')}
             size={moderateScale(40)}
           >
-            <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+            <BellIcon color={headerIconColor} size={moderateScale(18)} />
           </IconButton>
         }
       />
 
       {!isBootstrapping ? (
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={
-            {
-              // gap: moderateScale(30),
-              // paddingBottom: S.space['4xl'],
-            }
-          }
-          showsVerticalScrollIndicator={false}
-        >
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View
             style={{
               paddingHorizontal: S.space.paddingHorizontal,

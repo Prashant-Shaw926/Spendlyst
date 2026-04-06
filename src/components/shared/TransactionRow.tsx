@@ -1,10 +1,5 @@
 import React, { memo } from 'react';
-import {
-  Text,
-  TouchableOpacity,
-  View,
-  useColorScheme,
-} from 'react-native';
+import { Text, TouchableOpacity, View, useColorScheme } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
 import {
   CarIcon,
@@ -18,14 +13,14 @@ import { colors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { TransactionModel } from '../../types/models';
 import { moderateScale } from '../../utils/responsive';
-import type { FinanceIconProps } from './FinanceIcons';
+import type { FinanceIconProps } from './Icons';
 import {
   BagIcon,
   ForkKnifeIcon,
   KeyIcon,
   StackCashIcon,
   TransportIcon,
-} from './FinanceIcons';
+} from './Icons';
 
 export type TransactionRowVariant = 'preview' | 'detailed';
 
@@ -77,7 +72,7 @@ function TransactionRowComponent({
 
   if (variant === 'preview') {
     const Icon = PREVIEW_ICONS[item.icon] ?? SalaryIcon;
-    const iconColor = isDark ? colors.primary50 : colors.card;
+    const iconColor = isDark ? colors.primary50 : colors.white;
 
     return (
       <Container
@@ -94,11 +89,7 @@ function TransactionRowComponent({
             backgroundColor: item.iconBackgroundColor,
           }}
         >
-          <Icon
-            color={iconColor}
-            height={S.icon.lg}
-            width={S.icon.lg}
-          />
+          <Icon color={iconColor} height={S.icon.lg} width={S.icon.lg} />
         </View>
 
         <View
@@ -157,12 +148,11 @@ function TransactionRowComponent({
       {...containerProps}
     >
       <View
-        className="items-center justify-center"
+        className="items-center justify-center bg-blue-500"
         style={{
           width: S.size.avatarMd,
           height: S.size.avatarMd,
           borderRadius: moderateScale(999),
-          backgroundColor: colors.blue500,
         }}
       >
         <Icon color={colors.white} size={24} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, useColorScheme } from 'react-native';
 import { ExpenseIcon, IncomeIcon } from '../../../assets/icons';
-import { getSemanticColors } from '../../../theme/colors';
+import { darkColors, lightColors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
 import type { BudgetOverviewModel } from '../../../types/models';
 import { moderateScale } from '../../../utils/responsive';
@@ -13,7 +13,7 @@ type HomeBalanceSectionProps = {
 
 export function HomeBalanceSection({ overview }: HomeBalanceSectionProps) {
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const iconColor = isDark ? darkColors.text : lightColors.text;
 
   return (
     <View
@@ -30,7 +30,7 @@ export function HomeBalanceSection({ overview }: HomeBalanceSectionProps) {
           valueClassName: 'text-text',
           icon: (
             <IncomeIcon
-              color={semanticColors.text}
+              color={iconColor}
               height={moderateScale(14)}
               width={moderateScale(14)}
             />
@@ -43,7 +43,7 @@ export function HomeBalanceSection({ overview }: HomeBalanceSectionProps) {
           valueClassName: 'text-finance-expense',
           icon: (
             <ExpenseIcon
-              color={semanticColors.text}
+              color={iconColor}
               height={moderateScale(14)}
               width={moderateScale(14)}
             />
@@ -53,7 +53,7 @@ export function HomeBalanceSection({ overview }: HomeBalanceSectionProps) {
         progressValue={overview.budgetLabel}
         note={overview.note}
         noteClassName="text-text"
-        noteIconColor={semanticColors.text}
+        noteIconColor={iconColor}
         dividerClassName="bg-primary-50"
         metricsContainerStyle={{ gap: S.space.lg }}
       />

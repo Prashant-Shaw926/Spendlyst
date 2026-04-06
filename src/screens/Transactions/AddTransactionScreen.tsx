@@ -4,7 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TransactionForm } from '../../components/features/transactions/TransactionForm';
-import { ArrowLeftIcon } from '../../components/shared/FinanceIcons';
+import { ArrowLeftIcon } from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import {
@@ -17,7 +17,7 @@ import {
   selectUpdateTransaction,
 } from '../../store/selectors/transactions.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { getSemanticColors } from '../../theme/colors';
+import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { TransactionsStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
@@ -27,12 +27,17 @@ export function AddTransactionScreen() {
   const route =
     useRoute<RouteProp<TransactionsStackParamList, 'AddTransaction'>>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const initializeAppData = useAppStore(selectInitializeAppData);
   const addTransaction = useAppStore(selectAddTransaction);
   const updateTransaction = useAppStore(selectUpdateTransaction);
-  const transaction = useAppStore(selectTransactionById(route.params?.transactionId));
+  const transaction = useAppStore(
+    selectTransactionById(route.params?.transactionId),
+  );
 
   useEffect(() => {
     if (hasHydrated) {
@@ -41,9 +46,13 @@ export function AddTransactionScreen() {
   }, [hasHydrated, initializeAppData]);
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={['top']} style={{ gap: S.space.lg }}>
+    <SafeAreaView
+      className="flex-1 bg-bg"
+      edges={['top']}
+      style={{ gap: S.space.lg }}
+    >
       <StatusBar
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
@@ -58,7 +67,7 @@ export function AddTransactionScreen() {
             onPress={() => navigation.goBack()}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={semanticColors.text} size={24} />
+            <ArrowLeftIcon color={headerIconColor} size={24} />
           </IconButton>
         }
       />
@@ -69,15 +78,13 @@ export function AddTransactionScreen() {
           borderTopLeftRadius: moderateScale(72),
           borderTopRightRadius: moderateScale(72),
           paddingVertical: S.space.lg,
-          // marginTop: moderateScale(20),
         }}
       >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
             paddingHorizontal: S.space.paddingHorizontal,
-            paddingTop: moderateScale(40),
-            paddingBottom: moderateScale(40),
+            paddingVertical: moderateScale(40),
           }}
           showsVerticalScrollIndicator={false}
         >

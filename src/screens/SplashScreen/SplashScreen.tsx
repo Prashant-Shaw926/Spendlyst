@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(18),
     fontSize: moderateScale(34),
     fontFamily: 'Poppins-Bold',
-    color: colors.card,
+    color: colors.white,
     letterSpacing: -0.6,
   },
 });

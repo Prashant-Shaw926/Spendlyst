@@ -13,7 +13,6 @@ export type IconButtonProps = {
   className?: string;
   size?: number;
   borderRadius?: number;
-  backgroundColor?: string;
   borderColor?: string;
   borderWidth?: number;
   style?: StyleProp<ViewStyle>;
@@ -27,7 +26,6 @@ export function IconButton({
   className,
   size = 40,
   borderRadius = size / 2,
-  // backgroundColor = colors.secondaryBackgroundLight,
   borderColor,
   borderWidth = borderColor ? 1 : 0,
   style,
@@ -45,7 +43,6 @@ export function IconButton({
           width: size,
           height: size,
           borderRadius,
-          // backgroundColor,
           borderColor,
           borderWidth,
         },

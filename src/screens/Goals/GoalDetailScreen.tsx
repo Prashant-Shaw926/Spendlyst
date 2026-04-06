@@ -11,7 +11,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GoalForm } from '../../components/features/Goals/GoalForm';
-import { ArrowLeftIcon } from '../../components/shared/FinanceIcons';
+import { ArrowLeftIcon } from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import { PrimaryButton } from '../../components/shared/PrimaryButton';
@@ -26,7 +26,7 @@ import {
   selectUpdateGoal,
 } from '../../store/selectors/goals.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { getSemanticColors } from '../../theme/colors';
+import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { GoalsStackParamList } from '../../types/navigation';
 import { moderateScale, rs } from '../../utils/responsive';
@@ -60,7 +60,10 @@ export function GoalDetailScreen() {
   const navigation = useNavigation<any>();
   const route = useRoute<RouteProp<GoalsStackParamList, 'GoalDetail'>>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const initializeAppData = useAppStore(selectInitializeAppData);
   const addGoal = useAppStore(selectAddGoal);
@@ -102,9 +105,13 @@ export function GoalDetailScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={['top']} style={{ gap: S.space.lg }}>
+    <SafeAreaView
+      className="flex-1 bg-bg"
+      edges={['top']}
+      style={{ gap: S.space.lg }}
+    >
       <StatusBar
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
@@ -119,7 +126,7 @@ export function GoalDetailScreen() {
             onPress={() => navigation.goBack()}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={semanticColors.text} size={24} />
+            <ArrowLeftIcon color={headerIconColor} size={24} />
           </IconButton>
         }
       />
@@ -130,7 +137,6 @@ export function GoalDetailScreen() {
           borderTopLeftRadius: moderateScale(72),
           borderTopRightRadius: moderateScale(72),
           paddingVertical: S.space.lg,
-          // marginTop: moderateScale(20),
         }}
       >
         <ScrollView
@@ -159,14 +165,12 @@ export function GoalDetailScreen() {
           ) : goal ? (
             <View style={{ gap: S.space.xl }}>
               <View
-                className="bg-card"
+                className="bg-card border border-black/[0.02] dark:border-white/[0.05]"
                 style={{
                   borderRadius: S.radius.xxxl,
                   gap: S.space.xs,
                   paddingHorizontal: S.space.lg,
                   paddingVertical: S.space.xl,
-                  borderWidth: 1,
-                  borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
                 }}
               >
                 <Text
@@ -200,7 +204,7 @@ export function GoalDetailScreen() {
                   >
                     Target {goal.targetAmountLabel}
                   </Text>
-                  
+
                   <View
                     className="bg-primary-100"
                     style={{
@@ -223,14 +227,12 @@ export function GoalDetailScreen() {
               </View>
 
               <View
-                className="bg-card"
+                className="bg-card border border-black/[0.02] dark:border-white/[0.05]"
                 style={{
                   borderRadius: S.radius.xxxl,
                   gap: S.space.lg,
                   paddingHorizontal: S.space.lg,
                   paddingVertical: S.space.xl,
-                  borderWidth: 1,
-                  borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
                 }}
               >
                 <View style={{ flexDirection: 'row' }}>

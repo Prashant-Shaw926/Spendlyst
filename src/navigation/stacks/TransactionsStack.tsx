@@ -1,20 +1,26 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useColorScheme } from 'react-native';
 import type { TransactionsStackParamList } from '../../types/navigation';
 import { TransactionsScreen } from '../../screens/Transactions/TransactionsScreen';
 import { AddTransactionScreen } from '../../screens/Transactions/AddTransactionScreen';
 import { TransactionDetailScreen } from '../../screens/Transactions/TransactionDetailScreen';
-import { colors } from '../../theme/colors';
+import { darkColors, lightColors } from '../../theme/colors';
 import NotificationScreen from '../../screens/Notification/NotificationScreen';
 
 const Stack = createNativeStackNavigator<TransactionsStackParamList>();
 
 export function TransactionsStack() {
+  const isDark = useColorScheme() === 'dark';
+  const contentBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: colors.background },
+        contentStyle: { backgroundColor: contentBackgroundColor },
         animation: 'slide_from_right',
       }}>
       <Stack.Screen name="Transactions" component={TransactionsScreen} />

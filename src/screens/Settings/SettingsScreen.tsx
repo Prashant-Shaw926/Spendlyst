@@ -1,21 +1,12 @@
 import React from 'react';
-import { Text, View, useColorScheme } from 'react-native';
+import { Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
 export function SettingsScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: isDark ? colors.surfaceDeep : colors.primary50,
-      }}
-    >
+    <SafeAreaView className="flex-1 bg-primary-50 dark:bg-surface-deep">
       <View
         className="flex-1 items-center justify-center"
         style={{

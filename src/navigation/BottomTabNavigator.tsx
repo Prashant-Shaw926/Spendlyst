@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, useColorScheme, Pressable } from 'react-native';
+import { View, useColorScheme, Pressable, ColorValue } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { SvgProps } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ import {
   InsightsIcon,
   TransactionsIcon,
 } from '../assets/icons';
-import { UserIcon } from '../components/shared/FinanceIcons';
+import { UserIcon } from '../components/shared/Icons';
 import type { BottomTabParamList } from '../types/navigation';
 import { HomeStack } from './stacks/HomeStack';
 import { TransactionsStack } from './stacks/TransactionsStack';
@@ -20,10 +20,10 @@ import { colors } from '../theme/colors';
 import { moderateScale } from '../utils/responsive';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
-type TabIconComponent = React.ComponentType<SvgProps>;
+type TabIconComponent = React.ComponentType<any>;
 type FinanceTabIconComponent = React.ComponentType<{
   size?: number;
-  color?: string;
+  color?: ColorValue;
 }>;
 
 function TabBubble({
@@ -114,7 +114,8 @@ export function BottomTabNavigator() {
           borderTopWidth: 0,
           elevation: 0,
           shadowOpacity: 0,
-          height: moderateScale(88) + Math.max(insets.bottom, moderateScale(10)),
+          height:
+            moderateScale(88) + Math.max(insets.bottom, moderateScale(10)),
           paddingTop: moderateScale(14),
           paddingBottom: Math.max(insets.bottom, moderateScale(10)),
         },
@@ -122,15 +123,9 @@ export function BottomTabNavigator() {
           alignItems: 'center',
           justifyContent: 'center',
         },
-        tabBarButton: (props) => {
+        tabBarButton: props => {
           const { style, ...rest } = props as any;
-          return (
-            <Pressable
-              {...rest}
-              android_ripple={null}
-              style={style}
-            />
-          );
+          return <Pressable {...rest} android_ripple={null} style={style} />;
         },
       }}
     >
@@ -139,7 +134,11 @@ export function BottomTabNavigator() {
         component={HomeStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon Icon={HomeIcon} focused={focused} inactiveColor={inactiveColor} />
+            <TabBarIcon
+              Icon={HomeIcon}
+              focused={focused}
+              inactiveColor={inactiveColor}
+            />
           ),
         }}
       />
@@ -149,7 +148,11 @@ export function BottomTabNavigator() {
         component={InsightsStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon Icon={InsightsIcon} focused={focused} inactiveColor={inactiveColor} />
+            <TabBarIcon
+              Icon={InsightsIcon}
+              focused={focused}
+              inactiveColor={inactiveColor}
+            />
           ),
         }}
       />
@@ -173,7 +176,11 @@ export function BottomTabNavigator() {
         component={GoalsStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon Icon={GoalsIcon} focused={focused} inactiveColor={inactiveColor} />
+            <TabBarIcon
+              Icon={GoalsIcon}
+              focused={focused}
+              inactiveColor={inactiveColor}
+            />
           ),
         }}
       />
@@ -183,7 +190,7 @@ export function BottomTabNavigator() {
         component={ProfileStack}
         options={{
           tabBarIcon: ({ focused }) => (
-            <TabBarFinanceIcon
+            <TabBarIcon
               Icon={UserIcon}
               focused={focused}
               inactiveColor={inactiveColor}

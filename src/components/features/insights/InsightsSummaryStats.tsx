@@ -2,10 +2,7 @@ import React, { memo } from 'react';
 import { Text, View, useColorScheme } from 'react-native';
 import { colors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
-import {
-  ArrowDownRightIcon,
-  ArrowUpRightIcon,
-} from '../../shared/FinanceIcons';
+import { ArrowDownRightIcon, ArrowUpRightIcon } from '../../shared/Icons';
 
 type InsightsSummaryStatsProps = {
   summary: {
@@ -56,6 +53,8 @@ function StatItem({
 
 function InsightsSummaryStatsComponent({ summary }: InsightsSummaryStatsProps) {
   const isDark = useColorScheme() === 'dark';
+  const incomeIconColor = isDark ? colors.primary50 : colors.primary500;
+  const expenseIconColor = isDark ? colors.primary50 : colors.blue700;
 
   return (
     <View
@@ -67,7 +66,7 @@ function InsightsSummaryStatsComponent({ summary }: InsightsSummaryStatsProps) {
       <StatItem
         label="Income"
         value={summary.incomeLabel}
-        iconColor={isDark ? colors.primary50 : colors.primary500}
+        iconColor={incomeIconColor}
       />
 
       <View
@@ -81,7 +80,7 @@ function InsightsSummaryStatsComponent({ summary }: InsightsSummaryStatsProps) {
       <StatItem
         label="Expense"
         value={summary.expenseLabel}
-        iconColor={isDark ? colors.primary50 : colors.blue700}
+        iconColor={expenseIconColor}
         isExpense
       />
     </View>

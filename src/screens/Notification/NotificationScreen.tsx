@@ -18,10 +18,10 @@ import {
   DollarIcon,
   StarIcon,
   TrendDownIcon,
-} from '../../components/shared/FinanceIcons';
+} from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
@@ -97,11 +97,7 @@ const NOTIFICATIONS: NotifGroup[] = [
         title: 'Transactions',
         body: 'A new transaction has been registered',
         time: '17:00 - April 24',
-        tags: [
-          { label: 'Food' },
-          { label: 'Dinner' },
-          { label: '-$70,40' },
-        ],
+        tags: [{ label: 'Food' }, { label: 'Dinner' }, { label: '-$70,40' }],
       },
     ],
   },
@@ -109,12 +105,7 @@ const NOTIFICATIONS: NotifGroup[] = [
 
 function NotifIcon({ type }: { type: NotifType }) {
   const iconSize = moderateScale(22);
-  const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
-  
-  // Icon color and Bg based on theme/type to feel premium
   const iconColor = colors.primary500;
-  const bgColor = isDark ? 'rgba(0, 168, 120, 0.15)' : 'rgba(0, 168, 120, 0.1)';
 
   const icon = (() => {
     switch (type) {
@@ -133,14 +124,11 @@ function NotifIcon({ type }: { type: NotifType }) {
 
   return (
     <View
-      items-center justify-center
+      className="items-center justify-center bg-[#00D09E1A] dark:bg-[#00D09E26]"
       style={{
         width: moderateScale(48),
         height: moderateScale(48),
         borderRadius: moderateScale(14),
-        backgroundColor: bgColor,
-        alignItems: 'center',
-        justifyContent: 'center',
       }}
     >
       {icon}
@@ -155,18 +143,17 @@ function NotificationRow({
   item: NotifItem;
   isLast: boolean;
 }) {
-  const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
-
   return (
     <View
+      className={
+        isLast ? '' : 'border-b border-black/[0.05] dark:border-white/[0.1]'
+      }
       style={{
         paddingVertical: moderateScale(16),
         borderBottomWidth: isLast ? 0 : 0.5,
-        borderBottomColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
       }}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: moderateScale(14) }}>
+      <View className="flex-row items-start" style={{ gap: moderateScale(14) }}>
         <NotifIcon type={item.type} />
 
         <View style={{ flex: 1, gap: moderateScale(2) }}>
@@ -185,8 +172,8 @@ function NotificationRow({
             style={{
               fontSize: S.fs.sm,
               fontFamily: 'Poppins-Regular',
-              opacity: 0.8,
               lineHeight: S.fs.sm * 1.4,
+              opacity: 0.8,
             }}
           >
             {item.body}
@@ -206,11 +193,10 @@ function NotificationRow({
           ) : null}
 
           <Text
+            className="text-right text-primary-600 dark:text-primary-300"
             style={{
               fontSize: S.fs.xs,
               fontFamily: 'Poppins-Regular',
-              color: isDark ? colors.primary300 : colors.primary600,
-              textAlign: 'right',
               marginTop: moderateScale(4),
               opacity: 0.9,
             }}
@@ -226,20 +212,23 @@ function NotificationRow({
 export default function NotificationScreen() {
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.title : lightColors.title;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
 
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
       />
 
       <Header
         variant="centerTitle"
         title="Notification"
         titleClassName="text-title"
-                    contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
+        contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
         leftAction={
           <IconButton
             accessibilityLabel="Go back"
@@ -251,7 +240,7 @@ export default function NotificationScreen() {
             }}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={semanticColors.title} size={moderateScale(22)} />
+            <ArrowLeftIcon color={headerIconColor} size={moderateScale(22)} />
           </IconButton>
         }
       />

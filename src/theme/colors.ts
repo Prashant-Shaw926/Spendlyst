@@ -7,7 +7,8 @@
  * - Reach for this file only when a direct style prop, SVG, or third-party
  *   library needs a raw color string.
  * - Semantic tokens differ between light and dark. Resolve them locally with
- *   `getSemanticColors(useColorScheme() === 'dark')`.
+ *   `lightColors` / `darkColors` or `getSemanticColors(...)` only when a raw
+ *   color is required.
  * - Primitive tokens never change between modes.
  */
 
@@ -136,60 +137,6 @@ export function getSemanticColors(isDark: boolean) {
 
 export const colors = {
   ...primitives,
-  background: lightColors.background,
-  secondaryBackground: lightColors.secondaryBackground,
-  card: lightColors.card,
-  secondaryCard: lightColors.secondaryCard,
-  pill: lightColors.pill,
-  title: lightColors.title,
-  text: lightColors.text,
-  textMuted: lightColors.textMuted,
-  textTertiary: lightColors.textTertiary,
-  progressBar: lightColors.progressBar,
-  tabActive: lightColors.tabActive,
-  tabInactive: lightColors.tabInactive,
-  tabBackground: lightColors.tabBackground,
-  income: lightColors.income,
-  expense: lightColors.expense,
-  savings: lightColors.savings,
-  border: lightColors.border,
-  progress: lightColors.progress,
-  backgroundLight: lightColors.background,
-  backgroundDark: darkColors.background,
-  secondaryBackgroundLight: lightColors.secondaryBackground,
-  secondaryBackgroundDark: darkColors.secondaryBackground,
-  cardLight: lightColors.card,
-  cardDark: darkColors.card,
-  secondaryCardLight: lightColors.secondaryCard,
-  secondaryCardDark: darkColors.secondaryCard,
-  pillLight: lightColors.pill,
-  pillDark: darkColors.pill,
-  titleLight: lightColors.title,
-  titleDark: darkColors.title,
-  textLight: lightColors.text,
-  textDark: darkColors.text,
-  textMutedLight: lightColors.textMuted,
-  textMutedDark: darkColors.textMuted,
-  textTertiaryLight: lightColors.textTertiary,
-  textTertiaryDark: darkColors.textTertiary,
-  progressBarLight: lightColors.progressBar,
-  progressBarDark: darkColors.progressBar,
-  tabActiveLight: lightColors.tabActive,
-  tabActiveDark: darkColors.tabActive,
-  tabInactiveLight: lightColors.tabInactive,
-  tabInactiveDark: darkColors.tabInactive,
-  tabBackgroundLight: lightColors.tabBackground,
-  tabBackgroundDark: darkColors.tabBackground,
-  incomeLight: lightColors.income,
-  incomeDark: darkColors.income,
-  expenseLight: lightColors.expense,
-  expenseDark: darkColors.expense,
-  savingsLight: lightColors.savings,
-  savingsDark: darkColors.savings,
-  borderLight: lightColors.border,
-  borderDark: darkColors.border,
-  progressLight: lightColors.progress,
-  progressDark: darkColors.progress,
 } as const;
 
 export type Colors = typeof colors;

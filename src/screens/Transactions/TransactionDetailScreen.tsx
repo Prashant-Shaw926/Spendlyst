@@ -11,7 +11,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../../components/shared/PrimaryButton';
-import { ArrowLeftIcon } from '../../components/shared/FinanceIcons';
+import { ArrowLeftIcon } from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import {
@@ -23,18 +23,12 @@ import {
   selectTransactionById,
 } from '../../store/selectors/transactions.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { getSemanticColors } from '../../theme/colors';
+import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { TransactionsStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
 
-function DetailRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <View
       style={{
@@ -68,11 +62,16 @@ export function TransactionDetailScreen() {
   const route =
     useRoute<RouteProp<TransactionsStackParamList, 'TransactionDetail'>>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const initializeAppData = useAppStore(selectInitializeAppData);
   const deleteTransaction = useAppStore(selectDeleteTransaction);
-  const transaction = useAppStore(selectTransactionById(route.params.transactionId));
+  const transaction = useAppStore(
+    selectTransactionById(route.params.transactionId),
+  );
 
   useEffect(() => {
     if (hasHydrated) {
@@ -93,7 +92,7 @@ export function TransactionDetailScreen() {
   return (
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
         barStyle={isDark ? 'light-content' : 'dark-content'}
       />
 
@@ -108,7 +107,7 @@ export function TransactionDetailScreen() {
             onPress={() => navigation.goBack()}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={semanticColors.text} size={24} />
+            <ArrowLeftIcon color={headerIconColor} size={24} />
           </IconButton>
         }
       />
@@ -142,7 +141,9 @@ export function TransactionDetailScreen() {
           </Text>
 
           <Text
-            className={transaction.isExpense ? 'text-finance-expense' : 'text-text'}
+            className={
+              transaction.isExpense ? 'text-finance-expense' : 'text-text'
+            }
             style={{
               fontFamily: 'Poppins-Bold',
               fontSize: S.fs.xl,

@@ -9,10 +9,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { HomeSavingsCard } from '../../components/features/home/HomeSavingsCard';
 import { HomeTransactionItem } from '../../components/features/home/HomeTransactionItem';
 import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
-import { BellIcon, PlusIcon } from '../../components/shared/FinanceIcons';
+import { BellIcon } from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { HomeScreenSkeleton } from '../../components/shared/HomeScreenSkeleton';
 import { IconButton } from '../../components/shared/IconButton';
@@ -24,17 +23,11 @@ import {
 } from '../../store/selectors/app.selectors';
 import { selectHomeDashboard } from '../../store/selectors/home.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
-function MetricTile({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function MetricTile({ label, value }: { label: string; value: string }) {
   return (
     <View
       className="bg-secondary-card"
@@ -71,7 +64,7 @@ function MetricTile({
 export function HomeScreen() {
   const navigation = useNavigation<any>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerActionIconColor = isDark ? darkColors.title : lightColors.title;
   const hasHydrated = useAppStore(selectHasHydrated);
   const hasInitializedData = useAppStore(selectHasInitializedData);
   const initializeAppData = useAppStore(selectInitializeAppData);
@@ -110,17 +103,15 @@ export function HomeScreen() {
                 onPress={() => navigation.navigate('Notification')}
                 size={moderateScale(40)}
               >
-                <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+                <BellIcon
+                  color={headerActionIconColor}
+                  size={moderateScale(18)}
+                />
               </IconButton>
             }
           />
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            // contentContainerStyle={{
-            //   paddingBottom: S.space['5xl'],
-            // }}
-          >
+          <ScrollView showsVerticalScrollIndicator={false}>
             <View
               style={{
                 gap: S.space.xl,
@@ -177,7 +168,6 @@ export function HomeScreen() {
                     value={dashboard.overview.totalExpenseLabel}
                   />
                 </View>
-
               </View>
             </View>
 
@@ -255,7 +245,7 @@ export function HomeScreen() {
                 </View>
 
                 <View style={{ gap: S.space.lg }}>
-                  {dashboard.recentTransactions.map((transaction) => (
+                  {dashboard.recentTransactions.map(transaction => (
                     <HomeTransactionItem
                       key={transaction.id}
                       item={transaction}

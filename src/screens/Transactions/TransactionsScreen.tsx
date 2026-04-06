@@ -17,9 +17,8 @@ import {
   ArrowLeftIcon,
   ArrowUpRightIcon,
   BellIcon,
-  CheckSquareIcon,
   PlusIcon,
-} from '../../components/shared/FinanceIcons';
+} from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import { PillChip } from '../../components/shared/PillChip';
@@ -37,7 +36,7 @@ import {
   selectTransactionOverview,
 } from '../../store/selectors/transactions.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import {
   buildTransactionCollections,
@@ -52,7 +51,11 @@ const typeFilters: readonly TypeFilter[] = ['All', 'Income', 'Expense'];
 export function TransactionsScreen() {
   const navigation = useNavigation<any>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const headerActionIconColor = isDark ? darkColors.title : lightColors.title;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const hasInitializedData = useAppStore(selectHasInitializedData);
   const initializeAppData = useAppStore(selectInitializeAppData);
@@ -108,10 +111,14 @@ export function TransactionsScreen() {
   const isBootstrapping = !hasHydrated || !hasInitializedData;
 
   return (
-    <SafeAreaView className="flex-1 bg-bg" edges={['top']} style={{ gap: S.space.md }}>
+    <SafeAreaView
+      className="flex-1 bg-bg"
+      edges={['top']}
+      style={{ gap: S.space.md }}
+    >
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
       />
 
       {isBootstrapping ? <TransactionsScreenSkeleton /> : null}
@@ -134,7 +141,7 @@ export function TransactionsScreen() {
                 }}
                 size={moderateScale(40)}
               >
-                <ArrowLeftIcon color={semanticColors.text} size={24} />
+                <ArrowLeftIcon color={headerIconColor} size={24} />
               </IconButton>
             }
             rightAction={
@@ -146,7 +153,7 @@ export function TransactionsScreen() {
                 size={moderateScale(40)}
               >
                 <BellIcon
-                  color={semanticColors.title}
+                  color={headerActionIconColor}
                   size={moderateScale(18)}
                 />
               </IconButton>
@@ -156,7 +163,7 @@ export function TransactionsScreen() {
           <ScrollView
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
-            // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
+            contentContainerStyle={{ flexGrow: 1 }}
           >
             <View
               style={{
@@ -173,9 +180,7 @@ export function TransactionsScreen() {
                   value: transactionOverview.totalIncomeLabel,
                   labelClassName: 'text-text',
                   valueClassName: 'text-text',
-                  icon: (
-                    <ArrowUpRightIcon color={semanticColors.text} size={15} />
-                  ),
+                  icon: <ArrowUpRightIcon color={headerIconColor} size={15} />,
                 }}
                 rightMetric={{
                   label: 'Total Expense',
@@ -183,14 +188,14 @@ export function TransactionsScreen() {
                   labelClassName: 'text-text',
                   valueClassName: 'text-finance-expense',
                   icon: (
-                    <ArrowDownRightIcon color={semanticColors.text} size={15} />
+                    <ArrowDownRightIcon color={headerIconColor} size={15} />
                   ),
                 }}
                 progressPercent={transactionOverview.spentPercent}
                 progressValue={transactionOverview.budgetLabel}
                 note={transactionOverview.note}
                 noteClassName="text-text"
-                noteIconColor={semanticColors.text}
+                noteIconColor={headerIconColor}
                 dividerClassName="bg-primary-50"
               />
             </View>
@@ -198,10 +203,10 @@ export function TransactionsScreen() {
             <View
               className="bg-secondary-bg"
               style={{
+                flex: 1,
                 borderTopLeftRadius: moderateScale(72),
                 borderTopRightRadius: moderateScale(72),
                 gap: S.space.xl,
-                // marginTop: moderateScale(14),
                 paddingHorizontal: S.space.paddingHorizontal,
                 paddingTop: S.space['2xl'],
                 paddingBottom: S.space['4xl'],
@@ -226,20 +231,16 @@ export function TransactionsScreen() {
                   <TouchableOpacity
                     accessibilityRole="button"
                     activeOpacity={0.88}
+                    className="items-center justify-center bg-primary-500"
                     onPress={() => navigation.navigate('AddTransaction')}
                     style={{
-                      alignItems: 'center',
-                      backgroundColor: colors.primary500,
                       borderRadius: S.radius.lg,
-                      justifyContent: 'center',
-                      // marginTop: moderateScale(28),
-                                    height: moderateScale(44),
-                                    width: moderateScale(44),
+                      height: moderateScale(44),
+                      width: moderateScale(44),
                     }}
                   >
                     <PlusIcon color={colors.surfaceDark} size={22} />
                   </TouchableOpacity>
-
                 </View>
 
                 <ScrollView

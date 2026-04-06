@@ -6,7 +6,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import { CheckSquareIcon } from './FinanceIcons';
+import { CheckSquareIcon } from './Icons';
 import { ProgressBar } from './ProgressBar';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';

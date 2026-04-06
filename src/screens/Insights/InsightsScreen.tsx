@@ -10,7 +10,6 @@ import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IncomeExpenseBarChart } from '../../components/features/insights/IncomeExpenseBarChart';
 import { InsightsSummaryStats } from '../../components/features/insights/InsightsSummaryStats';
-import { TargetCard } from '../../components/features/insights/TargetCard';
 import { BudgetOverview } from '../../components/shared/BudgetOverview';
 import { ChartSection } from '../../components/shared/ChartSection';
 import {
@@ -18,7 +17,7 @@ import {
   ArrowLeftIcon,
   ArrowUpRightIcon,
   BellIcon,
-} from '../../components/shared/FinanceIcons';
+} from '../../components/shared/Icons';
 import { Header } from '../../components/shared/Header';
 import { IconButton } from '../../components/shared/IconButton';
 import { InsightsScreenSkeleton } from '../../components/shared/InsightsScreenSkeleton';
@@ -29,7 +28,7 @@ import {
 } from '../../store/selectors/app.selectors';
 import { selectInsightsDashboard } from '../../store/selectors/insights.selectors';
 import { useAppStore } from '../../store/useAppStore';
-import { getSemanticColors } from '../../theme/colors';
+import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
 
@@ -87,7 +86,11 @@ function InsightCard({
 export function InsightsScreen() {
   const navigation = useNavigation<any>();
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const headerActionIconColor = isDark ? darkColors.title : lightColors.title;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
   const hasHydrated = useAppStore(selectHasHydrated);
   const hasInitializedData = useAppStore(selectHasInitializedData);
   const initializeAppData = useAppStore(selectInitializeAppData);
@@ -105,7 +108,7 @@ export function InsightsScreen() {
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
       />
 
       {isBootstrapping ? <InsightsScreenSkeleton /> : null}
@@ -128,7 +131,7 @@ export function InsightsScreen() {
                 }}
                 size={moderateScale(40)}
               >
-                <ArrowLeftIcon color={semanticColors.text} size={24} />
+                <ArrowLeftIcon color={headerIconColor} size={24} />
               </IconButton>
             }
             rightAction={
@@ -139,16 +142,15 @@ export function InsightsScreen() {
                 onPress={() => navigation.navigate('Notification')}
                 size={moderateScale(40)}
               >
-                <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+                <BellIcon
+                  color={headerActionIconColor}
+                  size={moderateScale(18)}
+                />
               </IconButton>
             }
           />
 
-          <ScrollView
-            style={{ flex: 1 }}
-            showsVerticalScrollIndicator={false}
-            // contentContainerStyle={{ paddingBottom: S.space['4xl'] }}
-          >
+          <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
             <View
               style={{
                 gap: S.space.xl,
@@ -162,20 +164,22 @@ export function InsightsScreen() {
                   value: insights.overview.totalBalanceLabel,
                   labelClassName: 'text-text',
                   valueClassName: 'text-text',
-                  icon: <ArrowUpRightIcon color={semanticColors.text} size={15} />,
+                  icon: <ArrowUpRightIcon color={headerIconColor} size={15} />,
                 }}
                 rightMetric={{
                   label: 'Total Expense',
                   value: insights.overview.totalExpenseLabel,
                   labelClassName: 'text-text',
                   valueClassName: 'text-finance-expense',
-                  icon: <ArrowDownRightIcon color={semanticColors.text} size={15} />,
+                  icon: (
+                    <ArrowDownRightIcon color={headerIconColor} size={15} />
+                  ),
                 }}
                 progressPercent={insights.overview.spentPercent}
                 progressValue={insights.overview.budgetLabel}
                 note={insights.overview.note}
                 noteClassName="text-text"
-                noteIconColor={semanticColors.text}
+                noteIconColor={headerIconColor}
                 dividerClassName="bg-primary-50"
               />
             </View>
@@ -248,7 +252,7 @@ export function InsightsScreen() {
                 </Text>
 
                 <View style={{ gap: S.space.md }}>
-                  {insights.categoryBreakdown.map((item) => (
+                  {insights.categoryBreakdown.map(item => (
                     <View
                       key={item.category}
                       className="bg-secondary-card"
@@ -310,13 +314,13 @@ export function InsightsScreen() {
                           fontSize: S.fs.xs,
                         }}
                       >
-                        {item.percent}% of recorded expenses across {item.transactionCount} entries
+                        {item.percent}% of recorded expenses across{' '}
+                        {item.transactionCount} entries
                       </Text>
                     </View>
                   ))}
                 </View>
               </View>
-
             </View>
           </ScrollView>
         </>

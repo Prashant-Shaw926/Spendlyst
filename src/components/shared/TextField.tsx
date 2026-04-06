@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TextInput, View, useColorScheme } from 'react-native';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 
 type TextFieldProps = {
@@ -26,7 +26,10 @@ export function TextField({
   helperText,
   errorText,
 }: TextFieldProps) {
-  const semanticColors = getSemanticColors(useColorScheme() === 'dark');
+  const isDark = useColorScheme() === 'dark';
+  const placeholderTextColor = isDark
+    ? darkColors.textMuted
+    : lightColors.textMuted;
 
   return (
     <View style={{ gap: S.space.sm }}>
@@ -44,18 +47,18 @@ export function TextField({
 
       <TextInput
         autoCapitalize={autoCapitalize}
+        className={`border bg-card text-text ${
+          errorText ? 'border-error-500' : 'border-border'
+        }`}
         keyboardType={keyboardType}
         multiline={multiline}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={semanticColors.textMuted}
+        placeholderTextColor={placeholderTextColor}
         style={{
           minHeight: multiline ? 108 : 56,
           borderRadius: S.radius.xxl,
           borderWidth: 1,
-          borderColor: errorText ? colors.error500 : semanticColors.border,
-          backgroundColor: semanticColors.card,
-          color: semanticColors.text,
           fontFamily: 'Poppins-Regular',
           fontSize: S.fs.md,
           paddingHorizontal: S.space.lg,
@@ -67,8 +70,8 @@ export function TextField({
 
       {errorText ? (
         <Text
+          className="text-error-500"
           style={{
-            color: colors.error500,
             fontFamily: 'Poppins-Regular',
             fontSize: S.fs.xs,
           }}

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Text, View, useColorScheme } from 'react-native';
 import { PieChart, type pieDataItem } from 'react-native-gifted-charts';
-import { colors, getSemanticColors } from '../../../theme/colors';
+import { colors, darkColors, lightColors } from '../../../theme/colors';
 import { S } from '../../../theme/scale';
 import { moderateScale, rs } from '../../../utils/responsive';
 
@@ -58,7 +58,9 @@ export function GoalHeroCard({
   monthlySaving,
 }: GoalHeroCardProps) {
   const isDark = useColorScheme() === 'dark';
-  const semanticColors = getSemanticColors(isDark);
+  const remainingProgressColor = isDark
+    ? darkColors.progress
+    : lightColors.progress;
   const donutData: pieDataItem[] = useMemo(() => {
     const safeProgress = Math.max(0, Math.min(100, progress));
 
@@ -66,10 +68,10 @@ export function GoalHeroCard({
       { value: safeProgress, color: colors.primary500 },
       {
         value: 100 - safeProgress,
-        color: semanticColors.progress,
+        color: remainingProgressColor,
       },
     ];
-  }, [progress, semanticColors.progress]);
+  }, [progress, remainingProgressColor]);
 
   return (
     <View

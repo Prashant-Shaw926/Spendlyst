@@ -11,7 +11,7 @@ type ProgressBarProps = {
 
 export function ProgressBar({
   progressPercent,
-  progressValue,
+  progressValue: _progressValue,
   style,
 }: ProgressBarProps) {
   const clampedProgress = Math.max(0, Math.min(100, progressPercent));

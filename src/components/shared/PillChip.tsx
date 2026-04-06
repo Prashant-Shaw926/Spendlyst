@@ -1,6 +1,5 @@
 import React from 'react';
-import { Text, TouchableOpacity, useColorScheme } from 'react-native';
-import { colors, getSemanticColors } from '../../theme/colors';
+import { Text, TouchableOpacity } from 'react-native';
 import { S } from '../../theme/scale';
 
 type PillChipProps = {
@@ -10,23 +9,21 @@ type PillChipProps = {
 };
 
 export function PillChip({ label, active, onPress }: PillChipProps) {
-  const semanticColors = getSemanticColors(useColorScheme() === 'dark');
-
   return (
     <TouchableOpacity
       accessibilityRole="button"
       activeOpacity={0.85}
+      className={active ? 'bg-primary-500' : 'bg-secondary-card'}
       onPress={onPress}
       style={{
         borderRadius: S.radius.xxl,
-        backgroundColor: active ? colors.primary500 : semanticColors.secondaryCard,
         paddingHorizontal: S.space.lg,
         paddingVertical: S.space.md,
       }}
     >
       <Text
+        className={active ? 'text-surface-dark' : 'text-text'}
         style={{
-          color: active ? colors.surfaceDark : semanticColors.text,
           fontFamily: active ? 'Poppins-SemiBold' : 'Poppins-Regular',
           fontSize: S.fs.sm,
         }}

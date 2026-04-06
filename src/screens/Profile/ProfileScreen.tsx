@@ -9,14 +9,18 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeftIcon, BellIcon, UserIcon } from '../../components/shared/FinanceIcons';
+import {
+  ArrowLeftIcon,
+  BellIcon,
+  UserIcon,
+} from '../../components/shared/Icons';
+import { Header } from '../../components/shared/Header';
+import { IconButton } from '../../components/shared/IconButton';
 import { useAppStore } from '../../store/useAppStore';
-import { getSemanticColors } from '../../theme/colors';
+import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import type { ProfileStackParamList } from '../../types/navigation';
 import { moderateScale } from '../../utils/responsive';
-import { Header } from '../../components/shared/Header';
-import { IconButton } from '../../components/shared/IconButton';
 
 type UserProfile = {
   id: string;
@@ -36,7 +40,6 @@ const fetchUserProfile = async (): Promise<UserProfile> => {
   });
 };
 
-// ─── Profile field (read-only) ───────────────────────────────────────────────
 function ProfileField({ label, value }: { label: string; value: string }) {
   return (
     <View style={{ gap: S.space.xs }}>
@@ -70,7 +73,6 @@ function ProfileField({ label, value }: { label: string; value: string }) {
   );
 }
 
-// ─── Skeleton helpers ─────────────────────────────────────────────────────────
 function SkeletonBar({ width, height }: { width: number; height: number }) {
   return (
     <View
@@ -99,31 +101,38 @@ function SkeletonField() {
   );
 }
 
-// ─── Screen ──────────────────────────────────────────────────────────────────
 export function ProfileScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<ProfileStackParamList>>();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const semanticColors = getSemanticColors(isDark);
-  const userName = useAppStore((state) => state.userName);
+  const isDark = useColorScheme() === 'dark';
+  const headerIconColor = isDark ? darkColors.text : lightColors.text;
+  const headerActionIconColor = isDark ? darkColors.title : lightColors.title;
+  const statusBarBackgroundColor = isDark
+    ? darkColors.background
+    : lightColors.background;
+  const userName = useAppStore(state => state.userName);
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [_pushNotifications, _setPushNotifications] = useState(true);
-  const [_darkTheme, _setDarkTheme] = useState(isDark);
 
   useEffect(() => {
     let isMounted = true;
+
     const loadProfile = async () => {
       try {
         const data = await fetchUserProfile();
-        if (isMounted) setProfile(data);
+        if (isMounted) {
+          setProfile(data);
+        }
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
+
     loadProfile();
+
     return () => {
       isMounted = false;
     };
@@ -146,25 +155,26 @@ export function ProfileScreen() {
     <SafeAreaView className="flex-1 bg-bg" edges={['top']}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={semanticColors.background}
+        backgroundColor={statusBarBackgroundColor}
       />
 
-      {/* ── Header — fixed, sits on bg-bg colour ── */}
       <Header
         variant="centerTitle"
         title="My Profile"
-        titleColor={semanticColors.text}
+        titleClassName="text-text"
         contentStyle={{ paddingHorizontal: 0, paddingVertical: 0 }}
         leftAction={
           <IconButton
             accessibilityLabel="Go back"
             disabled={!navigation.canGoBack()}
             onPress={() => {
-              if (navigation.canGoBack()) navigation.goBack();
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              }
             }}
             size={moderateScale(40)}
           >
-            <ArrowLeftIcon color={semanticColors.text} size={24} />
+            <ArrowLeftIcon color={headerIconColor} size={24} />
           </IconButton>
         }
         rightAction={
@@ -175,18 +185,16 @@ export function ProfileScreen() {
             onPress={() => navigation.navigate('Notification')}
             size={moderateScale(40)}
           >
-            <BellIcon color={semanticColors.title} size={moderateScale(18)} />
+            <BellIcon color={headerActionIconColor} size={moderateScale(18)} />
           </IconButton>
         }
       />
 
-      {/* ── Scrollable body ── */}
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
       >
-        {/* bg-bg strip behind the avatar so it peeks above the card */}
         <View
           className="bg-bg"
           style={{
@@ -194,7 +202,6 @@ export function ProfileScreen() {
             paddingVertical: S.space.lg,
           }}
         >
-          {/* Avatar ring */}
           <View
             className="bg-bg"
             style={{
@@ -213,7 +220,7 @@ export function ProfileScreen() {
               }}
             >
               <UserIcon
-                color={semanticColors.tabActive}
+                color={colors.primary500}
                 size={moderateScale(42)}
                 strokeWidth={2}
               />
@@ -221,19 +228,17 @@ export function ProfileScreen() {
           </View>
         </View>
 
-        {/* ── White/card sheet ── */}
         <View
           className="bg-card"
           style={{
             flex: 1,
             borderTopLeftRadius: moderateScale(40),
             borderTopRightRadius: moderateScale(40),
+            gap: S.space['2xl'],
             paddingHorizontal: S.space.paddingHorizontal,
             paddingVertical: S.space['2xl'],
-            gap: S.space['2xl'],
           }}
         >
-          {/* Name + ID */}
           <View style={{ alignItems: 'center', gap: S.space.xs }}>
             {isLoading ? (
               <>
@@ -264,9 +269,7 @@ export function ProfileScreen() {
             )}
           </View>
 
-          {/* Account Settings */}
           <View style={{ gap: S.space.lg }}>
-            {/* Fields */}
             <View style={{ gap: S.space.md }}>
               {isLoading ? (
                 <>
