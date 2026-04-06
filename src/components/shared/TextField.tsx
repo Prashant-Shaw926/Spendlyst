@@ -37,7 +37,6 @@ export function TextField({
         <Text
           className="text-text"
           style={{
-            fontFamily: 'Poppins-SemiBold',
             fontSize: S.fs.sm,
           }}
         >
@@ -59,7 +58,7 @@ export function TextField({
           minHeight: multiline ? 108 : 56,
           borderRadius: S.radius.xxl,
           borderWidth: 1,
-          fontFamily: 'Poppins-Regular',
+
           fontSize: S.fs.md,
           paddingHorizontal: S.space.lg,
           paddingVertical: S.space.md,
@@ -72,7 +71,6 @@ export function TextField({
         <Text
           className="text-error-500"
           style={{
-            fontFamily: 'Poppins-Regular',
             fontSize: S.fs.xs,
           }}
         >
@@ -82,7 +80,6 @@ export function TextField({
         <Text
           className="text-text-muted"
           style={{
-            fontFamily: 'Poppins-Regular',
             fontSize: S.fs.xs,
           }}
         >

@@ -14,17 +14,20 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeftIcon,
-  BellIcon,
   DollarIcon,
   Header,
   IconButton,
+  NotificationIcon,
   StarIcon,
   TrendDownIcon,
 } from '../../components';
 import { colors, darkColors, lightColors } from '../../theme/colors';
 import { S } from '../../theme/scale';
 import { moderateScale } from '../../utils/responsive';
-import type { NotificationItem, NotifType } from '../../features/notifications/data/notifications';
+import type {
+  NotificationItem,
+  NotifType,
+} from '../../features/notifications/data/notifications';
 import { useNotificationFeed } from '../../features/notifications/hooks/useNotificationFeed';
 
 function NotifIcon({ type }: { type: NotifType }) {
@@ -34,7 +37,7 @@ function NotifIcon({ type }: { type: NotifType }) {
   const icon = (() => {
     switch (type) {
       case 'reminder':
-        return <BellIcon color={iconColor} size={iconSize} />;
+        return <NotificationIcon color={iconColor} size={iconSize} />;
       case 'update':
         return <StarIcon color={iconColor} size={iconSize} />;
       case 'transaction':
@@ -85,7 +88,6 @@ function NotificationRow({
             className="text-title"
             style={{
               fontSize: S.fs.md_h,
-              fontFamily: 'Poppins-SemiBold',
             }}
           >
             {item.title}
@@ -95,7 +97,7 @@ function NotificationRow({
             className="text-text"
             style={{
               fontSize: S.fs.sm,
-              fontFamily: 'Poppins-Regular',
+
               lineHeight: S.fs.sm * 1.4,
               opacity: 0.8,
             }}
@@ -108,11 +110,11 @@ function NotificationRow({
               className="text-primary-500"
               style={{
                 fontSize: S.fs.xs,
-                fontFamily: 'Poppins-SemiBold',
+
                 marginTop: moderateScale(2),
               }}
             >
-              {item.tags.map((tag) => tag.label).join(' | ')}
+              {item.tags.map(tag => tag.label).join(' | ')}
             </Text>
           ) : null}
 
@@ -120,7 +122,7 @@ function NotificationRow({
             className="text-right text-primary-600 dark:text-primary-300"
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Regular',
+
               marginTop: moderateScale(4),
               opacity: 0.9,
             }}
@@ -202,7 +204,6 @@ export default function NotificationScreen() {
                 className="text-text"
                 style={{
                   fontSize: S.fs.md_h,
-                  fontFamily: 'Poppins-SemiBold',
                 }}
               >
                 No notifications yet
@@ -211,7 +212,6 @@ export default function NotificationScreen() {
                 className="text-text-muted"
                 style={{
                   fontSize: S.fs.sm,
-                  fontFamily: 'Poppins-Regular',
                 }}
               >
                 We&apos;ll show reminders, updates, and finance activity here.
@@ -219,13 +219,12 @@ export default function NotificationScreen() {
             </View>
           ) : null}
 
-          {groups.map((group) => (
+          {groups.map(group => (
             <View key={group.section} style={{ gap: moderateScale(4) }}>
               <Text
                 className="text-text opacity-50"
                 style={{
                   fontSize: S.fs.sm,
-                  fontFamily: 'Poppins-Medium',
                 }}
               >
                 {group.section}

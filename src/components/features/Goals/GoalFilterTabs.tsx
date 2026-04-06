@@ -35,13 +35,8 @@ export function GoalFilterTabs<T extends string>({
       labelStyle={{
         fontSize: S.fs.sm,
       }}
-      activeLabelStyle={{
-        fontFamily: 'Poppins-Bold',
-      }}
-      inactiveLabelStyle={{
-        fontFamily: 'Poppins-Medium',
-      }}
+      activeLabelStyle={{}}
+      inactiveLabelStyle={{}}
     />
-
   );
 }

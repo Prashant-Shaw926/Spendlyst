@@ -6,54 +6,35 @@
   --color-white: #ffffff;
   --color-black: #000000;
 
-  /* Primary — mint/teal
-     Named shades derived from palette:
-     50  = Honeydew  #F1FFF3
-     100 = Light Green #DFF7E2
-     500 = Caribbean Green #00D09E (brand primary)
-     Intermediate shades interpolated between palette anchors
-  */
-  --color-primary-50:  #F1FFF3;
-  --color-primary-100: #DFF7E2;
-  --color-primary-200: #AAEFD4;
-  --color-primary-300: #6DE6BE;
-  --color-primary-400: #1FCEA9;
-  --color-primary-500: #00D09E;
-  --color-primary-600: #00A87E;
-  --color-primary-700: #007F5F;
+  --color-primary-50: #f1fff3;
+  --color-primary-100: #dff7e2;
+  --color-primary-200: #aaefd4;
+  --color-primary-300: #6de6be;
+  --color-primary-400: #1fcea9;
+  --color-primary-500: #00d09e;
+  --color-primary-600: #00a87e;
+  --color-primary-700: #007f5f;
   --color-primary-800: #005640;
-  --color-primary-900: #002E22;
+  --color-primary-900: #002e22;
 
-  /* Blue
-     300 = Light Blue  #6DB6FE
-     500 = Vivid Blue  #3299FF
-     700 = Ocean Blue  #0068FF
-     Other shades interpolated from palette anchors
-  */
-  --color-blue-50:  #EBF5FF;
-  --color-blue-100: #CCE5FF;
-  --color-blue-200: #99CCFF;
-  --color-blue-300: #6DB6FE;
-  --color-blue-400: #4DAAFF;
-  --color-blue-500: #3299FF;
-  --color-blue-600: #1A88EE;
-  --color-blue-700: #0068FF;
-  --color-blue-800: #0050CC;
+  --color-blue-50: #ebf5ff;
+  --color-blue-100: #cce5ff;
+  --color-blue-200: #99ccff;
+  --color-blue-300: #6db6fe;
+  --color-blue-400: #4daaff;
+  --color-blue-500: #3299ff;
+  --color-blue-600: #1a88ee;
+  --color-blue-700: #0068ff;
+  --color-blue-800: #0050cc;
   --color-blue-900: #003899;
 
-  /* Dark teal surfaces — from palette
-     Cyprus    #0E3E3E → surface-raised
-     Fence Green #052224 → surface-dark / surface-medium
-     Void      #031314 → surface-deep
-  */
-  --color-surface-light: #FFFFFF;   
-  --color-surface-deep:   #031314;
-  --color-surface-dark:   #052224;
+  --color-surface-light: #ffffff;
+  --color-surface-deep: #031314;
+  --color-surface-dark: #052224;
   --color-surface-medium: #093030;
-  --color-surface-raised: #0E3E3E;
+  --color-surface-raised: #0e3e3e;
 
-  /* Warning — not in palette, kept from previous */
-  --color-warning-50:  #fefce8;
+  --color-warning-50: #fefce8;
   --color-warning-100: #fef9c3;
   --color-warning-200: #fef08a;
   --color-warning-300: #fde047;
@@ -64,8 +45,7 @@
   --color-warning-800: #854d0e;
   --color-warning-900: #713f12;
 
-  /* Error — not in palette, kept from previous */
-  --color-error-50:  #fef2f2;
+  --color-error-50: #fef2f2;
   --color-error-100: #fee2e2;
   --color-error-200: #fecaca;
   --color-error-300: #fca5a5;
@@ -76,94 +56,77 @@
   --color-error-800: #991b1b;
   --color-error-900: #7f1d1d;
 
-  /* Neutral — mapped from palette dark teal scale.
-     Light mode neutrals stay close to white/light end.
-     Darkest neutral uses Void #031314.
-  */
-  --color-neutral-50:  #fafafa;
-  --color-neutral-100: #F1FFF3;
-  --color-neutral-200: #DFF7E2;
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f1fff3;
+  --color-neutral-200: #dff7e2;
   --color-neutral-300: #d4d4d4;
   --color-neutral-400: #a3a3a3;
   --color-neutral-500: #737373;
   --color-neutral-600: #525252;
   --color-neutral-700: #404040;
   --color-neutral-800: #262626;
-  --color-neutral-900: #0E3E3E;
+  --color-neutral-900: #0e3e3e;
   --color-neutral-950: #031314;
 
-  /* ── Light mode semantic tokens ───────────────────── */
+  --color-bg: #00d09e;
+  --color-secondary-bg: #f1fff3;
+  --color-card: #ffffff;
+  --color-secondary-card: #dff7e2;
+  --color-pill: #dff7e2;
+  --color-progress-bar: #0e3e3e;
 
-  /* Backgrounds & surfaces */
-  --color-bg:             #00D09E;
-  --color-secondary-bg:   #F1FFF3;
-  --color-card:           #FFFFFF;
-  --color-secondary-card: #DFF7E2;
-  --color-pill:           #DFF7E2;
-  --color-progress-bar:   #0E3E3E;
+  --color-title: #052224;
+  --color-text: #000000;
+  --color-text-muted: #737373;
+  --color-text-tertiary: #9aa0ad;
 
-  /* Text */
-  --color-title:         #052224;
-  --color-text:          #000000;
-  --color-text-muted:    #737373;
-  --color-text-tertiary: #9AA0AD;
+  --color-tab-active: #00d09e;
+  --color-tab-inactive: #737373;
+  --color-tab-background: #dff7e2;
 
-  /* Tab bar */
-  --color-tab-active:     #00D09E;
-  --color-tab-inactive:   #737373;
-  --color-tab-background: #DFF7E2;
+  --color-income: #00d09e;
+  --color-expense: #0068ff;
+  --color-savings: #6db6fe;
 
-  /* Finance */
-  --color-income:  #00D09E;
-  --color-expense: #0068FF;
-  --color-savings: #6DB6FE;
-
-  /* Borders & progress */
-  --color-border:   #DFF7E2;
-  --color-progress: #DFF7E2;
+  --color-border: #dff7e2;
+  --color-progress: #dff7e2;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Neutral flips — dark end of palette becomes "light" text */
-    --color-neutral-50:  #031314;
+    --color-neutral-50: #031314;
     --color-neutral-100: #052224;
     --color-neutral-200: #093030;
-    --color-neutral-300: #0E3E3E;
+    --color-neutral-300: #0e3e3e;
     --color-neutral-400: #525252;
     --color-neutral-500: #737373;
     --color-neutral-600: #a3a3a3;
     --color-neutral-700: #d4d4d4;
-    --color-neutral-800: #DFF7E2;
-    --color-neutral-900: #F1FFF3;
+    --color-neutral-800: #dff7e2;
+    --color-neutral-900: #f1fff3;
     --color-neutral-950: #fafafa;
 
-    /* Dark mode surfaces — palette dark teals */
-    --color-bg:             #031314;
-    --color-secondary-bg:   #052224;
-    --color-card:           #052224;
+    --color-bg: #031314;
+    --color-secondary-bg: #052224;
+    --color-card: #052224;
     --color-secondary-card: #093030;
-    --color-pill:           #0E3E3E;
-    --color-progress-bar:   #0E3E3E;
+    --color-pill: #0e3e3e;
+    --color-progress-bar: #0e3e3e;
 
-    /* Text on dark */
-    --color-title:         #FFFFFF;
-    --color-text:          #FFFFFF;
-    --color-text-muted:    #9AA0AD;
+    --color-title: #ffffff;
+    --color-text: #ffffff;
+    --color-text-muted: #9aa0ad;
     --color-text-tertiary: #737373;
 
-    /* Tab bar */
-    --color-tab-active:     #00D09E;
-    --color-tab-inactive:   #9AA0AD;
+    --color-tab-active: #00d09e;
+    --color-tab-inactive: #9aa0ad;
     --color-tab-background: #093030;
 
-    /* Finance — expense shifts to vivid blue in dark per screens */
-    --color-income:  #00D09E;
-    --color-expense: #4DAAFF;
-    --color-savings: #6DB6FE;
+    --color-income: #00d09e;
+    --color-expense: #4daaff;
+    --color-savings: #6db6fe;
 
-    /* Borders */
-    --color-border:   #0E3E3E;
-    --color-progress: #0E3E3E;
+    --color-border: #0e3e3e;
+    --color-progress: #0e3e3e;
   }
 }

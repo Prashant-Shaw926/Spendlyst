@@ -55,7 +55,7 @@ export function PrimaryButton({
         <Text
           style={{
             color: textColor,
-            fontFamily: 'Poppins-Bold',
+
             fontSize: S.fs.md,
           }}
         >

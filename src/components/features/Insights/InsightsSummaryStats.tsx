@@ -35,7 +35,7 @@ function StatItem({
         className="text-text"
         style={{
           fontSize: S.fs.lg,
-          fontFamily: 'Poppins-Medium',
+          
         }}
       >
         {label}
@@ -45,7 +45,7 @@ function StatItem({
         className={`${isExpense ? 'text-finance-expense' : 'text-primary-500'}`}
         style={{
           fontSize: S.fs.md_h,
-          fontFamily: 'Poppins-SemiBold',
+          
         }}
       >
         {value}

@@ -30,7 +30,6 @@ function StatPill({ label, value }: { label: string; value: string }) {
         className="text-text-muted"
         style={{
           fontSize: S.fs.xs,
-          fontFamily: 'Poppins-Regular',
         }}
       >
         {label}
@@ -40,7 +39,6 @@ function StatPill({ label, value }: { label: string; value: string }) {
         className="text-text"
         style={{
           fontSize: S.fs.md_h,
-          fontFamily: 'Poppins-Bold',
         }}
       >
         {value}
@@ -101,7 +99,6 @@ export function GoalHeroCard({
                 className="text-text"
                 style={{
                   fontSize: S.fs.md_h,
-                  fontFamily: 'Poppins-Bold',
                 }}
               >
                 {Math.round(progress)}%
@@ -113,7 +110,6 @@ export function GoalHeroCard({
             className="text-center text-text-muted"
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Medium',
             }}
           >
             Overall Progress
@@ -125,7 +121,6 @@ export function GoalHeroCard({
             className="text-text-muted"
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Medium',
             }}
           >
             Saved across all goals
@@ -135,7 +130,7 @@ export function GoalHeroCard({
             className="text-text"
             style={{
               fontSize: S.fs.xl,
-              fontFamily: 'Poppins-Bold',
+
               letterSpacing: -0.5,
             }}
           >
@@ -146,7 +141,6 @@ export function GoalHeroCard({
             className="text-text-muted"
             style={{
               fontSize: S.fs.sm,
-              fontFamily: 'Poppins-Regular',
             }}
           >
             Target {targetAmount}
@@ -173,7 +167,7 @@ export function GoalHeroCard({
             className="text-surface-dark"
             style={{
               fontSize: rs(13),
-              fontFamily: 'Poppins-Medium',
+
               opacity: 0.8,
             }}
           >
@@ -183,7 +177,6 @@ export function GoalHeroCard({
             className="text-surface-dark"
             style={{
               fontSize: S.fs.md_h,
-              fontFamily: 'Poppins-Bold',
             }}
           >
             {monthlySaving}
@@ -202,14 +195,12 @@ export function GoalHeroCard({
             className="text-surface-dark"
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-SemiBold',
             }}
           >
             Keep it up!
           </Text>
         </View>
       </View>
-
     </View>
   );
 }

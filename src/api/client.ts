@@ -20,14 +20,6 @@ type ApiClientErrorCode =
 
 type ErrorResponse = ApiResponse<null>;
 
-declare module 'axios' {
-  interface InternalAxiosRequestConfig {
-    metadata?: {
-      startedAt: number;
-    };
-  }
-}
-
 export class ApiClientError extends Error {
   status: number | null;
   code: ApiClientErrorCode;
@@ -151,48 +143,6 @@ export const apiClient = axios.create({
   },
 });
 
-apiClient.interceptors.request.use((config) => {
-  config.metadata = {
-    startedAt: Date.now(),
-  };
-
-  if (__DEV__) {
-    const method = config.method?.toUpperCase() ?? 'GET';
-    console.info(`[api] ${method} ${resolveApiUrl(config.baseURL, config.url)}`);
-  }
-
-  return config;
-});
-
-apiClient.interceptors.response.use(
-  (response) => {
-    if (__DEV__) {
-      const method = response.config.method?.toUpperCase() ?? 'GET';
-      const duration =
-        Date.now() - (response.config.metadata?.startedAt ?? Date.now());
-
-      console.info(
-        `[api] ${response.status} ${method} ${resolveApiUrl(response.config.baseURL, response.config.url)} (${duration}ms)`,
-      );
-    }
-
-    return response;
-  },
-  (error) => {
-    if (__DEV__) {
-      const method = error.config?.method?.toUpperCase() ?? 'GET';
-      const route = resolveApiUrl(error.config?.baseURL, error.config?.url);
-      const duration =
-        Date.now() - (error.config?.metadata?.startedAt ?? Date.now());
-      const status = error.response?.status ?? 'ERR';
-
-      console.warn(`[api] ${status} ${method} ${route} (${duration}ms)`);
-    }
-
-    return Promise.reject(error);
-  },
-);
-
 export function normalizeApiError(
   error: unknown,
   fallbackMessage = 'Something went wrong. Please try again.',
@@ -283,12 +233,6 @@ export async function request<T>({
 
       if (attempt >= retryCount || !normalizedError.retryable) {
         throw normalizedError;
-      }
-
-      if (__DEV__) {
-        console.info(
-          `[api] retry ${attempt + 1}/${retryCount} ${method} ${url} after ${normalizedError.message}`,
-        );
       }
 
       await wait(getBackoffDelay(retryDelayMs, attempt));

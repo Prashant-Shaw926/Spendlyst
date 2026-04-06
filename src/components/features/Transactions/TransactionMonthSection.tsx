@@ -15,7 +15,7 @@ function TransactionMonthSectionComponent({ section }: TransactionMonthSectionPr
         className="text-title"
         style={{
           fontSize: S.fs.lg,
-          fontFamily: 'Poppins-Bold',
+          
           letterSpacing: -0.5,
         }}
       >

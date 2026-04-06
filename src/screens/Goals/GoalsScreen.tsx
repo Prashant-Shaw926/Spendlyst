@@ -12,11 +12,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeftIcon,
   BagIcon,
-  BellIcon,
   CarIcon,
   Header,
   HomeIcon,
   IconButton,
+  NotificationIcon,
   PlusIcon,
   StackCashIcon,
 } from '../../components';
@@ -64,11 +64,8 @@ function toGoalCardItem(goal: GoalModel): GoalCardItem {
     savedAmount: goal.savedAmountLabel,
     targetAmount: goal.targetAmountLabel,
     leftAmount: goal.leftAmountLabel,
-    dueLabel: goal.deadlineLabel,
     monthlyPlan: `${goal.monthlyTargetLabel} / month`,
     progress: goal.progress,
-    tint: goal.accentColor,
-    iconBg: goal.iconBackgroundColor,
     status: goal.status === 'Completed' ? 'Achieved' : goal.status,
     Icon: mapGoalIcon(goal),
   };
@@ -95,7 +92,7 @@ export function GoalsScreen() {
   }, [hasHydrated, initializeAppData]);
 
   const filteredGoals = useMemo(
-    () => goals.filter((goal) => goal.status === activeTab),
+    () => goals.filter(goal => goal.status === activeTab),
     [activeTab, goals],
   );
   const isBootstrapping = !hasHydrated || !hasInitializedData;
@@ -134,7 +131,10 @@ export function GoalsScreen() {
             onPress={() => navigation.navigate('Notification')}
             size={moderateScale(40)}
           >
-            <BellIcon color={headerIconColor} size={moderateScale(18)} />
+            <NotificationIcon
+              color={headerIconColor}
+              size={moderateScale(18)}
+            />
           </IconButton>
         }
       />
@@ -177,7 +177,6 @@ export function GoalsScreen() {
               <Text
                 className="text-title"
                 style={{
-                  fontFamily: 'Poppins-Bold',
                   fontSize: S.fs.lg,
                 }}
               >
@@ -231,7 +230,6 @@ export function GoalsScreen() {
                   <Text
                     className="text-text"
                     style={{
-                      fontFamily: 'Poppins-SemiBold',
                       fontSize: S.fs.md_h,
                     }}
                   >
@@ -240,7 +238,6 @@ export function GoalsScreen() {
                   <Text
                     className="text-text-muted"
                     style={{
-                      fontFamily: 'Poppins-Regular',
                       fontSize: S.fs.sm,
                     }}
                   >

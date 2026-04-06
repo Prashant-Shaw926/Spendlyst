@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { goalIconOptions, goalStatusOptions } from '../../../constants/finance';
+import { goalIconOptions, goalStatusOptions } from '../../../constants/options';
 import type { GoalModel } from '../../../types/models';
 import { S } from '../../../theme/scale';
 import {
@@ -171,7 +171,6 @@ export function GoalForm({
         <Text
           className="text-text"
           style={{
-            fontFamily: 'Poppins-SemiBold',
             fontSize: S.fs.sm,
           }}
         >
@@ -196,7 +195,6 @@ export function GoalForm({
         <Text
           className="text-text"
           style={{
-            fontFamily: 'Poppins-SemiBold',
             fontSize: S.fs.sm,
           }}
         >

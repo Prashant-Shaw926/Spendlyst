@@ -54,6 +54,7 @@ export function IncomeExpenseBarChart({
       notation: 'compact',
       maximumFractionDigits: 1,
     });
+
     return {
       maxValue: stepValue * 4,
       stepValue,
@@ -63,39 +64,25 @@ export function IncomeExpenseBarChart({
     };
   }, [data]);
 
-  // ── Dynamic bar sizing ──────────────────────────────────────────────
-  // Each group = 2 bars (income + expense) + gap between them + gap after group
-  // Total drawable width = parentWidth - yAxisLabelWidth - initialSpacing - endSpacing
   const yAxisLabelWidth = moderateScale(28);
   const initialSpacing = moderateScale(16);
   const endSpacing = moderateScale(8);
-  const intraGroupGap = moderateScale(4);   // gap between the 2 bars in one group
-
+  const intraGroupGap = moderateScale(4);
   const drawableWidth = width - yAxisLabelWidth - initialSpacing - endSpacing;
   const numGroups = data.length;
-
-  // Each group occupies: 2 * barWidth + intraGroupGap + interGroupSpacing
-  // We want: numGroups * (2 * barWidth + intraGroupGap + interGroupSpacing) = drawableWidth
-  // Fix ratio: barWidth : interGroupSpacing = 1 : 2  (gives breathing room)
-  // So: numGroups * (2 * barWidth + intraGroupGap + 2 * barWidth) = drawableWidth
-  //     numGroups * (4 * barWidth + intraGroupGap) = drawableWidth
-  //     barWidth = (drawableWidth / numGroups - intraGroupGap) / 4
-
   const barWidth = Math.max(
-    moderateScale(4), // minimum bar width
+    moderateScale(4),
     Math.floor((drawableWidth / numGroups - intraGroupGap) / 4),
   );
   const interGroupSpacing = Math.max(
     moderateScale(8),
     Math.floor(drawableWidth / numGroups - 2 * barWidth - intraGroupGap),
   );
-  // ────────────────────────────────────────────────────────────────────
 
-  // Rebuild bar data with dynamic spacing values
   const dynamicChartData = useMemo(() => {
     return data.flatMap((day, index) => {
-      const trailingSpacing =
-        index === data.length - 1 ? 0 : interGroupSpacing;
+      const trailingSpacing = index === data.length - 1 ? 0 : interGroupSpacing;
+
       return [
         {
           value: day.income,
@@ -141,12 +128,12 @@ export function IncomeExpenseBarChart({
       yAxisLabelTexts={chartScale.labels}
       yAxisTextStyle={{
         fontSize: S.fs.xs,
-        fontFamily: 'Poppins-Regular',
+
         color: colors.blue300,
       }}
       xAxisLabelTextStyle={{
         fontSize: S.fs.xs,
-        fontFamily: 'Poppins-Regular',
+
         color: colors.blue300,
       }}
       labelWidth={moderateScale(60)}

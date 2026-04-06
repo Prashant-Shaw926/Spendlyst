@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { transactionCategorySuggestions } from '../../../constants/finance';
+import { transactionCategorySuggestions } from '../../../constants/options';
 import type { TransactionModel } from '../../../types/models';
 import { S } from '../../../theme/scale';
 import {
@@ -18,7 +18,9 @@ type TransactionFormProps = {
   onSubmit: (payload: TransactionUpsertPayload) => void;
 };
 
-type ValidationErrors = Partial<Record<'title' | 'amount' | 'category' | 'date', string>>;
+type ValidationErrors = Partial<
+  Record<'title' | 'amount' | 'category' | 'date', string>
+>;
 
 export function TransactionForm({
   initialTransaction,
@@ -122,7 +124,7 @@ export function TransactionForm({
         <Text
           className="text-text"
           style={{
-            fontFamily: 'Poppins-SemiBold',
+            
             fontSize: S.fs.sm,
           }}
         >
@@ -154,7 +156,7 @@ export function TransactionForm({
       />
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: S.space.sm }}>
-        {transactionCategorySuggestions.map((suggestion) => (
+        {transactionCategorySuggestions.map(suggestion => (
           <PillChip
             key={suggestion}
             label={suggestion}

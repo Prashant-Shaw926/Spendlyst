@@ -13,11 +13,8 @@ export type GoalCardItem = {
   savedAmount: string;
   targetAmount: string;
   leftAmount: string;
-  dueLabel: string;
   monthlyPlan: string;
   progress: number;
-  tint: string;
-  iconBg: string;
   status: string;
   Icon: React.ComponentType<FinanceIconProps>;
 };
@@ -43,7 +40,6 @@ function InfoItem({
         className="text-text-muted"
         style={{
           fontSize: S.fs.xs,
-          fontFamily: 'Poppins-Regular',
         }}
       >
         {label}:{' '}
@@ -52,7 +48,6 @@ function InfoItem({
         className="text-title"
         style={{
           fontSize: S.fs.xs,
-          fontFamily: 'Poppins-SemiBold',
         }}
       >
         {value}
@@ -70,17 +65,18 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
   const plannedMutedColor = isDark
     ? darkColors.textMuted
     : lightColors.textMuted;
-
-  // Status-based colors
   const statusColors = {
-    // Both active and completed use the primary brand color for uniformity
     primary: isPlanned ? plannedMutedColor : colors.primary500,
     amount: isPlanned
       ? isDark
         ? darkColors.text
         : lightColors.text
       : colors.primary500,
-    badge: isPlanned ? colors.primary500 : isCompleted ? colors.primary500 : colors.primary500,
+    badge: isPlanned
+      ? colors.primary500
+      : isCompleted
+      ? colors.primary500
+      : colors.primary500,
     badgeBg: isPlanned
       ? 'bg-[#00D09E1A] dark:bg-[#00D09E26]'
       : 'bg-primary-50 dark:bg-surface-medium',
@@ -128,7 +124,6 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
             className={isPlanned ? 'text-text' : 'text-title'}
             style={{
               fontSize: S.fs.md_h,
-              fontFamily: 'Poppins-Bold',
             }}
             numberOfLines={1}
           >
@@ -139,7 +134,6 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
             className="text-text-muted"
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-Regular',
             }}
             numberOfLines={1}
           >
@@ -160,7 +154,6 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
           <Text
             style={{
               fontSize: rs(9),
-              fontFamily: 'Poppins-Bold',
               color: statusColors.badge,
               textTransform: 'uppercase',
               letterSpacing: 0.5,
@@ -177,7 +170,6 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
             <Text
               style={{
                 fontSize: S.fs.xl,
-                fontFamily: 'Poppins-Bold',
                 color: statusColors.amount,
               }}
             >
@@ -187,7 +179,6 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
               className="text-text-muted"
               style={{
                 fontSize: S.fs.xs,
-                fontFamily: 'Poppins-Medium',
                 marginBottom: rs(2),
               }}
             >
@@ -197,7 +188,6 @@ export default function GoalCard({ item, onPress }: GoalCardProps) {
           <Text
             style={{
               fontSize: S.fs.sm,
-              fontFamily: 'Poppins-Bold',
               color: percentColor,
             }}
           >

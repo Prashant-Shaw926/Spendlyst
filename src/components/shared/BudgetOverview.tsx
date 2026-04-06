@@ -28,7 +28,6 @@ type BudgetOverviewProps = {
   leftMetric: OverviewMetricConfig;
   rightMetric: OverviewMetricConfig;
   progressPercent: number;
-  progressValue: string;
   note: string;
   noteClassName?: string;
   dividerClassName?: string;
@@ -76,7 +75,6 @@ function OverviewMetric({
         className={valueClassName ?? 'text-text'}
         style={[
           {
-            fontFamily: 'Poppins-Bold',
             fontSize: moderateScale(22),
             lineHeight: moderateScale(26),
           },
@@ -97,7 +95,6 @@ export function BudgetOverview({
   leftMetric,
   rightMetric,
   progressPercent,
-  progressValue,
   note,
   noteClassName,
   dividerClassName,
@@ -140,10 +137,7 @@ export function BudgetOverview({
         />
       </View>
 
-      <ProgressBar
-        progressPercent={progressPercent}
-        progressValue={progressValue}
-      />
+      <ProgressBar progressPercent={progressPercent} />
 
       <View
         className="flex-row items-center"
@@ -160,7 +154,6 @@ export function BudgetOverview({
           style={[
             {
               fontSize: S.fs.md,
-              fontFamily: 'Poppins-Regular',
             },
             noteColor ? { color: noteColor } : null,
             noteTextStyle,

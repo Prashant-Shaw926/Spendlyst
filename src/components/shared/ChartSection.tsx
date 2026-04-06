@@ -36,7 +36,7 @@ export function ChartSection({
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
     const nextWidth = Math.floor(event.nativeEvent.layout.width);
-    setWidth((current) => (current === nextWidth ? current : nextWidth));
+    setWidth(current => (current === nextWidth ? current : nextWidth));
   }, []);
 
   const content = useMemo(() => {
@@ -70,7 +70,6 @@ export function ChartSection({
             style={[
               {
                 fontSize: S.fs.sm,
-                fontFamily: 'Poppins-SemiBold',
               },
               titleStyle,
             ]}

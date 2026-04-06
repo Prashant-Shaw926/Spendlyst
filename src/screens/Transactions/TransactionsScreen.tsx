@@ -13,10 +13,10 @@ import {
   ArrowDownRightIcon,
   ArrowLeftIcon,
   ArrowUpRightIcon,
-  BellIcon,
   BudgetOverview,
   Header,
   IconButton,
+  NotificationIcon,
   PillChip,
   PlusIcon,
   ScreenState,
@@ -112,7 +112,7 @@ export function TransactionsScreen() {
                 onPress={() => navigation.navigate('Notification')}
                 size={moderateScale(40)}
               >
-                <BellIcon
+                <NotificationIcon
                   color={headerActionIconColor}
                   size={moderateScale(18)}
                 />
@@ -152,7 +152,6 @@ export function TransactionsScreen() {
                   ),
                 }}
                 progressPercent={transactionOverview.spentPercent}
-                progressValue={transactionOverview.budgetLabel}
                 note={transactionOverview.note}
                 noteClassName="text-text"
                 noteIconColor={headerIconColor}
@@ -211,7 +210,7 @@ export function TransactionsScreen() {
                     paddingRight: S.space.paddingHorizontal,
                   }}
                 >
-                  {typeFilters.map((filter) => (
+                  {typeFilters.map(filter => (
                     <PillChip
                       key={filter}
                       label={filter}
@@ -222,7 +221,7 @@ export function TransactionsScreen() {
                       }}
                     />
                   ))}
-                  {categories.slice(1, 5).map((category) => (
+                  {categories.slice(1, 5).map(category => (
                     <PillChip
                       key={category}
                       label={category}
@@ -238,12 +237,11 @@ export function TransactionsScreen() {
 
               <View style={{ gap: S.space['2xl'] }}>
                 {filteredSections.length > 0 ? (
-                  filteredSections.map((section) => (
+                  filteredSections.map(section => (
                     <View key={section.title} style={{ gap: S.space.lg }}>
                       <Text
                         className="text-title"
                         style={{
-                          fontFamily: 'Poppins-Bold',
                           fontSize: S.fs.lg,
                         }}
                       >
@@ -251,7 +249,7 @@ export function TransactionsScreen() {
                       </Text>
 
                       <View style={{ gap: S.space.lg }}>
-                        {section.items.map((transaction) => (
+                        {section.items.map(transaction => (
                           <TransactionRow
                             key={transaction.id}
                             item={transaction}
@@ -279,7 +277,6 @@ export function TransactionsScreen() {
                     <Text
                       className="text-text"
                       style={{
-                        fontFamily: 'Poppins-SemiBold',
                         fontSize: S.fs.md_h,
                       }}
                     >
@@ -288,7 +285,6 @@ export function TransactionsScreen() {
                     <Text
                       className="text-text-muted"
                       style={{
-                        fontFamily: 'Poppins-Regular',
                         fontSize: S.fs.sm,
                       }}
                     >

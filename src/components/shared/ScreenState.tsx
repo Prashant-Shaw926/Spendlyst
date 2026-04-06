@@ -20,8 +20,8 @@ export function ScreenState({
     mode === 'loading'
       ? S.space.lg
       : mode === 'error' && onRetry
-        ? S.space.xl
-        : S.space.sm;
+      ? S.space.xl
+      : S.space.sm;
 
   return (
     <View
@@ -40,7 +40,6 @@ export function ScreenState({
             className="text-text text-center"
             style={{
               fontSize: S.fs.xl,
-              fontFamily: 'Poppins-Bold',
             }}
           >
             {title}
@@ -50,7 +49,7 @@ export function ScreenState({
             className="text-text-muted text-center"
             style={{
               fontSize: S.fs.md,
-              fontFamily: 'Poppins-Regular',
+
               lineHeight: S.fs.md * 1.5,
             }}
           >
@@ -72,7 +71,6 @@ export function ScreenState({
               className="text-surface-dark"
               style={{
                 fontSize: S.fs.md,
-                fontFamily: 'Poppins-SemiBold',
               }}
             >
               Try Again

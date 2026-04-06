@@ -237,7 +237,6 @@ function filterExpenses(transactions: TransactionModel[]) {
 
 function getReferenceDate(transactions: TransactionModel[], fallback = new Date()) {
   const latestTransaction = sortTransactions(transactions)[0];
-
   return latestTransaction ? new Date(latestTransaction.occurredAt) : fallback;
 }
 
@@ -497,6 +496,27 @@ export function getWeeklyTrend(
   });
 }
 
+export function getDailyTrend(
+  transactions: TransactionModel[],
+  now = getReferenceDate(transactions),
+) {
+  const today = startOfDay(now);
+  // Show last 24 hours in 4-hour blocks
+  const blocks = Array.from({ length: 6 }, (_, index) => {
+    const blockStart = new Date(today.getTime() - (5 - index) * 4 * 60 * 60 * 1000);
+    const blockEnd = new Date(blockStart.getTime() + 4 * 60 * 60 * 1000 - 1);
+    
+    const blockTransactions = transactions.filter(t => {
+      const occurredAt = new Date(t.occurredAt).getTime();
+      return occurredAt >= blockStart.getTime() && occurredAt <= blockEnd.getTime();
+    });
+
+    return buildTrendPoint(formatTimeLabel(blockStart.toISOString()), blockTransactions);
+  });
+
+  return blocks;
+}
+
 export function getMonthlyTrend(
   transactions: TransactionModel[],
   now = getReferenceDate(transactions),
@@ -708,6 +728,8 @@ export function buildInsightsDashboard(
 ): InsightsDashboardModel {
   return {
     overview: mapBudgetOverviewFromTransactions(transactions),
+    dailyTrend: getDailyTrend(transactions),
+    weeklyTrend: getWeeklyTrend(transactions),
     monthlyTrend: getMonthlyTrend(transactions),
     summary: {
       income: transactions.reduce((total, transaction) => {

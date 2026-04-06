@@ -1,7 +1,6 @@
 import { Platform } from 'react-native';
 import notifee, {
   AndroidImportance,
-  EventType,
   type Event,
   type Notification as NotifeeNotification,
 } from '@notifee/react-native';
@@ -45,25 +44,6 @@ function extractString(value: unknown): string | undefined {
 
   const normalized = value.trim();
   return normalized.length > 0 ? normalized : undefined;
-}
-
-function logNotificationEvent(source: 'foreground' | 'background', event: Event) {
-  const notificationId = event.detail.notification?.id;
-  const pressActionId = event.detail.pressAction?.id;
-
-  switch (event.type) {
-    case EventType.PRESS:
-    case EventType.ACTION_PRESS:
-    case EventType.DISMISSED:
-      console.log('[notifications]', source, {
-        notificationId,
-        pressActionId,
-        type: event.type,
-      });
-      break;
-    default:
-      break;
-  }
 }
 
 function normalizeRemoteMessage(
@@ -137,14 +117,7 @@ async function syncPermissionState(): Promise<NotificationPermissionStatus> {
     shouldRequestPermission ||
     permissionStatus !== 'not-determined';
 
-  console.log(
-    '[notifications] current permission status:',
-    permissionStatus,
-    `(platform: ${Platform.OS})`,
-  );
-
   if (shouldRequestPermission) {
-    console.log('[notifications] requesting notification permission');
     const requestedSettings =
       (await notifee.requestPermission()) as NotificationSnapshot;
 
@@ -152,11 +125,6 @@ async function syncPermissionState(): Promise<NotificationPermissionStatus> {
       requestedSettings.authorizationStatus,
     );
     hasRequested = true;
-
-    console.log(
-      '[notifications] notification permission result:',
-      permissionStatus,
-    );
   }
 
   store.setNotificationPermissionStatus(permissionStatus);
@@ -178,9 +146,6 @@ async function syncFcmToken(permissionStatus: NotificationPermissionStatus) {
   const store = useAppStore.getState();
 
   if (!isPermissionGranted(permissionStatus)) {
-    console.log(
-      '[notifications] permission not granted, skipping FCM token fetch',
-    );
     store.setFcmToken(null);
     return;
   }
@@ -189,11 +154,9 @@ async function syncFcmToken(permissionStatus: NotificationPermissionStatus) {
     await ensureRemoteMessagesRegistered();
 
     const token = await getMessagingModule().getToken();
-    console.log('[notifications] FCM Token:', token);
     store.setFcmToken(token);
-  } catch (error) {
+  } catch {
     store.setFcmToken(null);
-    console.warn('[notifications] failed to get FCM token', error);
   }
 }
 
@@ -252,14 +215,11 @@ export async function bootstrapNotifications(): Promise<void> {
   if (!bootstrapPromise) {
     bootstrapPromise = (async () => {
       try {
-        console.log('[notifications] bootstrap started');
         await ensureDefaultNotificationChannel();
 
         const permissionStatus = await syncPermissionState();
         await syncFcmToken(permissionStatus);
-        console.log('[notifications] bootstrap completed');
-      } catch (error) {
-        console.warn('[notifications] bootstrap failed', error);
+      } catch {
       }
     })();
   }
@@ -275,7 +235,6 @@ export function registerForegroundNotificationHandlers() {
   );
   const unsubscribeFromTokenRefresh = getMessagingModule().onTokenRefresh(
     token => {
-      console.log('[notifications] FCM Token Refreshed:', token);
       if (!isPermissionGranted(useAppStore.getState().notificationPermissionStatus)) {
         return;
       }
@@ -283,9 +242,9 @@ export function registerForegroundNotificationHandlers() {
       useAppStore.getState().setFcmToken(token);
     },
   );
-  const unsubscribeFromForegroundEvents = notifee.onForegroundEvent(event => {
-    logNotificationEvent('foreground', event);
-  });
+  const unsubscribeFromForegroundEvents = notifee.onForegroundEvent(
+    () => undefined,
+  );
 
   return () => {
     unsubscribeFromMessages();
@@ -304,8 +263,7 @@ export async function handleBackgroundMessage(
   await displayNotification(remoteMessage);
 }
 
-export async function handleNotificationBackgroundEvent(event: Event) {
-  logNotificationEvent('background', event);
+export async function handleNotificationBackgroundEvent(_event: Event) {
 }
 
 export function __resetNotificationsForTests() {

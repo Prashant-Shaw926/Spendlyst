@@ -1,17 +1,3 @@
-/**
- * colors.ts - hex fallbacks for places that cannot consume CSS variables.
- *
- * Rules:
- * - Keep every value in sync with `global.css`.
- * - Prefer NativeWind className tokens in components whenever possible.
- * - Reach for this file only when a direct style prop, SVG, or third-party
- *   library needs a raw color string.
- * - Semantic tokens differ between light and dark. Resolve them locally with
- *   `lightColors` / `darkColors` or `getSemanticColors(...)` only when a raw
- *   color is required.
- * - Primitive tokens never change between modes.
- */
-
 export const primitives = {
   white: '#FFFFFF',
   black: '#000000',

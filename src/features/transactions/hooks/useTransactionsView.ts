@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { transactionCategorySuggestions } from '../../../constants/finance';
+import { transactionCategorySuggestions } from '../../../constants/options';
 import {
   buildTransactionCollections,
   mapTransactionsToSections,
@@ -50,7 +50,7 @@ export function useTransactionsView() {
   const filteredTransactions = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLowerCase();
 
-    return transactions.filter((transaction) => {
+    return transactions.filter(transaction => {
       const matchesQuery =
         normalizedQuery.length === 0 ||
         transaction.title.toLowerCase().includes(normalizedQuery) ||
@@ -67,7 +67,8 @@ export function useTransactionsView() {
   }, [categoryFilter, searchQuery, transactions, typeFilter]);
 
   const filteredSections = useMemo(() => {
-    const filteredCollections = buildTransactionCollections(filteredTransactions);
+    const filteredCollections =
+      buildTransactionCollections(filteredTransactions);
 
     return mapTransactionsToSections(
       filteredCollections.transactionMonthIds,

@@ -11,9 +11,9 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeftIcon,
-  BellIcon,
   Header,
   IconButton,
+  NotificationIcon,
   ScreenState,
   UserIcon,
 } from '../../components';
@@ -28,7 +28,7 @@ function ProfileField({ label, value }: { label: string; value: string }) {
     <View style={{ gap: S.space.xs }}>
       <Text
         className="text-text"
-        style={{ fontSize: S.fs.sm, fontFamily: 'Poppins-Medium' }}
+        style={{ fontSize: S.fs.sm }}
       >
         {label}
       </Text>
@@ -45,7 +45,7 @@ function ProfileField({ label, value }: { label: string; value: string }) {
           className="text-text-muted"
           style={{
             fontSize: S.fs.sm,
-            fontFamily: 'Poppins-Regular',
+
             lineHeight: S.fs.sm * 1.45,
           }}
         >
@@ -133,7 +133,7 @@ export function ProfileScreen() {
             onPress={() => navigation.navigate('Notification')}
             size={moderateScale(40)}
           >
-            <BellIcon color={headerActionIconColor} size={moderateScale(18)} />
+            <NotificationIcon color={headerActionIconColor} size={moderateScale(18)} />
           </IconButton>
         }
       />
@@ -212,13 +212,13 @@ export function ProfileScreen() {
                 <>
                   <Text
                     className="text-text text-center"
-                    style={{ fontSize: S.fs.xl, fontFamily: 'Poppins-Bold' }}
+                    style={{ fontSize: S.fs.xl }}
                   >
-                    {userName}
+                    {userName}  
                   </Text>
                   <Text
                     className="text-text-muted text-center"
-                    style={{ fontSize: S.fs.sm, fontFamily: 'Poppins-Regular' }}
+                    style={{ fontSize: S.fs.sm }}
                   >
                     ID: {profile?.id}
                   </Text>
@@ -235,7 +235,7 @@ export function ProfileScreen() {
                     <SkeletonField />
                   </>
                 ) : (
-                  accountFields.map((item) => (
+                  accountFields.map(item => (
                     <ProfileField
                       key={item.label}
                       label={item.label}

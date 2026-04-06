@@ -1,5 +1,4 @@
 export { default as CarIcon } from './Car.svg';
-export { default as CheckIcon } from './check.svg';
 export { default as ExpenseIcon } from './Expense-box.svg';
 export { default as FoodIcon } from './Food.svg';
 export { default as GoalsIcon } from './Goals.svg';
@@ -7,11 +6,8 @@ export { default as GroceriesIcon } from './Groceries.svg';
 export { default as HomeIcon } from './Home.svg';
 export { default as IncomeIcon } from './Income.svg';
 export { default as InsightsIcon } from './Insights.svg';
-export { default as NotificationIcon } from './Notification.svg';
+export { default as NotificationAsset } from './Notification.svg';
 export { default as RentIcon } from './Rent.svg';
 export { default as SalaryIcon } from './Salary.svg';
 export { default as TransactionsIcon } from './Transactions.svg';
-export { default as Expense } from './Expense.svg';
-export { default as NewUpdate } from './NewUpdate.svg';
-export { default as DollarSign } from './DollarSign.svg';
 export { default as Transport } from './Transport.svg';

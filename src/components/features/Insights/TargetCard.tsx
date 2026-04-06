@@ -24,7 +24,7 @@ export function TargetCard({ goal }: TargetCardProps) {
         <Text
           className="text-text"
           style={{
-            fontFamily: 'Poppins-SemiBold',
+            
             fontSize: S.fs.md,
           }}
         >
@@ -33,7 +33,7 @@ export function TargetCard({ goal }: TargetCardProps) {
         <Text
           className="text-text-muted"
           style={{
-            fontFamily: 'Poppins-Regular',
+            
             fontSize: S.fs.xs,
           }}
         >
@@ -58,7 +58,7 @@ export function TargetCard({ goal }: TargetCardProps) {
         <Text
           className="text-text"
           style={{
-            fontFamily: 'Poppins-SemiBold',
+            
             fontSize: S.fs.md,
           }}
         >
@@ -67,7 +67,7 @@ export function TargetCard({ goal }: TargetCardProps) {
         <Text
           className="text-text-muted"
           style={{
-            fontFamily: 'Poppins-Regular',
+            
             fontSize: S.fs.xs,
           }}
         >
@@ -75,12 +75,12 @@ export function TargetCard({ goal }: TargetCardProps) {
         </Text>
       </View>
 
-      <ProgressBar progressPercent={goal.progress} progressValue={goal.targetAmountLabel} />
+      <ProgressBar progressPercent={goal.progress} />
 
       <Text
         className="text-text-muted"
         style={{
-          fontFamily: 'Poppins-Regular',
+          
           fontSize: S.fs.xs,
         }}
       >

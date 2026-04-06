@@ -67,7 +67,7 @@ export function Header({
               style={[
                 {
                   fontSize: moderateScale(24),
-                  fontFamily: 'Poppins-Bold',
+
                   lineHeight: moderateScale(30),
                 },
                 titleColor ? { color: titleColor } : null,
@@ -84,7 +84,6 @@ export function Header({
                 style={[
                   {
                     fontSize: S.fs.sm,
-                    fontFamily: 'Poppins-Regular',
                   },
                   subtitleColor || titleColor
                     ? { color: subtitleColor ?? titleColor }
@@ -117,8 +116,6 @@ export function Header({
                 style={[
                   {
                     fontSize: S.fs.lg,
-                    // fontFamily: 'Poppins-Bold',
-                    // letterSpacing: -0.5,
                   },
                   titleColor ? { color: titleColor } : null,
                   titleStyle,

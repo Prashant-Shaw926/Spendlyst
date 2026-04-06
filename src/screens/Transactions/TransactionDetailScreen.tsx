@@ -10,7 +10,12 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeftIcon, Header, IconButton, PrimaryButton } from '../../components';
+import {
+  ArrowLeftIcon,
+  Header,
+  IconButton,
+  PrimaryButton,
+} from '../../components';
 import {
   selectDeleteTransaction,
   selectHasHydrated,
@@ -33,7 +38,6 @@ function DetailRow({ label, value }: { label: string; value: string }) {
       <Text
         className="text-text-muted"
         style={{
-          fontFamily: 'Poppins-Regular',
           fontSize: S.fs.xs,
         }}
       >
@@ -42,7 +46,6 @@ function DetailRow({ label, value }: { label: string; value: string }) {
       <Text
         className="text-text"
         style={{
-          fontFamily: 'Poppins-SemiBold',
           fontSize: S.fs.md,
         }}
       >
@@ -128,7 +131,6 @@ export function TransactionDetailScreen() {
           <Text
             className="text-text-muted"
             style={{
-              fontFamily: 'Poppins-Regular',
               fontSize: S.fs.sm,
             }}
           >
@@ -140,7 +142,6 @@ export function TransactionDetailScreen() {
               transaction.isExpense ? 'text-finance-expense' : 'text-text'
             }
             style={{
-              fontFamily: 'Poppins-Bold',
               fontSize: S.fs.xl,
             }}
           >
@@ -150,7 +151,6 @@ export function TransactionDetailScreen() {
           <Text
             className="text-text"
             style={{
-              fontFamily: 'Poppins-SemiBold',
               fontSize: S.fs.md_h,
             }}
           >
@@ -160,7 +160,6 @@ export function TransactionDetailScreen() {
           <Text
             className="text-text-muted"
             style={{
-              fontFamily: 'Poppins-Regular',
               fontSize: S.fs.sm,
             }}
           >

@@ -10,7 +10,12 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeftIcon, Header, IconButton, PrimaryButton } from '../../components';
+import {
+  ArrowLeftIcon,
+  Header,
+  IconButton,
+  PrimaryButton,
+} from '../../components';
 import {
   selectAddGoal,
   selectDeleteGoal,
@@ -32,7 +37,6 @@ function DetailBlock({ label, value }: { label: string; value: string }) {
       <Text
         className="text-text-muted"
         style={{
-          fontFamily: 'Poppins-Regular',
           fontSize: S.fs.xs,
         }}
       >
@@ -41,7 +45,6 @@ function DetailBlock({ label, value }: { label: string; value: string }) {
       <Text
         className="text-text"
         style={{
-          fontFamily: 'Poppins-SemiBold',
           fontSize: S.fs.md,
         }}
       >
@@ -147,7 +150,7 @@ export function GoalDetailScreen() {
             <GoalForm
               initialGoal={goal}
               submitLabel={goal ? 'Save Goal' : 'Create Goal'}
-              onSubmit={(payload) => {
+              onSubmit={payload => {
                 if (goal) {
                   updateGoal(goal.id, payload);
                   setIsEditing(false);
@@ -171,7 +174,6 @@ export function GoalDetailScreen() {
                 <Text
                   className="text-text-muted uppercase tracking-wider"
                   style={{
-                    fontFamily: 'Poppins-Medium',
                     fontSize: S.fs.tiny,
                   }}
                 >
@@ -181,7 +183,6 @@ export function GoalDetailScreen() {
                 <Text
                   className="text-text"
                   style={{
-                    fontFamily: 'Poppins-Bold',
                     fontSize: moderateScale(32),
                     marginVertical: S.space.xs,
                   }}
@@ -193,7 +194,6 @@ export function GoalDetailScreen() {
                   <Text
                     className="text-text-muted"
                     style={{
-                      fontFamily: 'Poppins-Regular',
                       fontSize: S.fs.sm,
                     }}
                   >
@@ -211,7 +211,6 @@ export function GoalDetailScreen() {
                     <Text
                       className="text-primary-600"
                       style={{
-                        fontFamily: 'Poppins-SemiBold',
                         fontSize: S.fs.xs,
                       }}
                     >

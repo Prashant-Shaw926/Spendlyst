@@ -116,6 +116,8 @@ export interface WeekComparisonModel {
 
 export interface InsightsDashboardModel {
   overview: BudgetOverviewModel;
+  dailyTrend: TrendPointModel[];
+  weeklyTrend: TrendPointModel[];
   monthlyTrend: TrendPointModel[];
   summary: {
     income: number;

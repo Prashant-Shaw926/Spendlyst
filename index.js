@@ -1,7 +1,3 @@
-/**
- * @format
- */
-
 import { AppRegistry } from 'react-native';
 import notifee from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';

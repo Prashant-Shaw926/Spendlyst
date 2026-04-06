@@ -1,4 +1,4 @@
-/* eslint-env jest */
+const { jest } = require('@jest/globals');
 
 require('react-native-gesture-handler/jestSetup');
 

@@ -10,12 +10,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  BellIcon,
   ChartSection,
   Header,
   HomeScreenSkeleton,
   IconButton,
   IncomeExpenseBarChart,
+  NotificationIcon,
   ScreenState,
 } from '../../components';
 import {
@@ -48,7 +48,6 @@ function MetricTile({ label, value }: { label: string; value: string }) {
       <Text
         className="text-text-muted"
         style={{
-          fontFamily: 'Poppins-Regular',
           fontSize: S.fs.xs,
         }}
       >
@@ -57,7 +56,6 @@ function MetricTile({ label, value }: { label: string; value: string }) {
       <Text
         className="text-text"
         style={{
-          fontFamily: 'Poppins-SemiBold',
           fontSize: S.fs.md,
         }}
       >
@@ -104,9 +102,7 @@ export function HomeScreen() {
         <ScreenState
           mode="error"
           title="Unable to load your dashboard"
-          message={
-            lastGlobalError?.message ?? 'Please try again in a moment.'
-          }
+          message={lastGlobalError?.message ?? 'Please try again in a moment.'}
           onRetry={() => {
             fetchTransactions();
           }}
@@ -129,7 +125,7 @@ export function HomeScreen() {
                 onPress={() => navigation.navigate('Notification')}
                 size={moderateScale(40)}
               >
-                <BellIcon
+                <NotificationIcon
                   color={headerActionIconColor}
                   size={moderateScale(18)}
                 />
@@ -158,7 +154,6 @@ export function HomeScreen() {
                   <Text
                     className="text-text-muted"
                     style={{
-                      fontFamily: 'Poppins-Regular',
                       fontSize: S.fs.sm,
                     }}
                   >
@@ -167,7 +162,6 @@ export function HomeScreen() {
                   <Text
                     className="text-text"
                     style={{
-                      fontFamily: 'Poppins-Bold',
                       fontSize: S.fs.xl,
                     }}
                   >
@@ -176,7 +170,6 @@ export function HomeScreen() {
                   <Text
                     className="text-text-muted"
                     style={{
-                      fontFamily: 'Poppins-Regular',
                       fontSize: S.fs.xs,
                     }}
                   >
@@ -213,7 +206,6 @@ export function HomeScreen() {
                 title="Weekly money flow"
                 titleClassName="text-surface-dark"
                 titleStyle={{
-                  fontFamily: 'Poppins-SemiBold',
                   fontSize: S.fs.md_h,
                 }}
                 containerClassName="bg-primary-100"
@@ -243,7 +235,6 @@ export function HomeScreen() {
                   <Text
                     className="text-text"
                     style={{
-                      fontFamily: 'Poppins-SemiBold',
                       fontSize: S.fs.md_h,
                     }}
                   >
@@ -261,7 +252,6 @@ export function HomeScreen() {
                     <Text
                       className="text-blue-700"
                       style={{
-                        fontFamily: 'Poppins-SemiBold',
                         fontSize: S.fs.sm,
                       }}
                     >
@@ -271,7 +261,7 @@ export function HomeScreen() {
                 </View>
 
                 <View style={{ gap: S.space.lg }}>
-                  {dashboard.recentTransactions.map((transaction) => (
+                  {dashboard.recentTransactions.map(transaction => (
                     <HomeTransactionItem
                       key={transaction.id}
                       item={transaction}

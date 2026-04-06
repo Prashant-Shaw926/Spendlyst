@@ -145,4 +145,52 @@ describe('finance mappers and dashboard builders', () => {
       ]),
     });
   });
+
+  it('anchors chart trends to the latest mock transaction instead of today', () => {
+    const now = new Date();
+    const latestTransactionDate = new Date(
+      now.getFullYear() - 1,
+      now.getMonth(),
+      now.getDate(),
+      12,
+      0,
+      0,
+      0,
+    );
+    const earlierTransactionDate = new Date(latestTransactionDate);
+    earlierTransactionDate.setDate(earlierTransactionDate.getDate() - 2);
+
+    const salary = mapTransactionApiToModel({
+      id: 'txn_salary_old',
+      title: 'Salary',
+      category: 'Salary',
+      amount: 4200,
+      type: 'income',
+      icon: 'salary',
+      occurredAt: latestTransactionDate.toISOString(),
+    });
+    const groceries = mapTransactionApiToModel({
+      id: 'txn_groceries_old',
+      title: 'Groceries',
+      category: 'Groceries',
+      amount: -220,
+      type: 'expense',
+      icon: 'groceries',
+      occurredAt: earlierTransactionDate.toISOString(),
+    });
+
+    const homeDashboard = buildHomeDashboard([salary, groceries], [], 'John Smith');
+    const insightsDashboard = buildInsightsDashboard([salary, groceries], []);
+
+    expect(
+      homeDashboard.weeklyTrend.some(
+        (point) => point.income > 0 || point.expense > 0,
+      ),
+    ).toBe(true);
+    expect(
+      insightsDashboard.monthlyTrend.some(
+        (point) => point.income > 0 || point.expense > 0,
+      ),
+    ).toBe(true);
+  });
 });

@@ -140,6 +140,13 @@ export function startOfDay(value: Date) {
   return next;
 }
 
+export function startOfMonth(value: Date) {
+  const next = new Date(value);
+  next.setDate(1);
+  next.setHours(0, 0, 0, 0);
+  return next;
+}
+
 export function addDays(value: Date, amount: number) {
   const next = new Date(value);
   next.setDate(next.getDate() + amount);

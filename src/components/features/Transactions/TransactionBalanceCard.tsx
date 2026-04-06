@@ -24,7 +24,7 @@ function TransactionBalanceCardComponent({
         className="text-surface-dark"
         style={{
           fontSize: S.fs.md,
-          fontFamily: 'Poppins-Medium',
+          
         }}
       >
         Total Balance
@@ -34,7 +34,7 @@ function TransactionBalanceCardComponent({
         className="text-surface-dark"
         style={{
           fontSize: S.fs.lg,
-          fontFamily: 'Poppins-Bold',
+          
           letterSpacing: -0.4,
         }}
       >

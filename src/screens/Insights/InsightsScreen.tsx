@@ -12,13 +12,13 @@ import {
   ArrowDownRightIcon,
   ArrowLeftIcon,
   ArrowUpRightIcon,
-  BellIcon,
   BudgetOverview,
   ChartSection,
   Header,
   IconButton,
   IncomeExpenseBarChart,
   InsightsScreenSkeleton,
+  NotificationIcon,
   ScreenState,
 } from '../../components';
 import {
@@ -59,7 +59,6 @@ function InsightCard({
       <Text
         className="text-text-muted"
         style={{
-          fontFamily: 'Poppins-Regular',
           fontSize: S.fs.xs,
         }}
       >
@@ -68,7 +67,6 @@ function InsightCard({
       <Text
         className="text-text"
         style={{
-          fontFamily: 'Poppins-SemiBold',
           fontSize: S.fs.md_h,
         }}
       >
@@ -77,7 +75,6 @@ function InsightCard({
       <Text
         className="text-text-muted"
         style={{
-          fontFamily: 'Poppins-Regular',
           fontSize: S.fs.xs,
         }}
       >
@@ -164,7 +161,7 @@ export function InsightsScreen() {
                 onPress={() => navigation.navigate('Notification')}
                 size={moderateScale(40)}
               >
-                <BellIcon
+                <NotificationIcon
                   color={headerActionIconColor}
                   size={moderateScale(18)}
                 />
@@ -198,7 +195,6 @@ export function InsightsScreen() {
                   ),
                 }}
                 progressPercent={insights.overview.spentPercent}
-                progressValue={insights.overview.budgetLabel}
                 note={insights.overview.note}
                 noteClassName="text-text"
                 noteIconColor={headerIconColor}
@@ -222,7 +218,6 @@ export function InsightsScreen() {
                 title="Monthly trend"
                 titleClassName="text-surface-dark"
                 titleStyle={{
-                  fontFamily: 'Poppins-SemiBold',
                   fontSize: S.fs.md_h,
                 }}
                 containerClassName="bg-primary-100"
@@ -266,7 +261,6 @@ export function InsightsScreen() {
                 <Text
                   className="text-text"
                   style={{
-                    fontFamily: 'Poppins-SemiBold',
                     fontSize: S.fs.md_h,
                   }}
                 >
@@ -274,7 +268,7 @@ export function InsightsScreen() {
                 </Text>
 
                 <View style={{ gap: S.space.md }}>
-                  {insights.categoryBreakdown.map((item) => (
+                  {insights.categoryBreakdown.map(item => (
                     <View
                       key={item.category}
                       className="bg-secondary-card"
@@ -295,7 +289,6 @@ export function InsightsScreen() {
                         <Text
                           className="text-text"
                           style={{
-                            fontFamily: 'Poppins-SemiBold',
                             fontSize: S.fs.md,
                           }}
                         >
@@ -304,7 +297,6 @@ export function InsightsScreen() {
                         <Text
                           className="text-text"
                           style={{
-                            fontFamily: 'Poppins-SemiBold',
                             fontSize: S.fs.sm,
                           }}
                         >
@@ -332,7 +324,6 @@ export function InsightsScreen() {
                       <Text
                         className="text-text-muted"
                         style={{
-                          fontFamily: 'Poppins-Regular',
                           fontSize: S.fs.xs,
                         }}
                       >

@@ -50,7 +50,6 @@ export function HomeBalanceSection({ overview }: HomeBalanceSectionProps) {
           ),
         }}
         progressPercent={overview.spentPercent}
-        progressValue={overview.budgetLabel}
         note={overview.note}
         noteClassName="text-text"
         noteIconColor={iconColor}

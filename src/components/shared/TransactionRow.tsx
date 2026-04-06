@@ -101,7 +101,6 @@ function TransactionRowComponent({
               className="text-text"
               numberOfLines={1}
               style={{
-                fontFamily: 'Poppins-SemiBold',
                 fontSize: S.fs.md,
                 lineHeight: S.fs.md * 1.35,
               }}
@@ -113,7 +112,6 @@ function TransactionRowComponent({
               className="text-finance-expense"
               numberOfLines={1}
               style={{
-                fontFamily: 'Poppins-SemiBold',
                 fontSize: S.fs.xs,
               }}
             >
@@ -126,7 +124,6 @@ function TransactionRowComponent({
               className={item.isExpense ? 'text-finance-expense' : 'text-text'}
               numberOfLines={1}
               style={{
-                fontFamily: 'Poppins-SemiBold',
                 fontSize: S.fs.md,
                 lineHeight: S.fs.md * 1.35,
               }}
@@ -168,7 +165,6 @@ function TransactionRowComponent({
             numberOfLines={1}
             style={{
               fontSize: S.fs.md,
-              fontFamily: 'Poppins-SemiBold',
             }}
           >
             {item.title}
@@ -179,7 +175,6 @@ function TransactionRowComponent({
             numberOfLines={1}
             style={{
               fontSize: S.fs.xs,
-              fontFamily: 'Poppins-SemiBold',
             }}
           >
             {item.metaLabel}
@@ -192,7 +187,7 @@ function TransactionRowComponent({
             numberOfLines={1}
             style={{
               fontSize: S.fs.md,
-              fontFamily: 'Poppins-SemiBold',
+
               textAlign: 'right',
             }}
           >

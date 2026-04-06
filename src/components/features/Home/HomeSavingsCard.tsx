@@ -25,7 +25,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
         <Text
           className="text-surface-dark"
           style={{
-            fontFamily: 'Poppins-SemiBold',
+            
             fontSize: S.fs.md_h,
           }}
         >
@@ -34,7 +34,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
         <Text
           className="text-surface-dark"
           style={{
-            fontFamily: 'Poppins-Regular',
+            
             fontSize: S.fs.sm,
           }}
         >
@@ -59,7 +59,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
         <Text
           className="text-surface-dark"
           style={{
-            fontFamily: 'Poppins-Bold',
+            
             fontSize: S.fs.md_h,
           }}
         >
@@ -68,7 +68,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
         <Text
           className="text-surface-dark"
           style={{
-            fontFamily: 'Poppins-Regular',
+            
             fontSize: S.fs.sm,
           }}
         >
@@ -78,7 +78,6 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
 
       <ProgressBar
         progressPercent={goal.progress}
-        progressValue={goal.targetAmountLabel}
         style={{
           backgroundColor: colors.white,
         }}
@@ -94,7 +93,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
           <Text
             className="text-text-muted"
             style={{
-              fontFamily: 'Poppins-Regular',
+              
               fontSize: S.fs.xs,
             }}
           >
@@ -103,7 +102,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
           <Text
             className="text-surface-dark"
             style={{
-              fontFamily: 'Poppins-SemiBold',
+              
               fontSize: S.fs.md,
             }}
           >
@@ -115,7 +114,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
           <Text
             className="text-text-muted"
             style={{
-              fontFamily: 'Poppins-Regular',
+              
               fontSize: S.fs.xs,
             }}
           >
@@ -124,7 +123,7 @@ export function HomeSavingsCard({ goal }: HomeSavingsCardProps) {
           <Text
             className="text-surface-dark"
             style={{
-              fontFamily: 'Poppins-SemiBold',
+              
               fontSize: S.fs.md,
             }}
           >
